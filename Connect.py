@@ -1,4 +1,4 @@
-from serial import Serial
+import serial
 
 class Connect: 
         
@@ -11,15 +11,15 @@ class Connect:
         self.timeout = timeout
 
     def connect_device(self):
-        self.serial = 0
+        self.ser = 0
         try:
-            self.serial = Serial(self.port, self.baudrate, self.bytesize, self.parity, self.stopbits, self.timeout)
-            self.serial.write(b'Port: ' + str(self.port).encode("UTF-8")) 
+            self.ser = serial.Serial(self.port, self.baudrate, self.bytesize, self.parity, self.stopbits, self.timeout)
+            print('Port: ' + self.ser.name) 
 
         except IOError:
             print("Port already open or anything else went wrong.")
         
-        return self.serial
+        return self.ser
 
 
                 
