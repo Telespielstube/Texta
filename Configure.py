@@ -10,18 +10,19 @@ class Configure:
     def __init__(self, communicate):
         self.communicate = communicate
 
-    """ Constructor """
+    # Constructor
     def config_modul(self, *args):
         for arg in args:
             message = arg + "\r\n"
+            print(message)
             byte_message = bytes(message, 'utf-8')
             self.communicate.write(byte_message)
             print(arg)
             read = str(self.communicate.readline().decode("utf-8"))
-            print(stripped)
+            print(read)
             sleep(3)
 
-
+ 
     
 
         
