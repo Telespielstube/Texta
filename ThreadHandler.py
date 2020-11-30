@@ -12,5 +12,5 @@ class ThreadHandler():
         self.start_threads()
 
     def start_threads(self):
-        #self.writer.start()
+        self.writer.start()
         self.reader.start()
