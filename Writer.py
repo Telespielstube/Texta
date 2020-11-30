@@ -4,7 +4,7 @@ import queue
 from Keyboard import Keyboard
 from Connection import Connection
 
-class Writer(threading.Thread, Keyboard):
+class Writer(threading.Thread):
 
     # Constructor for Reader class.
     # @group    reserved for future extension

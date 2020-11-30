@@ -13,7 +13,7 @@ class Reader(threading.Thread):
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(self, Reader).__init__()
+        super(Reader, self).__init__()
         self.name = name
         self.received_queue = queue.Queue()
         self.communicate = Connection()

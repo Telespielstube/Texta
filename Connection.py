@@ -3,7 +3,7 @@ import serial
 class Connection: 
         
     def __init__(self):
-        self.ser 
+        self.ser = None
 
     # Connects to the Lora mcu.
     def connect_device(self, port, baudrate, bytesize, parity, stopbits, timeout):  
