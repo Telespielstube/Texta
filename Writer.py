@@ -23,7 +23,7 @@ class Writer(threading.Thread):
     #def message_builder(self):
     
     def trasmit_data(self, message):
-        message += message + '\n\r'
+        message += message + '\r\n'
         byte_message = bytes(message, 'utf-8')
         self.communicate.write_to_mcu(byte_message)
     

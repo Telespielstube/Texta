@@ -12,7 +12,8 @@ class ThreadHandler():
         self.start_threads()
 
     def start_threads(self):
-        self.writer.start()
-        self.writer.join()
-        self.reader.start()
-        self.reader.join()
+        while True:
+            self.writer.start()
+            self.reader.start()
+            self.writer.join()
+            self.reader.join()

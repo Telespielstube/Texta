@@ -23,7 +23,7 @@ class Reader(threading.Thread):
     def receive_data(self):
         self.received_queue.put(self.communicate.read_from_mcu())
         if '\r\n' in self.received_queue:
-            self.message = self.received_queue.split('\n\r')
+            self.message = self.received_queue.split('\r\n')
 
     # Prints received data on screen.
     # @message    received data
