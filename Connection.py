@@ -2,27 +2,22 @@ import serial
 
 class Connection: 
         
-    def __init__(self, port, baudrate, bytesize, parity, stopbits, timeout):
-        self.port = port
-        self.baudrate = baudrate
-        self.bytesize = bytesize
-        self.parity = parity
-        self.stopbits = stopbits
-        self.timeout = timeout
-
     def __init__(self):
-        pass
-    
-    def connect_device(self):
-        self.ser = 0
+        self.ser 
+
+    # Connects to the Lora mcu.
+    def connect_device(self, port, baudrate, bytesize, parity, stopbits, timeout):  
         try:
             self.ser = serial.Serial(self.port, self.baudrate, self.bytesize, self.parity, self.stopbits, self.timeout)
             print('Port: ' + self.ser.name) 
-
         except IOError:
             print("Port already open or anything else went wrong.")
         
         return self.ser
 
+    def write_to_mcu(self, message):
+        self.ser.write(message)
 
-                
+    def read_from_mcu(self, message):
+        read = str(self.ser.readline.decode('utf-8'))
+        return read

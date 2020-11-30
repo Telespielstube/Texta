@@ -2,7 +2,7 @@ import threading
 import queue
 import time
 from Connection import Connection
-from Parser import Parser
+#from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
@@ -13,15 +13,15 @@ class Reader(threading.Thread):
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
     def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
-        super(self, Reader, Connection).__init__()
-        self.communicate = Connection()
+        super(self, Reader).__init__()
         self.name = name
         self.received_queue = queue.Queue()
-        self.message = message
+        self.communicate = Connection()
+        self.message = ''
 
     # Receives data from LoRa mcu and puts it in the queue.
     def receive_data(self):
-        self.received_queue.put(str(self.communicate.readline().decode('utf-8')))
+        self.received_queue.put(self.communicate.read_from_mcu())
         if '\r\n' in self.received_queue:
             self.message = self.received_queue.split('\n\r')
 
