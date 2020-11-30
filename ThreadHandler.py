@@ -5,7 +5,7 @@ from Keyboard import Keyboard
 
 class ThreadHandler():
 
-    def __init__(self, communicate):
+    def __init__(self):
         self.writer = Writer(name='writer')
         self.reader = Reader(name='reader')
         self.keyboard_input = Keyboard(name='keybaord')
@@ -13,4 +13,6 @@ class ThreadHandler():
 
     def start_threads(self):
         self.writer.start()
+        self.writer.join()
         self.reader.start()
+        self.reader.join()

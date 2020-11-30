@@ -3,11 +3,10 @@ from Writer import Writer
 import queue
 class Configuration:
     
-    def __init__(self, communicate):
-        self.communicate = communicate
+    def __init__(self):
         self.writer = Writer()
 
-    
+    # Configures the Lora module
     def config_modul(self, *args):
         for argument in args:
             print(argument)
