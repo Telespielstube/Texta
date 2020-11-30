@@ -10,6 +10,9 @@ class Connection:
         self.stopbits = stopbits
         self.timeout = timeout
 
+    def __init__(self):
+        pass
+    
     def connect_device(self):
         self.ser = 0
         try:
