@@ -14,7 +14,9 @@ class Reader(threading.Thread):
 
     def receive_data(self):
         self.put_data_in_queue = self.received_queue.put(str(self.communicate.readline().decode('utf-8')))
-    
+        if '\r\n' in self.put_data_in_queue:
+            message = self.put_data_in_queue.split('\n\r')
+            
     def print_received_message(self, put_data_in_queue):
         message = received_queue.get(put_data_in_queue)
         print(message)
