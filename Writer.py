@@ -23,6 +23,7 @@ class Writer(threading.Thread, Keyboard):
     #def message_builder(self):
     
     def trasmit_data(self, message):
+        message += message + '\n\r'
         byte_message = bytes(message, 'utf-8')
         self.communicate.write(byte_message)
     
@@ -31,4 +32,5 @@ class Writer(threading.Thread, Keyboard):
             message = self.keyboard.input_queue.get()
             self.trasmit_data(message)
         else:
-            message = 
+            message = self.transmit_queue.get()
+            self.trasmit_data(message)
