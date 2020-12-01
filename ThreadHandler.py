@@ -7,8 +7,8 @@ class ThreadHandler():
 
     def __init__(self, connection):
         self.thread_lock = threading.Lock()
-        self.writer = Writer(1, 'writer', connection, thread_lock)
-        self.reader = Reader(2, 'reader', connection, thread_lock)
+        self.writer = Writer(1, 'writer', connection, self.thread_lock)
+        self.reader = Reader(2, 'reader', connection, self.thread_lock)
         self.keyboard = Keyboard(3, 'keybaord')
         self.start_threads()
         
