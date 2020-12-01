@@ -25,7 +25,7 @@ def main():
     connection.read_from_mcu()
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
     time.sleep(2)
-    connnection.read_from_mcu()
+    connection.read_from_mcu()
     configure.config_modul('AT+ADDR=0136')
     time.sleep(2)
     connection.read_from_mcu()
