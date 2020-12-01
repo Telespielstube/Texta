@@ -5,7 +5,7 @@ from Keyboard import Keyboard
 from Connection import Connection
 
 class Writer(threading.Thread):
-
+    lock = threading.Lock()
     # Constructor for Reader class.
     # @group    reserved for future extension
     # @target   is the callable object to be invoked by the run() method.
@@ -13,11 +13,11 @@ class Writer(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+    def __init__(self, connection):
         super(Writer,self).__init__()
         self.name = name
         self.keyboard = Keyboard()
-        self.communicate = Connection()
+        self.communicate = connection
         self.transmit_queue = queue.Queue()
 
     #def message_builder(self):
@@ -30,7 +30,8 @@ class Writer(threading.Thread):
     def run(self):  
         if not self.keyboard.input_queue.empty():
             message = self.keyboard.input_queue.get()
-            self.trasmit_data(message)
+            with Writer.lock:
+                self.trasmit_data(message)
         else:
             message = self.transmit_queue.get()
             self.trasmit_data(message)

@@ -4,7 +4,8 @@ import time
 from Connection import Connection
 #from Parser import Parser
 class Reader(threading.Thread):
-
+    lock = threading.Lock()
+    
     # Constructor for Reader class.
     # @group    reserved for future extension
     # @target   is the callable object to be invoked by the run() method.
@@ -12,11 +13,11 @@ class Reader(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+    def __init__(self, connection):
         super(Reader, self).__init__()
         self.name = name
         self.received_queue = queue.Queue()
-        self.communicate = Connection()
+        self.communicate = connection
         self.message = ''
 
     # Receives data from LoRa mcu and puts it in the queue.
@@ -32,4 +33,5 @@ class Reader(threading.Thread):
         
     def run(self):
         self.receive_data()
-        self.print_received_message()
+        with Reader.lock:
+            self.print_received_message()

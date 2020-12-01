@@ -2,7 +2,7 @@ import serial
 
 class Connection: 
   
-    def __init__(self, port=None, baudrate=None, bytesize=None, parity=None, stopbits=None, timeout=None):
+    def __init__(self, port, baudrate, bytesize, parity, stopbits, timeout):
         self.port = port
         self.baudrate = baudrate
         self.bytesize = bytesize
