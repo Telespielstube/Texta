@@ -12,8 +12,20 @@ def main():
     # Connecting to LoRa mcu.
     connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
     connection.connect_device()
+    configure = Configuration(writer, connection)
+    configure.config_modul('AT+RST')
+    connection.read_from_mcu()
+    configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
+    connection.read_from_mcu()
+    configure.config_modul('AT+ADDR=0136')
+    connection.read_from_mcu()
+    configure.config_modul('AT+RX')
+    connection.read_from_mcu()
+    configure.config_modul('AT+SAVE')
+    connection.read_from_mcu()
 
-    #Setting up threads
+    
+  #Setting up threads
     thread_lock = threading.Lock()
     keyboard = Keyboard(3, 'keyboard')
     writer = Writer(1, 'writer', connection, thread_lock, keyboard)
@@ -21,25 +33,6 @@ def main():
     
     writer.start()
     reader.start()
-    
-    configure = Configuration(writer)
-    configure.config_modul('AT+RST')
-    connection.read_from_mcu()
-    configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
-    time.sleep(2)
-    connection.read_from_mcu()
-    configure.config_modul('AT+ADDR=0136')
-    time.sleep(2)
-    connection.read_from_mcu()
-    configure.config_modul('AT+RX')
-    time.sleep(2)
-    connection.read_from_mcu()
-    configure.config_modul('AT+SAVE')
-    time.sleep(2)
-    connection.read_from_mcu()
-
-    
-
 if __name__ == '__main__':
     main()
 
