@@ -19,18 +19,14 @@ def main():
     reader = Reader(2, 'reader', connection, thread_lock)
 
     writer.start()
-    configure = Configuration(writer)
     reader.start()
+
+    configure = Configuration(writer)
     configure.config_modul('AT+RST')
-    time.sleep(2)
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
-    time.sleep(2)
     configure.config_modul('AT+ADDR=0136')
-    time.sleep(2)
     configure.config_modul('AT+RX')
-    time.sleep(2)
     configure.config_modul('AT+SAVE')
-    time.sleep(2)
 
 if __name__ == '__main__':
     main()

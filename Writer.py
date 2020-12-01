@@ -5,7 +5,7 @@ from Keyboard import Keyboard
 from Connection import Connection
 
 class Writer(threading.Thread):
-
+    event = threading.Event()
     # Constructor for Writer class.
     # @thread_id
     # @name
@@ -30,4 +30,6 @@ class Writer(threading.Thread):
         for item in list(self.transmit_queue.queue):
             with self.write_lock:
                 self.transmit_data(item)
+                Writer.event.wait(2)
+                
  
