@@ -20,8 +20,13 @@ def main():
 
     writer.start()
     configure = Configuration(writer)
-    configure.config_modul('AT+RST', 'AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4', 'AT+ADDR=0136', 'AT+RX', 'AT+SAVE')
     reader.start()
+    configure.config_modul('AT+RST')
+    configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
+    configure.config_modul('AT+ADDR=0136')
+    configure.config_modul('AT+RX')
+    configure.config_modul('AT+SAVE')
+    
     
     writer.join()
     reader.join()
