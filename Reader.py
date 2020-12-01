@@ -5,7 +5,7 @@ from Connection import Connection
 #from Parser import Parser
 class Reader(threading.Thread):
     lock = threading.Lock()
-    
+
     # Constructor for Reader class.
     # @group    reserved for future extension
     # @target   is the callable object to be invoked by the run() method.
@@ -13,8 +13,9 @@ class Reader(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, connection):
+    def __init__(self, thread_id, name, connection):
         super(Reader, self).__init__()
+        self.thread_id = thread_id
         self.name = name
         self.received_queue = queue.Queue()
         self.communicate = connection

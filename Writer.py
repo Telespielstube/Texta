@@ -13,8 +13,9 @@ class Writer(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, connection):
+    def __init__(self, thread_id, name, connection):
         super(Writer,self).__init__()
+        self.thread_id = thread_id
         self.name = name
         self.keyboard = Keyboard()
         self.communicate = connection

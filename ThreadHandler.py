@@ -6,8 +6,8 @@ from Keyboard import Keyboard
 class ThreadHandler():
 
     def __init__(self, connection):
-        self.writer = Writer(name='writer', target=writer, args=(connection,))
-        self.reader = Reader(name='reader', target=reader, args=(connection,))
+        self.writer = Writer(1, 'writer', connection)
+        self.reader = Reader(2, 'reader', connection)
         self.keyboard_input = Keyboard(name='keybaord')
         self.start_threads()
 

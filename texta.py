@@ -5,8 +5,8 @@ from Configuration import Configuration
 def main():
     
     # Connecting and setting up the LoRa mcu.
-    connect = Connection()
-    connect.connect_device('/dev/ttyS0', 115200, 8, 'N', 1, 1)
+    connect = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
+    connect.connect_device()
     thread_handler = ThreadHandler(connect)
     configure = Configuration()
     configure.config_modul('AT+RST',
