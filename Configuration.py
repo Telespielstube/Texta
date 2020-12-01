@@ -7,6 +7,6 @@ class Configuration:
         self.writer = writer
 
     # Configures the Lora module
-    def config_modul(self, args):
+    def config_modul(self, argument):
         print(argument)
         self.writer.transmit_queue.put(argument)
