@@ -15,8 +15,6 @@ class Connection:
     def connect_device(self):  
         self.serial_connection = serial.Serial(self.port, self.baudrate, self.bytesize, self.parity, self.stopbits, self.timeout)
         print('Port: ' + self.serial_connection.name) 
-        
-        
         return self.serial_connection
 
     def close_Connection(self):
