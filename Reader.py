@@ -27,8 +27,8 @@ class Reader(threading.Thread):
         line = None
         self.received_queue.put(self.communicate.read_from_mcu())
         for item in list(self.received_queue.queue):
-            if b'\r\n' in item:
-                line = item.split(b'\r\n')
+            if '\r\n' in item:
+                line = item.split('\r\n')
         self.message = line
         self.received_queue.task_done()
         
