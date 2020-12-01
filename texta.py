@@ -7,16 +7,17 @@ from Reader import Reader
 from Keyboard import Keyboard
 
 def main():
-     #Setting up threads
+
+    # Connecting to LoRa mcu.
+    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
+    connection.connect_device()
+
+    #Setting up threads
     thread_lock = threading.Lock()
     keyboard = Keyboard(3, 'keyboard')
     writer = Writer(1, 'writer', connection, thread_lock, keyboard)
     reader = Reader(2, 'reader', connection, thread_lock)
     
-    # Connecting to LoRa mcu.
-    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
-    connection.connect_device()
-
     configure = Configuration(writer)
     configure.config_modul('AT+RST')
     configure.read_from_mcu()
