@@ -24,5 +24,5 @@ class Connection:
         self.serial_connection.write(message)
 
     def read_from_mcu(self):
-        message = self.serial_connection.readline().decode('utf-8')
-        print(str(message))
+        message = self.serial_connection.readline()
+        print(str(message).decode('utf-8').split(b'\r\n'))
