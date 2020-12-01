@@ -23,6 +23,7 @@ class Connection:
     def write_to_mcu(self, message):
         message += message + '\r\n'
         byte_message = message.encode()
+        print(byte_message)
         self.serial_connection.write(byte_message)
 
     def read_from_mcu(self):
