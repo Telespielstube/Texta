@@ -27,6 +27,8 @@ def main():
     configure.config_modul('AT+ADDR=0136')
     configure.config_modul('AT+RX')
     configure.config_modul('AT+SAVE')
+    writer.join()
+    reader.join()
 
 if __name__ == '__main__':
     main()
