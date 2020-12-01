@@ -1,6 +1,7 @@
 import serial
 from Writer import Writer
 import queue
+from Connection import Connection
 class Configuration:
     
     def __init__(self, writer, connection):
