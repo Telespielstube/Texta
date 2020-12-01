@@ -12,7 +12,7 @@ class Connection:
         self.serial_connection = None
 
     # Connects to the Lora mcu.
-    def connect_device(self, port, baudrate, bytesize, parity, stopbits, timeout):  
+    def connect_device(self):  
         with serial.Serial(self.port, self.baudrate, self.bytesize, self.parity, self.stopbits, self.timeout) as ser:
             print('Port: ' + ser.name) 
         self.serial_connection = ser
