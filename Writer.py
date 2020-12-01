@@ -22,7 +22,7 @@ class Writer(threading.Thread):
         self.transmit_queue = queue.Queue()
     
     def trasmit_data(self, message):
-        message += message + '\r\n'
+        message = message + '\r\n'
         byte_message = bytes(message, 'utf-8')
         self.communicate.write_to_mcu(byte_message)
     
