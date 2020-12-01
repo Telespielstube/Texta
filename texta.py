@@ -1,18 +1,22 @@
-from ThreadHandler import ThreadHandler
+#from ThreadHandler import ThreadHandler
+import threading
 from Connection import Connection 
 from Configuration import Configuration    
+from Writer import Writer
+from Reader import Reader
+from Keyboard import Keyboard
 
 def main():
 
     # Connecting to LoRa mcu.
-    connect = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
-    connect.connect_device()
+    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
+    connection.connect_device()
 
     #Setting up threads
     thread_lock = threading.Lock()
-    keyboard = Keyboard(3, 'keybaord')
-    writer = Writer(1, 'writer', connection, self.thread_lock, self.keyboard)
-    reader = Reader(2, 'reader', connection, self.thread_lock)
+    keyboard = Keyboard(3, 'keyboard')
+    writer = Writer(1, 'writer', connection, thread_lock, keyboard)
+    reader = Reader(2, 'reader', connection, thread_lock)
 
     writer.start()
     configure = Configuration(writer)

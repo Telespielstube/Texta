@@ -36,6 +36,6 @@ class Reader(threading.Thread):
             print(self.message)
         
     def run(self):
-        with Reader.lock:
+        with self.read_lock:
            self.receive_data()
         self.print_received_message()
