@@ -1,6 +1,5 @@
 import threading
 import queue
-import time
 from Connection import Connection
 #from Parser import Parser
 class Reader(threading.Thread):
@@ -22,14 +21,16 @@ class Reader(threading.Thread):
 
              
     # Prints received data on screen.
-    # @message    received data
-    def print_received_message(self):
-        for item in list(self.received_queue.queue):
-            if '\r\n' in item:
-                message = item.split('\r\n')
-                print(message)
-        
+    # @message    received data decoded to utf-8
+    def print_received_message(self, message):
+        print(message.decode())  # or print(str(message, 'utf-8'))
+
     def run(self):
         while True:
-            self.communicate.read_from_mcu()
+            with read_lock: 
+                message = self.communicate.read_from_mcu()
+                self.received_queue.put(message)
+            while not self.received_queue.empty:
+                message = self.reaceived_queue.get()
+                self.print_received_message(message)
        

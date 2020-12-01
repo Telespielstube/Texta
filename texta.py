@@ -1,6 +1,6 @@
 #from ThreadHandler import ThreadHandler
 import threading
-import time
+from time import sleep
 from Connection import Connection 
 from Configuration import Configuration    
 from Writer import Writer
@@ -9,18 +9,18 @@ from Keyboard import Keyboard
 
 def main():
    # Connecting to LoRa mcu.
-    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 1)
+    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 2)
     connection.connect_device()
-
     #Setting up threads
     thread_lock = threading.Lock()
-    keyboard = Keyboard(3, 'keyboard')
-    writer = Writer(1, 'writer', connection, thread_lock, keyboard)
-    reader = Reader(2, 'reader', connection, thread_lock)
-
+    writer = Writer(2, 'writer', connection, thread_lock, keyboard)
+    keyboard = Keyboard(1, 'keyboard', writer)
+    reader = Reader(3, 'reader', connection, thread_lock)
+    #Configuring the mcu
     configure = Configuration(writer, connection)
     configure.config_modul('AT+RST')
     connection.read_from_mcu()
+    time.sleep(2)
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
     connection.read_from_mcu()
     configure.config_modul('AT+ADDR=0136')
@@ -29,12 +29,10 @@ def main():
     connection.read_from_mcu()
     configure.config_modul('AT+SAVE')
     connection.read_from_mcu()
-
-    
- 
-    
+    # Starting the threads
     writer.start()
     reader.start()
+    #keyboard.start()
 if __name__ == '__main__':
     main()
 

@@ -11,14 +11,15 @@ class Keyboard(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None, verbose=None):
+    def __init__(self, thread_id, name, writer):
         super(Keyboard,self).__init__()
+        self.thread_id = thread_id
         self.name = name
-        self.input_queue = queue.Queue()
+        self.writer = writer
         
     def read_console_input(self):
         command = input()
-        self.input_queue.put(command)
+        self.writer.trasmit_queue.put(command)
 
     def run(self):
         while True:

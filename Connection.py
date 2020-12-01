@@ -17,15 +17,19 @@ class Connection:
         print('Port: ' + self.serial_connection.name) 
         return self.serial_connection
 
-    def close_Connection(self):
+    # Closes connection to serial device
+    def close_connection(self):
         self.serial_connection.close()
 
+    # Writes data to the serial device
+    # @message  data to send
     def write_to_mcu(self, message):
         message = message + '\r\n'
         byte_message = message.encode()
-        print(byte_message)
         self.serial_connection.write(byte_message)
 
+    # Reads data from the serical device
     def read_from_mcu(self):
         message = self.serial_connection.readline()
-        print(str(message, 'utf-8'))
+        return message
+        
