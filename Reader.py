@@ -24,11 +24,14 @@ class Reader(threading.Thread):
 
     # Receives data from LoRa mcu and puts it in the queue.
     def receive_data(self):
+        line = None
         self.received_queue.put(self.communicate.read_from_mcu())
         for item in list(self.received_queue.queue):
             if b'\r\n' in item:
-                lines = dict_items.split(b'\r\n')
-        self.message = item
+                line = item.split(b'\r\n')
+        self.message = line
+        self.received_queue.task_done()
+        
         
     # Prints received data on screen.
     # @message    received data
