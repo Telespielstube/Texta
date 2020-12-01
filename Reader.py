@@ -27,7 +27,7 @@ class Reader(threading.Thread):
 
     def run(self):
         while True:
-            with read_lock: 
+            with self.read_lock: 
                 message = self.communicate.read_from_mcu()
                 self.received_queue.put(message)
             while not self.received_queue.empty:

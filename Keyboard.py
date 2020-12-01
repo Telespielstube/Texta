@@ -19,7 +19,7 @@ class Keyboard(threading.Thread):
         
     def read_console_input(self):
         command = input()
-        self.writer.trasmit_queue.put(command)
+        self.writer.transmit_queue.put(command)
 
     def run(self):
         while True:

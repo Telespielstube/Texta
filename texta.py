@@ -13,14 +13,13 @@ def main():
     connection.connect_device()
     #Setting up threads
     thread_lock = threading.Lock()
-    writer = Writer(2, 'writer', connection, thread_lock, keyboard)
+    writer = Writer(2, 'writer', connection, thread_lock)
     keyboard = Keyboard(1, 'keyboard', writer)
     reader = Reader(3, 'reader', connection, thread_lock)
     #Configuring the mcu
     configure = Configuration(writer, connection)
     configure.config_modul('AT+RST')
     connection.read_from_mcu()
-    time.sleep(2)
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
     connection.read_from_mcu()
     configure.config_modul('AT+ADDR=0136')
@@ -32,7 +31,10 @@ def main():
     # Starting the threads
     writer.start()
     reader.start()
-    #keyboard.start()
+    keyboard.start()
+    writer.join()
+    reader.join()
+    keyboard.join()
 if __name__ == '__main__':
     main()
 
