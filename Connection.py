@@ -22,7 +22,7 @@ class Connection:
 
     def write_to_mcu(self, message):
         message += message + '\r\n'
-        byte_message = bytes(message, 'utf-8') 
+        byte_message = message.encode()
         self.serial_connection.write(byte_message)
 
     def read_from_mcu(self):
