@@ -19,15 +19,10 @@ def main():
     #Configuring the mcu
     configure = Configuration(writer, connection)
     configure.config_modul('AT+RST')
-    connection.read_from_mcu()
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
-    connection.read_from_mcu()
     configure.config_modul('AT+ADDR=0136')
-    connection.read_from_mcu()
     configure.config_modul('AT+RX')
-    connection.read_from_mcu()
     configure.config_modul('AT+SAVE')
-    connection.read_from_mcu()
     # Starting the threads
     writer.start()
     reader.start()

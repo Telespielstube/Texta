@@ -11,3 +11,5 @@ class Configuration:
     def config_modul(self, argument):
         print(argument)
         self.connection.write_to_mcu(argument)
+        message = self.connection.read_from_mcu()
+        print(message.decode())
