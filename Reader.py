@@ -4,7 +4,6 @@ import time
 from Connection import Connection
 #from Parser import Parser
 class Reader(threading.Thread):
-    lock = threading.Lock()
 
     # Constructor for Reader class.
     # @group    reserved for future extension

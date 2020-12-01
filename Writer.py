@@ -5,7 +5,7 @@ from Keyboard import Keyboard
 from Connection import Connection
 
 class Writer(threading.Thread):
-    lock = threading.Lock()
+
     # Constructor for Reader class.
     # @group    reserved for future extension
     # @target   is the callable object to be invoked by the run() method.
@@ -21,8 +21,6 @@ class Writer(threading.Thread):
         self.write_lock = write_lock
         self.keyboard = keyboard
         self.transmit_queue = queue.Queue()
-
-    #def message_builder(self):
     
     def trasmit_data(self, message):
         message += message + '\r\n'

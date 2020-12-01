@@ -3,8 +3,8 @@ from Writer import Writer
 import queue
 class Configuration:
     
-    def __init__(self):
-        self.writer = Writer()
+    def __init__(self, writer):
+        self.writer = writer
 
     # Configures the Lora module
     def config_modul(self, *args):
