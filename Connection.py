@@ -21,7 +21,7 @@ class Connection:
         self.serial_connection.close()
 
     def write_to_mcu(self, message):
-        message += message + '\r\n'
+        message = message + '\r\n'
         byte_message = message.encode()
         print(byte_message)
         self.serial_connection.write(byte_message)
