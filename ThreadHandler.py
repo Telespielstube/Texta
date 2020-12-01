@@ -7,17 +7,19 @@ class ThreadHandler():
 
     def __init__(self, connection):
         self.thread_lock = threading.Lock()
-        self.writer = Writer(1, 'writer', connection, self.thread_lock)
-        self.reader = Reader(2, 'reader', connection, self.thread_lock)
         self.keyboard = Keyboard(3, 'keybaord')
+        self.writer = Writer(1, 'writer', connection, self.thread_lock,self.keyboard)
+        self.reader = Reader(2, 'reader', connection, self.thread_lock)
+
         self.start_threads()
         
 
     def start_threads(self):
         while True:
+          #  self.keyboard.start()
             self.writer.start()
             self.reader.start()
-            self.keyboard.start()
+            
             self.writer.join()
             self.reader.join()
-            self.keyboard.join()
+           # self.keyboard.join()

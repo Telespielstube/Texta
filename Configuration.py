@@ -10,7 +10,6 @@ class Configuration:
     def config_modul(self, *args):
         for argument in args:
             print(argument)
-            #message = argument + '\r\n'
             self.writer.transmit_queue.put(argument)
             
             #print(message)

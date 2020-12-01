@@ -17,9 +17,8 @@ class Keyboard(threading.Thread):
         self.input_queue = queue.Queue()
         
     def read_console_input(self):
-        while True:
-            command = input()
-            self.input_queue.put(command)
+        command = input()
+        self.input_queue.put(command)
 
     def run(self):
         while True:
