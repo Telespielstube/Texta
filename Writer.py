@@ -30,6 +30,6 @@ class Writer(threading.Thread):
         for item in list(self.transmit_queue.queue):
             with self.write_lock:
                 self.transmit_data(item)
-                Writer.event.wait(2)
+            
                 
  

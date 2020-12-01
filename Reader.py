@@ -31,5 +31,5 @@ class Reader(threading.Thread):
         
     def run(self):
         while True:
-            self.received_queue.put(self.communicate.read_from_mcu())
-            self.print_received_message()
+            self.communicate.read_from_mcu()
+       
