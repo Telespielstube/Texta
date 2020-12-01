@@ -13,12 +13,13 @@ class Reader(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, thread_id, name, connection):
+    def __init__(self, thread_id, name, connection, read_lock):
         super(Reader, self).__init__()
         self.thread_id = thread_id
         self.name = name
         self.received_queue = queue.Queue()
         self.communicate = connection
+        self.read_lock = read_lock
         self.message = ''
 
     # Receives data from LoRa mcu and puts it in the queue.
@@ -33,6 +34,6 @@ class Reader(threading.Thread):
             print(message)
         
     def run(self):
-        self.receive_data()
         with Reader.lock:
-            self.print_received_message()
+            self.receive_data()
+        self.print_received_message()

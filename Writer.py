@@ -13,12 +13,13 @@ class Writer(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, thread_id, name, connection):
+    def __init__(self, thread_id, name, connection, write_lock):
         super(Writer,self).__init__()
         self.thread_id = thread_id
         self.name = name
         self.keyboard = Keyboard()
         self.communicate = connection
+        self.write_lock = write_lock
         self.transmit_queue = queue.Queue()
 
     #def message_builder(self):
@@ -31,8 +32,9 @@ class Writer(threading.Thread):
     def run(self):  
         if not self.keyboard.input_queue.empty():
             message = self.keyboard.input_queue.get()
-            with Writer.lock:
+            with self.write_lock:
                 self.trasmit_data(message)
         else:
             message = self.transmit_queue.get()
-            self.trasmit_data(message)
+            with self.write_lock:
+                self.trasmit_data(message)
