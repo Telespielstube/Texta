@@ -1,5 +1,6 @@
 #from ThreadHandler import ThreadHandler
 import threading
+import time
 from Connection import Connection 
 from Configuration import Configuration    
 from Writer import Writer
@@ -20,17 +21,20 @@ def main():
     
     configure = Configuration(writer)
     configure.config_modul('AT+RST')
-    configure.read_from_mcu()
+    time.sleep(2)
+    connnection.read_from_mcu()
     configure.config_modul('AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4')
-    configure.read_from_mcu()
+    time.sleep(2)
+    connnection.read_from_mcu()
     configure.config_modul('AT+ADDR=0136')
-    configure.read_from_mcu()
+    time.sleep(2)
+    connnection.read_from_mcu()
     configure.config_modul('AT+RX')
-    configure.read_from_mcu()
+    time.sleep(2)
+    connnection.read_from_mcu()
     configure.config_modul('AT+SAVE')
-    configure.read_from_mcu()
-
-   
+    time.sleep(2)
+    connnection.read_from_mcu()
 
     writer.start()
     reader.start()
