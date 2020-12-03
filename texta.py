@@ -28,14 +28,7 @@ def main():
     writer.start()
     reader.start()
     keyboard.start()
-    writer.join()
-    reader.join()
-    keyboard.join()
 
 if __name__ == '__main__':
     main()
-
-
-
-      
 

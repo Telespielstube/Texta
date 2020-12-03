@@ -34,11 +34,11 @@ class Header():
 
     @property
     def address(self):
-        return self.__my_address
+        return self.__MY_ADDRESS
     
     @address.setter
-    def address(self, my_address):
-        self.__my_address = my_address
+    def address(self, MY_ADDRESS):
+        self.__MY_ADDRESS = MY_ADDRESS
 
     # # Calculates the time to live for packets.
     # def calc_ttl(self):
@@ -58,5 +58,5 @@ class Header():
     #         self.seq_num_table[self.source] = seq_num
 
     # # Build the message header
-    # def build_header(self, destination, my_address):
-    #      return str(self.flag).zfill(2) + destination + my_address + str(self.time_to_live).zfill(2) + str(self.sequence_num).zfill(2)
+    # def build_header(self, destination, MY_ADDRESS):
+    #      return str(self.flag).zfill(2) + destination + MY_ADDRESS + str(self.time_to_live).zfill(2) + str(self.sequence_num).zfill(2)

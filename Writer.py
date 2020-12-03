@@ -1,10 +1,14 @@
 import threading
 import queue
+
 from Keyboard import Keyboard
 from Connection import Connection
 #from Parser import Parser
+#from Header import Header
 
 class Writer(threading.Thread):
+    HEADER_LENGTH = 14
+    MY_ADDRESS = '0136'
 
     # Constructor for Writer class.
     # @thread_id    thread id
@@ -19,13 +23,12 @@ class Writer(threading.Thread):
         self.write_lock = write_lock
         self.transmit_queue = queue.Queue()
         #self.parser = Parser(connection)
-    
+
     def run(self): 
         while True:
             while not self.transmit_queue.empty:
-                message = self.trasmit_queue.get()
+                message = self.trasmit_queue.get() 
                 print(message)
-                #self.parser.parse_outgoing_message(message)
                 with self.write_lock:
                     self.communicate.write_to_mcu(message)
             

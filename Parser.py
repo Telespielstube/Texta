@@ -3,7 +3,6 @@ from Header import Header
 #from Node import Node
 
 class Parser():
-    header_length = 14
 
     def __init__(self, connection):
         #self.routing_table = RoutingTable(connection)
@@ -29,10 +28,6 @@ class Parser():
             dest_address = command.split('=')
             destination = dest_address[1]
         return destination
-        # if "ADDR" in command:
-        #     my_address = command.split('=')
-        #     my_addr = my_address[1]
-        #     self.connection.my_address = my_addr 
 
     # Parsers the header of the incoming message.
     # @header_string    contains the header + payload as string for better slicing. 
@@ -44,13 +39,13 @@ class Parser():
         self.header.sequence_num = header_string[12:14]
 
         # distinguish flags
-        if self.header == '00' and self.header.destination != self.connection.my_address:
+        if self.header == '00' and self.header.destination != self.connection.MY_ADDRESS:
             if self.header.calc_ttl() > 0:
-                payload = len(header_string) - Parser.header_length
+                payload = len(header_string) - Parser.HEADER_LENGTH
                 self.connection.foward_message(self.header.time_to_live, payload)
             else:
                 pass
-        if self.header == '00' and self.header.destination == self.connection.my_address:
+        if self.header == '00' and self.header.destination == self.connection.MY_ADDRESS:
             self.header.sequence_num += 1
             # no response for 3 retries remove node
         if self.header.flag == '01':
