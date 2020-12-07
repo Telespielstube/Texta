@@ -8,7 +8,7 @@ class Connection:
         self.bytesize = bytesize
         self.parity = parity
         self.stopbits = stopbits
-        self.timeout = timeout
+        self.timeout = None
         self.serial_connection = None
 
     # Connects to the Lora mcu.
@@ -27,6 +27,7 @@ class Connection:
         message = message + '\r\n'
         byte_message = message.encode()
         self.serial_connection.write(byte_message)
+        self.serial_connection.flush()
 
     # Reads data from the serical device
     def read_from_mcu(self):

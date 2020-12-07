@@ -1,4 +1,6 @@
 import serial
+import time
+
 from Writer import Writer
 from Connection import Connection
 class Configuration:
@@ -8,8 +10,9 @@ class Configuration:
         self.connection = connection
 
     # Configures the Lora module
-    def config_modul(self, argument):
+    def config_module(self, argument):
         print(argument)
         self.connection.write_to_mcu(argument)
+        #time.sleep(1)
         message = self.connection.read_from_mcu()
         print(message.decode())

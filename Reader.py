@@ -28,7 +28,7 @@ class Reader(threading.Thread):
             with self.read_lock: 
                 message = self.communicate.read_from_mcu()
                 self.received_queue.put(message)
-            while not self.received_queue.empty :
+            while not self.received_queue.empty():
                 message = self.received_queue.get()
                 self.print_received_message(message)
                # self.parser.parse_incoming_message(message)
