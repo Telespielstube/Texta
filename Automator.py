@@ -10,11 +10,11 @@ class Automator(threading.Thread):
         self.name = name
         self.writer = writer
 
-    def hello_packet(self, *args):
-        for arg in args:
-            self.writer.transmit_queue.put(arg)
+    def hello_packet(self, *arguments):
+        for argument in arguments:
+            self.writer.transmit_queue.put(argument)
             time.sleep(0.2)
-        print(arg)
+        print(argument)
 
     def run(self):
         while True:

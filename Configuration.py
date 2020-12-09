@@ -1,12 +1,10 @@
 import serial
 import time
 
-from Writer import Writer
 from Connection import Connection
 class Configuration:
     
-    def __init__(self, writer, connection):
-        self.writer = writer
+    def __init__(self, connection):
         self.connection = connection
 
     # Configures the Lora module

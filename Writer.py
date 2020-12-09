@@ -31,7 +31,9 @@ class Writer(threading.Thread):
             while not self.transmit_queue.empty():
                 message = self.transmit_queue.get()     
                 self.communicate.write_to_mcu(message)
-            # self.hello_packet()
+                self.transmit_queue.task_done()
+             
+
 
            
 
