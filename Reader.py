@@ -1,5 +1,7 @@
 import threading
+import time
 import queue
+
 from Connection import Connection
 #from Parser import Parser
 class Reader(threading.Thread):
@@ -22,11 +24,18 @@ class Reader(threading.Thread):
     def print_received_message(self, message):
         print(message.decode().rstrip('\r\n'))
 
+    # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):
+        # constantly read from mcu, if received message is empty 
+        # sleep if message has content break from if statement and put message to queue
         while True:
             message = self.communicate.read_from_mcu()
+            if not message:
+                time.sleep(0.01)                          
+            else:
+                break
             self.received_queue.put(message)
-            
+
             while not self.received_queue.empty():
                 message = self.received_queue.get()
                 self.print_received_message(message)

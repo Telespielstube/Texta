@@ -9,7 +9,7 @@ class Connection:
         self.bytesize = bytesize
         self.parity = parity
         self.stopbits = stopbits
-        self.timeout = None
+        self.timeout = timeout
         self.serial_connection = None
         self.access_lock = threading.Lock()
 
@@ -30,7 +30,7 @@ class Connection:
             byte_message = message.encode()
             self.serial_connection.write(byte_message)
 
-    # Reads data from the serical device
+    # Reads data from the serial device
     def read_from_mcu(self):
         with self.access_lock:
             message = self.serial_connection.readline()
