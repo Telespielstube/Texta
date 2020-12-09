@@ -19,17 +19,9 @@ class Keyboard(threading.Thread):
         
     def read_console_input(self):
         command = input()
-
-        print(command)
         self.writer.transmit_queue.put(command)
-    
-    def auto_msg(self):
-        self.writer.transmit_queue.put('AT+DEST=FFFF')
-        self.writer.transmit_queue.put('AT+SEND=11')
-        self.writer.transmit_queue.put('HelloPacket')
 
     def run(self):
         while True:
             self.read_console_input()
-            #time.sleep(5)
-            #self.auto_msg()
+

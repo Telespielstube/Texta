@@ -13,6 +13,6 @@ class Configuration:
     def config_module(self, argument):
         print(argument)
         self.connection.write_to_mcu(argument)
-        #time.sleep(1)
+        time.sleep(1.0)
         message = self.connection.read_from_mcu()
         print(message.decode())

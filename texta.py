@@ -5,18 +5,19 @@ from Configuration import Configuration
 from Writer import Writer
 from Reader import Reader
 from Keyboard import Keyboard
+from Automator import Automator
 
 def main():
    # Connecting to LoRa mcu.
    # connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 2)
-    connection = Connection('/dev/ttys003', 115200, 8, 'N', 1, 2)
+    connection = Connection('/dev/ttys000', 115200, 8, 'N', 1, 2)
     connection.connect_device()
 
     #Setting up threads
-    thread_lock = threading.Lock()
-    writer = Writer(2, 'writer', connection, thread_lock)
-    keyboard = Keyboard(1, 'keyboard', writer)
-    reader = Reader(3, 'reader', connection, thread_lock)
+    writer = Writer(1, 'writer', connection)
+    reader = Reader(2, 'reader', connection)
+    keyboard = Keyboard(3, 'keyboard', writer)
+    automator = Automator(4, 'automator', writer)
     
     #Configuring the mcu
     configure = Configuration(writer, connection)
@@ -25,12 +26,13 @@ def main():
     configure.config_module('AT+ADDR=0136')
     configure.config_module('AT+DEST=FFFF')
     configure.config_module('AT+RX')
-    configure.config_module('AT+SAVE')
+    configure.config_module('AT+SAVE')  
 
     # Starting the threads
     writer.start()
     reader.start()
     keyboard.start()
+    automator.start()
 
 if __name__ == '__main__':
     main()
