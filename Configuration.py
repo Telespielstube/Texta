@@ -10,9 +10,10 @@ class Configuration:
         self.connection = connection
 
     # Configures the Lora module
-    def config_module(self, argument):
-        print(argument)
-        self.connection.write_to_mcu(argument)
-        time.sleep(1.0)
-        message = self.connection.read_from_mcu()
-        print(message.decode())
+    def config_module(self, *arguments):
+        for argument in arguments:
+            print(argument)
+            self.connection.write_to_mcu(argument)
+            time.sleep(1.0)
+            message = self.connection.read_from_mcu()
+            print(message.decode())

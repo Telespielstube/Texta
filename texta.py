@@ -10,7 +10,7 @@ from Automator import Automator
 def main():
    # Connecting to LoRa mcu.
    # connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 2)
-    connection = Connection('/dev/ttys000', 115200, 8, 'N', 1, 2)
+    connection = Connection('/dev/ttys006', 115200, 8, 'N', 1, 2)
     connection.connect_device()
 
     #Setting up threads
@@ -21,12 +21,11 @@ def main():
     
     #Configuring the mcu
     configure = Configuration(writer, connection)
-    configure.config_module('AT+RST')
-    configure.config_module('AT+CFG=433500000,20,6,12,1,1,0,0,0,0,3000,8,4')
-    configure.config_module('AT+ADDR=0136')
-    configure.config_module('AT+DEST=FFFF')
-    configure.config_module('AT+RX')
-    configure.config_module('AT+SAVE')  
+    configure.config_module('AT+RST', 'AT+CFG=433500000,20,6,12,1,1,0,0,0,0,3000,8,4', 
+                            'AT+ADDR=0136',
+                            'AT+DEST=FFFF',
+                            'AT+RX',
+                            'AT+SAVE')
 
     # Starting the threads
     writer.start()
