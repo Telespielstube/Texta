@@ -29,9 +29,10 @@ class Writer(threading.Thread):
             if self.transmit_queue.empty():
                 time.sleep(0.5)
             while not self.transmit_queue.empty():
-                message = self.transmit_queue.get()     
+                message = self.transmit_queue.get()
+                self.transmit_queue.task_done()     
                 self.communicate.write_to_mcu(message)
-                self.transmit_queue.task_done()
+
              
 
 

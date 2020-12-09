@@ -15,7 +15,7 @@ class Reader(threading.Thread):
         super(Reader, self).__init__()
         self.thread_id = thread_id
         self.name = name
-        self.received_queue = queue.Queue()
+        self.receive_queue = queue.Queue()
         self.communicate = connection
         #self.parser = Parser(connection)
             
@@ -34,9 +34,10 @@ class Reader(threading.Thread):
                 time.sleep(0.01)                          
             else:
                 break
-            self.received_queue.put(message)
+            self.receive_queue.put(message)
 
-            while not self.received_queue.empty():
-                message = self.received_queue.get()
+            while not self.receive_queue.empty():
+                message = self.receive_queue.get()
+                self.receive_queue.task_done()
                 self.print_received_message(message)
-               # self.parser.parse_incoming_message(message)
+               # self.parser.parse_message(message)

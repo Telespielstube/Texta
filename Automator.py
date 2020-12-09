@@ -13,7 +13,6 @@ class Automator(threading.Thread):
     def hello_packet(self, *arguments):
         for argument in arguments:
             self.writer.transmit_queue.put(argument)
-            time.sleep(0.2)
         print(argument)
 
     # Overridden Thread function to execute functions necessary to send automated messages at intervalls to mcu.

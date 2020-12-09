@@ -12,7 +12,7 @@ class Configuration:
         for argument in arguments:
             print(argument)
             self.connection.write_to_mcu(argument)
-            time.sleep(0.5)
+            time.sleep(0.2)
             # constantly read from mcu, if received message is empty 
             # sleep if message has content break from if statement and print message
             while True:
