@@ -22,7 +22,7 @@ class Reader(threading.Thread):
     # Prints received data on screen.
     # @message    received data encoded to utf-8
     def print_received_message(self, message):
-        print(message.decode().rstrip('\r\n'))
+        print(message.decode())
 
     # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):

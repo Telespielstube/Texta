@@ -13,7 +13,6 @@ class Automator(threading.Thread):
     def auto_msg(self, *arguments):
         for argument in arguments:
             self.writer.transmit_queue.put(argument)
-        print(argument)
 
     # Overridden Thread function to execute functions necessary to send automated messages at intervalls to mcu.
     def run(self):
