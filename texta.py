@@ -22,7 +22,7 @@ def main():
     #Set up and start threads
     writer = Writer(1, 'writer', connection)
     reader = Reader(2, 'reader', connection)
-    keyboard = Keyboard(3, 'keyboard', connection)
+    keyboard = Keyboard(3, 'keyboard', connection, writer)
     automator = Automator(4, 'automator', writer)
     writer.start()
     reader.start()

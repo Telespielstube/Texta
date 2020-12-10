@@ -3,14 +3,14 @@ import time
 import queue
 
 from Connection import Connection
-#from Parser import Parser
+from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
     # @thread_id    thread id
     # @name         thread name
     # @connection   connection to the serial device
-    # @read_lock   locks the writing process to the mcu
+    # @read_lock   locks the reading process to the mcu
     def __init__(self, thread_id, name, connection):
         super(Reader, self).__init__()
         self.thread_id = thread_id
@@ -39,4 +39,4 @@ class Reader(threading.Thread):
                 message = self.receive_queue.get()
                 self.receive_queue.task_done()
                 self.print_received_message(message)
-                #self.parser.parse_incoming_message(message)
+                self.parser.parse_incoming_message(message)
