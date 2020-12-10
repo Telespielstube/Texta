@@ -3,7 +3,7 @@ import time
 import queue
 
 from Connection import Connection
-from Parser import Parser
+#from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
@@ -28,11 +28,15 @@ class Reader(threading.Thread):
     def run(self):
         # constantly read from mcu, if received message is empty 
         # sleep if message has content break from if statement and put message to queue
-        message = self.communicate.read_from_mcu()
-        self.receive_queue.put(message)
+        while True:
+            message = self.communicate.read_from_mcu()
+            if not message:
+                time.sleep(0.5)
+                continue
+            self.receive_queue.put(message)
 
-        while not self.receive_queue.empty():
-            message = self.receive_queue.get()
-            self.receive_queue.task_done()
-            self.print_received_message(message)
-            self.parser.parse_incoming_message(message)
+            while not self.receive_queue.empty():
+                message = self.receive_queue.get()
+                self.receive_queue.task_done()
+                self.print_received_message(message)
+                #self.parser.parse_incoming_message(message)

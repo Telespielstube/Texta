@@ -34,7 +34,6 @@ class Connection:
     # Reads data from the serial device
     def read_from_mcu(self):
         with self.access_lock:
-            while self.serial_connection.in_waiting > 0:
-                message = self.serial_connection.readline()
-                return message
+            message = self.serial_connection.readline()
+            return message
         
