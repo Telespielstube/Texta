@@ -31,7 +31,7 @@ class Reader(threading.Thread):
         while True:
             message = self.communicate.read_from_mcu()
             if not message:
-                time.sleep(0.5)
+                time.sleep(0.2)
                 continue
             self.receive_queue.put(message)
 

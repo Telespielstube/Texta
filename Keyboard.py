@@ -2,6 +2,7 @@ import threading
 import queue
 import time
 
+from Connection import Connection
 class Keyboard(threading.Thread):
 
     # Constructor for Reader class.
@@ -11,15 +12,15 @@ class Keyboard(threading.Thread):
     # @args     is the argument tuple
     # @kwargs   is a dictionary of keyword arguments for the target invocation.
     # @verbose
-    def __init__(self, thread_id, name, writer):
+    def __init__(self, thread_id, name, communication):
         super(Keyboard,self).__init__()
         self.thread_id = thread_id
         self.name = name
-        self.writer = writer
+        self.connection = communication
         
     def read_console_input(self):
         command = input()
-        self.writer.transmit_queue.put(command)
+        self.connection.write_to_mcu(command)
 
     def run(self):
         while True:

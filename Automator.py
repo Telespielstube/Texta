@@ -20,5 +20,5 @@ class Automator(threading.Thread):
            # time.sleep(10)
            # self.auto_msg('AT+SEND=15', 'Hello from 0136')
             time.sleep(30)
-            self.auto_msg('AT+SEND=121', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard.')
+            self.auto_msg('AT+SEND=74', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.')
             
