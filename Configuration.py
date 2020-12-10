@@ -14,11 +14,6 @@ class Configuration:
             self.connection.write_to_mcu(argument)
             time.sleep(0.2)
             # constantly read from mcu, if received message is empty 
-            # sleep if message has content break from if statement and print message
-            while True:
-                message = self.connection.read_from_mcu()
-                if not message:
-                    time.sleep(0.01)                          
-                else:
-                    break
+            # sleep if message has content break from if statement and print message         
+            message = self.connection.read_from_mcu()    
             print(message.decode())

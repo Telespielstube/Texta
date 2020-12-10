@@ -9,7 +9,7 @@ from Automator import Automator
 
 def main():
    # Connecting and configure LoRa mcu.
-   # connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 2)
+   # connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
     connection = Connection('/dev/ttys004', 115200, 8, 'N', 1, 0.5)
     connection.connect_device()
     configure = Configuration(connection)
