@@ -10,7 +10,6 @@ class Configuration:
     # Configures the Lora module
     def config_module(self, *arguments):
         for argument in arguments:
-            print(argument)
             self.connection.write_to_mcu(argument)
             time.sleep(1)
             # constantly read from mcu, if received message is empty 

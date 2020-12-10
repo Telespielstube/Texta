@@ -30,11 +30,13 @@ class Connection:
             message = message + '\r\n'
             byte_message = message.encode()
             self.serial_connection.write(byte_message)
+            self.serial_connection.reset_output_buffer()
 
     # Reads data from the serial device
     def read_from_mcu(self):
         with self.access_lock:
             while self.serial_connection.in_waiting > 0:
                 message = self.serial_connection.readline()
+                self.serial_connection.reset_input_buffer()
                 return message
         
