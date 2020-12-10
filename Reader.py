@@ -3,7 +3,7 @@ import time
 import queue
 
 from Connection import Connection
-#from Parser import Parser
+from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
@@ -17,7 +17,7 @@ class Reader(threading.Thread):
         self.name = name
         self.receive_queue = queue.Queue()
         self.communicate = connection
-        #self.parser = Parser(connection)
+        self.parser = Parser()
             
     # Prints received data on screen.
     # @message    received data encoded to utf-8
@@ -35,4 +35,4 @@ class Reader(threading.Thread):
             message = self.receive_queue.get()
             self.receive_queue.task_done()
             self.print_received_message(message)
-            # self.parser.parse_message(message)
+            self.parser.parse_incoming_message(message)
