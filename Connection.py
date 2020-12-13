@@ -25,7 +25,6 @@ class Connection:
     # Writes data to the serial device
     # @message  data to send
     def write_to_mcu(self, message):
-        print(message)
         with self.access_lock:
             message = message + '\r\n'
             byte_message = message.encode()

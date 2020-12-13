@@ -13,10 +13,10 @@ class RoutingTable():
     def add_address_to_table(self, address): # hop, metric):
         if address not in self.routing_table:
             self.routing_table[address] = Node(address)   #, hop, metric)
-            print('Node added' + address)
-            # for key in self.routing_table.items():
-            #     print (key)
-            # self.communicator.transmit_queue.put(self.communicator.send_routing_table())
+           # print('Node added' + address)
+            for key in self.routing_table.items():
+                print (key)
+           # self.communicator.transmit_queue.put(self.communicator.send_routing_table())
         else:
             print(address)
           
