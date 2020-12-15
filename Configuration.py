@@ -11,8 +11,6 @@ class Configuration:
     def config_module(self, *arguments):
         for argument in arguments:
             self.connection.write_to_mcu(argument)
-            time.sleep(1)
-            # constantly read from mcu, if received message is empty 
-            # sleep if message has content break from if statement and print message         
+            time.sleep(1)       
             message = self.connection.read_from_mcu()    
             print(message.decode())

@@ -4,7 +4,8 @@ import collections
 
 class RoutingTable():
     
-    # Constructur
+    # Constructor
+    # @routing_table   inizialises a dictionary (is a collection which is unordered, changeable and does not allow duplicates.)
     def __init__(self):
         self.routing_table = dict()
 
@@ -14,18 +15,15 @@ class RoutingTable():
         if address not in self.routing_table:
             self.routing_table[address] = Node(address)   #, hop, metric)
             print('Node added' + address)
-            # for key in self.routing_table.items():
-            #     print (key)
-            # self.communicator.transmit_queue.put(self.communicator.send_routing_table())
         else:
             print(address)
-          
-          
-          
-          
-          
-          
-          
+
+    # Prints all Nodes in routing table.      
+    def show_routing_table(self):
+        for key in self.routing_table.items():
+            print (key)
+
+      
           
           
             # node = self.find_entry(address)

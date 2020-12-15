@@ -4,40 +4,62 @@ import time
 
 from Keyboard import Keyboard
 from Connection import Connection
-#from Parser import Parser
-#from Header import Header
+from Parser import Parser
+from Header import Header
+from MessageItem import MessageItem
 
 class Writer(threading.Thread):
-    HEADER_LENGTH = 14
     MY_ADDRESS = '0136'
 
     # Constructor for Writer class.
-    # @thread_id    thread id
-    # @name         thread name
-    # @connection   connection to the serial device
-    # @write_lock   locks the writing process to the mcu
+    # @thread_id        thread id
+    # @name             thread name
+    # @connection       connection to the serial device
+    # @trasmit_queue    initializes thread safe queu Object
+    # @parser           initializes Parser Object
+    # @header           initializes Header Object 
     def __init__(self, thread_id, name, connection):
         super(Writer,self).__init__()
         self.thread_id = thread_id
         self.name = name
         self.communicate = connection
         self.transmit_queue = queue.Queue()
-        #self.parser = Parser(connection)
+        self.parser = Parser()
+        self.header = Header()
     
+    # Prepares the message for sending.
+    # @self function is a member of this object. 
+    def message_builder(self):
+        destination = ''
+        write_queue_item = self.transmit_queue.get()
+        if 'SEND' in write_queue_item.command:
+            if write_queue_item.destination:
+                destination_address = write_queue_item.destination
+                command_string = "AT+DEST=" + destination_address
+                self.communicate.write_to_mcu(command_string)
+            command_string = "AT+SEND="
+            payload = write_queue_item.message
+            payload_length = 0
+            payload_length += len(payload) + 14
+            command_string += str(payload_length) + '\r\n'
+            self.communicate.write_to_mcu(command_string)
+            message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload + '\r\n'
+        self.communicate.write_to_mcu(message)
+        self.transmit_queue.task_done()
+
     def run(self): 
         while True:
             if self.transmit_queue.empty():
                 time.sleep(0.5)
-            while not self.transmit_queue.empty():  
-                self.communicate.write_to_mcu(self.transmit_queue.get())
-                self.transmit_queue.task_done()   
+            while not self.transmit_queue.empty():
+                self.message_builder()  
 
-             
+                
 
 
-           
+            
 
             
             
 
- 
+
