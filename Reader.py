@@ -11,13 +11,13 @@ class Reader(threading.Thread):
     # @name         thread name
     # @connection   connection to the serial device
     # @read_lock   locks the reading process to the mcu
-    def __init__(self, thread_id, name, connection):
+    def __init__(self, thread_id, name, connection, parser):
         super(Reader, self).__init__()
         self.thread_id = thread_id
         self.name = name
         self.receive_queue = queue.Queue()
         self.communicate = connection
-        self.parser = Parser()
+        self.parser = parser
             
     # Prints received data on screen.
     # @message    received data encoded to utf-8

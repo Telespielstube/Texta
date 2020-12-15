@@ -4,8 +4,8 @@ from Header import Header
 
 class Parser():
 
-    def __init__(self):
-        self.routing_table = RoutingTable()
+    def __init__(self, routing_table):
+        self.routing_table = routing_table
         self.header = Header()
         #self.node = Node(0, 0, 0)
         

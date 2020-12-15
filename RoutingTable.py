@@ -18,7 +18,7 @@ class RoutingTable():
         else:
             print(address)
 
-    # Prints all Nodes in routing table.      
+    # Prints all Nodes in routing table.   
     def show_routing_table(self):
         for key in self.routing_table.items():
             print (key)

@@ -51,5 +51,5 @@ class Header():
     #         self.seq_num_table[self.source] = seq_num
 
     # Build the message header
-    def build_header(self, destination, MY_ADDRESS):
+    def build_header(self, MY_ADDRESS, destination):
          return str(MY_ADDRESS + destination) #+ str(self.flag()) + self.time_to_live() + self.sequence_num()))

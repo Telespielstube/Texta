@@ -14,3 +14,4 @@ class Configuration:
             time.sleep(1)       
             message = self.connection.read_from_mcu()    
             print(message.decode())
+        print('Configuration complete')

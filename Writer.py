@@ -2,9 +2,7 @@ import threading
 import queue
 import time
 
-from Keyboard import Keyboard
 from Connection import Connection
-from Parser import Parser
 from Header import Header
 from MessageItem import MessageItem
 
@@ -16,7 +14,6 @@ class Writer(threading.Thread):
     # @name             thread name
     # @connection       connection to the serial device
     # @trasmit_queue    initializes thread safe queu Object
-    # @parser           initializes Parser Object
     # @header           initializes Header Object 
     def __init__(self, thread_id, name, connection):
         super(Writer,self).__init__()
@@ -24,21 +21,19 @@ class Writer(threading.Thread):
         self.name = name
         self.communicate = connection
         self.transmit_queue = queue.Queue()
-        self.parser = Parser()
         self.header = Header()
     
     # Prepares the message for sending.
     # @self function is a member of this object. 
     def message_builder(self):
-        destination = ''
-        write_queue_item = self.transmit_queue.get()
-        if 'SEND' in write_queue_item.command:
-            if write_queue_item.destination:
-                destination_address = write_queue_item.destination
+        message_item = self.transmit_queue.get()
+        if 'SEND' in message_item.command:
+            if message_item.destination:
+                destination_address = message_item.destination
                 command_string = "AT+DEST=" + destination_address
                 self.communicate.write_to_mcu(command_string)
             command_string = "AT+SEND="
-            payload = write_queue_item.message
+            payload = message_item.message
             payload_length = 0
             payload_length += len(payload) + 14
             command_string += str(payload_length) + '\r\n'

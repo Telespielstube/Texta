@@ -12,15 +12,15 @@ class Automator(threading.Thread):
         self.writer = writer
     
     def auto_msg(self, *arguments):
-        write_queue_item = MessageItem(arguments[0], arguments[1], arguments[2])
-        self.writer.transmit_queue.put(write_queue_item)
+        write_message_item = MessageItem(arguments[0], arguments[1], arguments[2])
+        print(write_message_item.command + ', '+ write_message_item.message + ', ' + write_message_item.destination)
+        self.writer.transmit_queue.put(write_message_item)
 
     # Overridden Thread function to execute functions necessary to send automated messages at intervalls to mcu.
     def run(self):
         while True:
-            time.sleep(10)
+            time.sleep(50)
             self.auto_msg('SEND', 'Hello from 0136', 'FFFF')
-            #self.auto_msg('SEND', 'Hello from 0136', 'FFFF')
-            # time.sleep(30)
-            # self.auto_msg('AT+DEST=FFFF', 'AT+SEND=74', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.')
+            time.sleep(60)
+            self.auto_msg('SEND', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.', 'FFFF')
             
