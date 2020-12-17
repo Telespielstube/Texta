@@ -11,8 +11,8 @@ from RoutingTable import RoutingTable
 
 def main():
    # Connecting and configure LoRa mcu.
-   # connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
-    connection = Connection('/dev/ttys003', 115200, 8, 'N', 1, 3)
+    connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
+   # connection = Connection('/dev/ttys003', 115200, 8, 'N', 1, 3)
     connection.connect_device()
     configure = Configuration(connection)
     configure.config_module('AT+RST', 'AT+CFG=433500000,20,6,12,1,1,0,0,0,0,3000,8,4', 

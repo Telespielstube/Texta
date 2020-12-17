@@ -18,8 +18,6 @@ class Reader(threading.Thread):
         self.receive_queue = queue.Queue()
         self.communicate = connection
         self.parser = parser
-        self.header = ''
-        self.payload = ''
             
     # Prints received data on screen.
     # @message    received data encoded to utf-8
@@ -29,7 +27,7 @@ class Reader(threading.Thread):
     def slice_incoming_message(self, message):
         mcu_header = message[:11]
         own_header = message[11:21]
-        self.payload = message[21:]
+        payload = message[21:]
         return mcu_header, own_header, payload 
 
     # Overridden Thread function to execute functions necessary to read from mcu.

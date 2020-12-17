@@ -14,7 +14,7 @@ class Parser():
     # @transport    serial communication channel to the mcu.
     def parse_incoming_message(self, mcu_header, own_header):
         splitted = mcu_header.decode().split(',')
-        if splitted[0] == 'AT' and splitted[1] == 'OK' or splitted[1] == 'SENDING' or splitted[1] == 'SENDED' or splitted[0] == 'ERR: PARA' or splitted[0] == 'ERR: CMD' or splitted[0] == 'CPU: BUSY':
+        if splitted[0] == 'AT' and splitted[1] == 'OK' or splitted[0] == 'ERR: PARA' or splitted[0] == 'ERR: CMD' or splitted[0] == 'CPU: BUSY':
             pass
         if splitted[0] == 'LR':
             header_source = self.parse_own_header(own_header)
