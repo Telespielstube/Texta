@@ -18,6 +18,7 @@ class Automator(threading.Thread):
 
     # Overridden Thread function to execute functions necessary to send automated messages at intervalls to mcu.
     def run(self):
+        self.auto_msg('SEND', 'Hello from 0136', 'FFFF')
         while True:
             time.sleep(50)
             self.auto_msg('SEND', 'Hello from 0136', 'FFFF')

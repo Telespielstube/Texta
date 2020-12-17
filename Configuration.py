@@ -11,7 +11,7 @@ class Configuration:
     def config_module(self, *arguments):
         for argument in arguments:
             self.connection.write_to_mcu(argument)
-            time.sleep(1)       
+            time.sleep(1.5)       
             message = self.connection.read_from_mcu()    
             print(message.decode())
         print('Configuration complete')

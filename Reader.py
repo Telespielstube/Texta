@@ -18,11 +18,19 @@ class Reader(threading.Thread):
         self.receive_queue = queue.Queue()
         self.communicate = connection
         self.parser = parser
+        self.header = ''
+        self.payload = ''
             
     # Prints received data on screen.
     # @message    received data encoded to utf-8
     def print_received_message(self, message):
         print(message.decode())
+    
+    def slice_incoming_message(self, message):
+        mcu_header = message[:11]
+        own_header = message[11:21]
+        self.payload = message[21:]
+        return mcu_header, own_header, payload 
 
     # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):
@@ -37,6 +45,7 @@ class Reader(threading.Thread):
 
             while not self.receive_queue.empty():
                 message = self.receive_queue.get()
+                mcu_header, own_header, payload = self.slice_incoming_message(message)
                 self.receive_queue.task_done()
-                self.print_received_message(message)
-                self.parser.parse_incoming_message(message)
+                self.print_received_message(payload)
+                self.parser.parse_incoming_message(mcu_header, own_header)

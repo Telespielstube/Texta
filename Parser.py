@@ -1,4 +1,4 @@
-from RoutingTable import RoutingTable
+#from RoutingTable import RoutingTable
 from Header import Header
 #from Node import Node
 
@@ -12,23 +12,22 @@ class Parser():
     # Parses incoming byte stream. 
     # @line         the incoming message received by the LoRa mcu.
     # @transport    serial communication channel to the mcu.
-    def parse_incoming_message(self, message):
-        splitted = message.decode().split(',')
+    def parse_incoming_message(self, mcu_header, own_header):
+        splitted = mcu_header.decode().split(',')
         if splitted[0] == 'AT' and splitted[1] == 'OK' or splitted[1] == 'SENDING' or splitted[1] == 'SENDED' or splitted[0] == 'ERR: PARA' or splitted[0] == 'ERR: CMD' or splitted[0] == 'CPU: BUSY':
             pass
         if splitted[0] == 'LR':
-            self.routing_table.add_address_to_table(splitted[1])
-            header_string = splitted[3]
-           # self.parse_header(header_string)
+            header_source = self.parse_own_header(own_header)
+            self.routing_table.add_address_to_table(header_source)
 
     # Parsers the header of the incoming message.
     # @header_string    contains the header + payload as string. 
-    # def parse_header(self, header_string):       
-    #     self.header.source = header_string[:4]
-    #     self.header.destination = header_string[4:8]
-    #     self.header.flag = header_string[8:9] # self.header.flag this is a setter call in Python    
-    #     self.header.time_to_live = header_string[9:11]
-    #     self.header.sequence_num = header_string[11:14]
+    def parse_own_header(self, own_header):       
+        header_source, header.source = own_header[:4]
+        header.destination = own_header[4:8]
+        header.flag = own_header[8:9] # self.header.flag this is a setter call in Python    
+        header.time_to_live = own_header[9:10]
+        return header_source
   
         # if self.header.flag == '00' and self.header.destination != self.connection.MY_ADDRESS:
         #     if self.header.calc_ttl() > 0:

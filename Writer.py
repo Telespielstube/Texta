@@ -35,9 +35,10 @@ class Writer(threading.Thread):
             command_string = "AT+SEND="
             payload = message_item.message
             payload_length = 0
-            payload_length += len(payload) + 14
+            payload_length += len(payload) + 10
             command_string += str(payload_length) + '\r\n'
             self.communicate.write_to_mcu(command_string)
+            time.sleep(0.5)
             message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload + '\r\n'
         self.communicate.write_to_mcu(message)
         self.transmit_queue.task_done()
