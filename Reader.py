@@ -35,7 +35,9 @@ class Reader(threading.Thread):
         # constantly read from mcu, if received message is empty 
         # sleep if message has content break from if statement and put message to queue
         while True:
+            self.communicate.lock()
             message = self.communicate.read_from_mcu()
+            self.communicate.unlock()
             if not message:
                 time.sleep(0.2)
                 continue
@@ -43,6 +45,7 @@ class Reader(threading.Thread):
 
             while not self.receive_queue.empty():
                 message = self.receive_queue.get()
+                print(message.decode())
                 mcu_header, own_header, payload = self.slice_incoming_message(message)
                 self.receive_queue.task_done()
                 self.print_received_message(payload)

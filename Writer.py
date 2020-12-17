@@ -28,11 +28,12 @@ class Writer(threading.Thread):
     def message_builder(self):
         message_item = self.transmit_queue.get()
         if 'SEND' in message_item.command:
+            self.communicate.lock()
             if message_item.destination:
                 destination_address = message_item.destination
                 command_string = 'AT+DEST=' + destination_address
                 self.communicate.write_to_mcu(command_string)
-                time.sleep(0.5)
+                #time.sleep(0.5)
                 print(self.communicate.read_from_mcu())
             command_string = 'AT+SEND='
             payload = message_item.message
@@ -44,9 +45,10 @@ class Writer(threading.Thread):
             time.sleep(0.5)
             print(self.communicate.read_from_mcu())
             message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload
-        self.communicate.write_to_mcu(message)
-        time.sleep(0.5)
-        print(self.communicate.read_from_mcu())
+            self.communicate.write_to_mcu(message)
+            time.sleep(0.5)
+            print(self.communicate.read_from_mcu())
+            self.communicate.unlock()
         self.transmit_queue.task_done()
 
     def run(self): 
