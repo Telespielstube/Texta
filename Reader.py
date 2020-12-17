@@ -3,7 +3,7 @@ import time
 import queue
 
 from Connection import Connection
-from Parser import Parser
+#from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
@@ -46,4 +46,4 @@ class Reader(threading.Thread):
                 mcu_header, own_header, payload = self.slice_incoming_message(message)
                 self.receive_queue.task_done()
                 self.print_received_message(payload)
-                self.parser.parse_incoming_message(mcu_header, own_header)
+              #  self.parser.parse_incoming_message(mcu_header, own_header)
