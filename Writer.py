@@ -30,17 +30,20 @@ class Writer(threading.Thread):
         if 'SEND' in message_item.command:
             if message_item.destination:
                 destination_address = message_item.destination
-                command_string = "AT+DEST=" + destination_address
+                command_string = 'AT+DEST=' + destination_address
                 self.communicate.write_to_mcu(command_string)
-            command_string = "AT+SEND="
+                self.communicate.read_from_mcu()
+            command_string = 'AT+SEND='
             payload = message_item.message
             payload_length = 0
             payload_length += len(payload) + 10
-            command_string += str(payload_length) + '\r\n'
+            command_string += str(payload_length)
             self.communicate.write_to_mcu(command_string)
-            time.sleep(0.5)
+            time.sleep(1)
             message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload + '\r\n'
         self.communicate.write_to_mcu(message)
+        self.communicate.read_from_mcu()
+        time.sleep(0.5)
         self.transmit_queue.task_done()
 
     def run(self): 
