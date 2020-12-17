@@ -1,36 +1,34 @@
 class Header():
 
     def __init__(self):
-        self.MY_ADDRESS = ''
-        self.destination = ''
+        self.source = b''
+        self.destination = b''
         self.flag = 0
-        # self.time_to_live = 0 #probably start at 20
-        # self.sequence_num = 0
-        # self.seq_num_table = dict()
+        # self.time_to_live = 0 #probably start at 8
     
-    # @property
-    # def address(self):
-    #     return self.__MY_ADDRESS
+    @property
+    def source(self):
+        return self.__source
     
-    # @address.setter
-    # def address(self, MY_ADDRESS):
-    #     self.__MY_ADDRESS = MY_ADDRESS
+    @address.setter
+    def source(self, source):
+        self.__source = source 
 
-    # @property
-    # def destination(self):
-    #     return self.__destination
+    @property
+    def destination(self):
+        return self.__destination
 
-    # @destination.setter
-    # def destination(self, destination):
-    #     self.__destination = destination
+    @destination.setter
+    def destination(self, destination):
+        self.__destination = destination
 
-    # @property
-    # def flag(self):
-    #     return self.__flag
+    @property
+    def flag(self):
+        return self.__flag
     
-    # @flag.setter
-    # def flag(self, flag):
-    #     self.__flag = flag
+    @flag.setter
+    def flag(self, flag):
+        self.__flag = flag
 
     #
     # # Calculates the time to live for packets.
@@ -51,5 +49,5 @@ class Header():
     #         self.seq_num_table[self.source] = seq_num
 
     # Build the message header
-    def build_header(self, MY_ADDRESS, destination):
-         return str(MY_ADDRESS + destination) #+ str(self.flag()) + self.time_to_live() + self.sequence_num()))
+    def build_header(self, source, destination):
+         return (self.source + self.destination + self.flag) #+ self.time_to_live() + self.sequence_num()))

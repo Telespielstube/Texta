@@ -11,12 +11,14 @@ class Parser():
         
      # Parsers the header of the incoming message.
     # @header_string    contains the header + payload as string. 
-    def parse_own_header(self, own_header):       
-        header_source = own_header[:4]
-        header.destination = own_header[4:8]
-       # header.flag = own_header[8:9] # self.header.flag this is a setter call in Python    
-       # header.time_to_live = own_header[9:10]
-        return header_source
+    def parse_our_header(self, own_header):       
+        self.header.source = own_header[:4]#set the sliced source adress as source adress in header class
+        self.header.destination = own_header[4:8]
+        self.header.flag = own_header[8:9] # self.header.flag this is a setter call in Python    
+       # self.header.time_to_live = own_header[9:10]
+
+       # if self.header.flag == 0:
+        self.routing_table.add_address_to_table(self.header.source)
 
     # Parses incoming byte stream. 
     # @line         the incoming message received by the LoRa mcu.
@@ -26,8 +28,8 @@ class Parser():
         if splitted[0] == 'AT' and splitted[1] == 'OK' or splitted[0] == 'ERR: PARA' or splitted[0] == 'ERR: CMD' or splitted[0] == 'CPU: BUSY':
             pass
         if splitted[0] == 'LR':
-            header_source = self.parse_own_header(own_header)
-            self.routing_table.add_address_to_table(header_source)
+            self.parse_our_header(own_header)
+            
 
    
   

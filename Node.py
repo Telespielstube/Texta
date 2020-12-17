@@ -5,15 +5,13 @@ class Node(object):
     def __init__(self, address, hop, metric):
         self.address = address #address of the node
         # self.hop = hop #neighbor node
-        # self.metric = metric #distance(hops) to the node
-        # now = datetime.now()   
-        # self.time_stamp = datetime.timestamp(now)
+
 
     # def __del__(self):
     #     print ("Object delete")
 
     # def __repr__(self):
-    #     return {self. address, self.hop, self.metric}
+    #     return (self. address, self.hop)
 
     # def __str__(self):
     #     return self.address + ', ' + str(self.hop) + ', ' + str(self.metric)

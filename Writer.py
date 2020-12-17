@@ -7,7 +7,7 @@ from Header import Header
 from MessageItem import MessageItem
 
 class Writer(threading.Thread):
-    MY_ADDRESS = '0136'
+    MY_ADDRESS = b'0136'
 
     # Constructor for Writer class.
     # @thread_id        thread id
@@ -19,7 +19,7 @@ class Writer(threading.Thread):
         super(Writer,self).__init__()
         self.thread_id = thread_id
         self.name = name
-        self.communicate = connection
+        self.connection = connection
         self.transmit_queue = queue.Queue()
         self.header = Header()
     
@@ -28,27 +28,26 @@ class Writer(threading.Thread):
     def message_builder(self):
         message_item = self.transmit_queue.get()
         if 'SEND' in message_item.command:
-            self.communicate.lock()
+            self.connection.lock()
             if message_item.destination:
                 destination_address = message_item.destination
                 command_string = 'AT+DEST=' + destination_address
-                self.communicate.write_to_mcu(command_string)
-                #time.sleep(0.5)
-                print(self.communicate.read_from_mcu())
+                self.connection.write_to_mcu(command_string)
+                print(self.connection.read_from_mcu())
             command_string = 'AT+SEND='
             payload = message_item.message
             payload_length = 0
             payload_length += len(payload) + 8
             command_string += str(payload_length)
             time.sleep(0.5)
-            self.communicate.write_to_mcu(command_string)
+            self.connection.write_to_mcu(command_string)
             time.sleep(0.5)
-            print(self.communicate.read_from_mcu())
+            print(self.connection.read_from_mcu())
             message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload
-            self.communicate.write_to_mcu(message)
+            self.connection.write_to_mcu(message)
             time.sleep(0.5)
-            print(self.communicate.read_from_mcu())
-            self.communicate.unlock()
+            print(self.connection.read_from_mcu())
+            self.connection.unlock()
         self.transmit_queue.task_done()
 
     def run(self): 
