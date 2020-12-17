@@ -32,18 +32,20 @@ class Writer(threading.Thread):
                 destination_address = message_item.destination
                 command_string = 'AT+DEST=' + destination_address
                 self.communicate.write_to_mcu(command_string)
-                self.communicate.read_from_mcu()
+                time.sleep(0.5)
+                print(self.communicate.read_from_mcu())
             command_string = 'AT+SEND='
             payload = message_item.message
             payload_length = 0
             payload_length += len(payload) + 10
             command_string += str(payload_length)
+            time.sleep(0.5)
             self.communicate.write_to_mcu(command_string)
             time.sleep(1)
-            message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload + '\r\n'
+            message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload
         self.communicate.write_to_mcu(message)
-        self.communicate.read_from_mcu()
         time.sleep(0.5)
+        self.communicate.read_from_mcu()
         self.transmit_queue.task_done()
 
     def run(self): 

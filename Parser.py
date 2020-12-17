@@ -1,4 +1,4 @@
-#from RoutingTable import RoutingTable
+from RoutingTable import RoutingTable
 from Header import Header
 #from Node import Node
 
@@ -9,6 +9,15 @@ class Parser():
         self.header = Header()
         #self.node = Node(0, 0, 0)
         
+     # Parsers the header of the incoming message.
+    # @header_string    contains the header + payload as string. 
+    def parse_own_header(self, own_header):       
+        header_source = own_header[:4]
+        header.destination = own_header[4:8]
+       # header.flag = own_header[8:9] # self.header.flag this is a setter call in Python    
+       # header.time_to_live = own_header[9:10]
+        return header_source
+
     # Parses incoming byte stream. 
     # @line         the incoming message received by the LoRa mcu.
     # @transport    serial communication channel to the mcu.
@@ -20,14 +29,7 @@ class Parser():
             header_source = self.parse_own_header(own_header)
             self.routing_table.add_address_to_table(header_source)
 
-    # Parsers the header of the incoming message.
-    # @header_string    contains the header + payload as string. 
-    def parse_own_header(self, own_header):       
-        header_source, header.source = own_header[:4]
-        header.destination = own_header[4:8]
-        header.flag = own_header[8:9] # self.header.flag this is a setter call in Python    
-        header.time_to_live = own_header[9:10]
-        return header_source
+   
   
         # if self.header.flag == '00' and self.header.destination != self.connection.MY_ADDRESS:
         #     if self.header.calc_ttl() > 0:
