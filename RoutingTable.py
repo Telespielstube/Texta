@@ -19,7 +19,7 @@ class RoutingTable():
     # Prints all Nodes in routing table.   
     def show_routing_table(self):
         for key in self.routing_table.items():
-            print (str(key))
+            print (key.decode())
 
       
          
