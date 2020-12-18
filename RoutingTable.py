@@ -14,14 +14,12 @@ class RoutingTable():
     def add_address_to_table(self, address): # hop, metric):
         if address not in self.routing_table:
             self.routing_table[address] = Node(address)  
-            print('Node added' + str(address))
-        else:
-            print(address)
+            print('Node added' + address.decode())
 
     # Prints all Nodes in routing table.   
     def show_routing_table(self):
         for key in self.routing_table.items():
-            print (key)
+            print (str(key))
 
       
           
