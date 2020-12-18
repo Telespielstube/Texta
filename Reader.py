@@ -26,9 +26,9 @@ class Reader(threading.Thread):
     
     def slice_incoming_message(self, message):
         mcu_header = message[:11]
-        own_header = message[11:21]
+        protocol_header = message[11:21]
         payload = message[21:]
-        return mcu_header, own_header, payload 
+        return mcu_header, protocol_header, payload 
 
     # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):
@@ -45,8 +45,8 @@ class Reader(threading.Thread):
 
             while not self.receive_queue.empty():
                 message = self.receive_queue.get()
-               # print(message.decode())
-                mcu_header, own_header, payload = self.slice_incoming_message(message)
+                print(message.decode())
+                mcu_header, protocol_header, payload = self.slice_incoming_message(message)
                 self.receive_queue.task_done()
                 self.print_received_message(payload)
-                self.parser.parse_incoming_message(mcu_header, own_header)
+                self.parser.parse_incoming_message(mcu_header, protocol_header)

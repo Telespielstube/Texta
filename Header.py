@@ -3,14 +3,14 @@ class Header():
     def __init__(self):
         self.source = b''
         self.destination = b''
-        self.flag = 0
+       # self.flag = 0
         # self.time_to_live = 0 #probably start at 8
     
     @property
     def source(self):
         return self.__source
     
-    @address.setter
+    @source.setter
     def source(self, source):
         self.__source = source 
 
@@ -50,4 +50,4 @@ class Header():
 
     # Build the message header
     def build_header(self, source, destination):
-         return (self.source + self.destination + self.flag) #+ self.time_to_live() + self.sequence_num()))
+         return (self.source + self.destination) #+ self.flag) + self.time_to_live() + self.sequence_num()))
