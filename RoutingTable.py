@@ -22,8 +22,7 @@ class RoutingTable():
             print (str(key))
 
       
-          
-          
+         
             # node = self.find_entry(address)
             # node.update_time_stamp()
             # self.routing_table[address] = node
