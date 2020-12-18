@@ -22,7 +22,7 @@ class Reader(threading.Thread):
     # Prints received data on screen.
     # @message    received data encoded to utf-8
     def print_received_message(self, message):
-        print(message.decode())
+        print(message[:-1].decode())
     
     def slice_incoming_message(self, message):
         mcu_header = message[:11]
@@ -45,7 +45,7 @@ class Reader(threading.Thread):
 
             while not self.receive_queue.empty():
                 message = self.receive_queue.get()
-                print(message.decode())
+                #print(message.decode())
                 mcu_header, protocol_header, payload = self.slice_incoming_message(message)
                 self.receive_queue.task_done()
                 self.print_received_message(payload)
