@@ -7,7 +7,7 @@ from Header import Header
 from MessageItem import MessageItem
 
 class Writer(threading.Thread):
-    MY_ADDRESS = b'0136'
+    MY_ADDRESS = '0136'
 
     # Constructor for Writer class.
     # @thread_id        thread id
@@ -33,19 +33,19 @@ class Writer(threading.Thread):
                 destination_address = message_item.destination
                 command_string = 'AT+DEST=' + destination_address
                 self.connection.write_to_mcu(command_string)
+                #time.sleep(0)
                 print(self.connection.read_from_mcu())
             command_string = 'AT+SEND='
             payload = message_item.message
             payload_length = 0
             payload_length += len(payload) + 8
             command_string += str(payload_length)
-            time.sleep(0.5)
             self.connection.write_to_mcu(command_string)
-            time.sleep(0.5)
+            #time.sleep(2)
             print(self.connection.read_from_mcu())
             message = self.header.build_header(Writer.MY_ADDRESS, destination_address) + payload
             self.connection.write_to_mcu(message)
-            time.sleep(0.5)
+            #time.sleep(2)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
         self.transmit_queue.task_done()

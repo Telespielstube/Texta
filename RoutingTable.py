@@ -13,8 +13,8 @@ class RoutingTable():
     # @address = address to add to table
     def add_address_to_table(self, address): # hop, metric):
         if address not in self.routing_table:
-            self.routing_table[address] = Node(address)   #, hop, metric)
-            print('Node added' + address)
+            self.routing_table[address] = Node(address)  
+            print('Node added' + str(address))
         else:
             print(address)
 

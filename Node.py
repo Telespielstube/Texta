@@ -2,7 +2,7 @@ from datetime import datetime
 
 class Node(object):
 
-    def __init__(self, address, hop, metric):
+    def __init__(self, address):
         self.address = address #address of the node
         # self.hop = hop #neighbor node
 
@@ -11,20 +11,20 @@ class Node(object):
     #     print ("Object delete")
 
     # def __repr__(self):
-    #     return (self. address, self.hop)
+    #     return (self. address)
 
     # def __str__(self):
-    #     return self.address + ', ' + str(self.hop) + ', ' + str(self.metric)
+    #     return self.address 
     
     # __repr__ = __str__
     
     @property
     def address(self):
-        return self.address
+        return self.__address
 
     @address.setter
     def address(self, address):
-        self.address = address 
+        self.__address = address 
 
     # @property
     # def hop(self):
