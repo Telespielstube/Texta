@@ -9,12 +9,12 @@ from RoutingTable import RoutingTable
 class UserInterface(threading.Thread):
 
     # Constructor for Reader class.
-    def __init__(self, thread_id, name, communication, writer, routing_table):
+    def __init__(self, communication, writer, reader, automator, routing_table):
         super(UserInterface,self).__init__()
-        self.thread_id = thread_id
-        self.name = name
         self.connection = communication
         self.writer = writer
+        self.reader = reader
+        self.automator = automator
         self.routing_table = routing_table
         
     def read_console_input(self):
@@ -32,6 +32,10 @@ class UserInterface(threading.Thread):
             print ('Routing Table')
             self.routing_table.show_routing_table()
         if 'EXIT' in command:
+            self.writer.join()
+            self.reader.join()
+            self.automator.join()
+            UserInterface.join()
             sys.exit(0)
             
     def run(self):

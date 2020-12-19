@@ -11,10 +11,8 @@ class Reader(threading.Thread):
     # @name         thread name
     # @connection   connection to the serial device
     # @read_lock   locks the reading process to the mcu
-    def __init__(self, thread_id, name, connection, parser):
+    def __init__(self, connection, parser):
         super(Reader, self).__init__()
-        self.thread_id = thread_id
-        self.name = name
         self.receive_queue = queue.Queue()
         self.connection = connection
         self.parser = parser

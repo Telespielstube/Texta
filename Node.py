@@ -4,19 +4,19 @@ class Node(object):
 
     def __init__(self, address):
         self.address = address #address of the node
-        # self.hop = hop #neighbor node
+        #self.hop = hop #neighbor node
 
 
-    # def __del__(self):
-    #     print ("Object delete")
+    def __del__(self):
+        print ("Object delete")
 
-    # def __repr__(self):
-    #     return (self. address)
+    def __repr__(self):
+        return (self. address)
 
-    # def __str__(self):
-    #     return self.address 
+    def __str__(self):
+        return self.address 
     
-    # __repr__ = __str__
+    __repr__ = __str__
     
     @property
     def address(self):
@@ -33,14 +33,6 @@ class Node(object):
     # @hop.setter
     # def hop(self, hop):
     #     self.__hop = hop
-
-    # @property
-    # def metric(self):
-    #     return self.__metric
-    
-    # @metric.setter
-    # def metric(self, metric):
-    #     self.__metric = metric
     
     # @property
     # def time_stamp(self):
