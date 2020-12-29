@@ -4,6 +4,7 @@ import time
 from Connection import Connection
 class Configuration:
     MY_ADDRESS = '0136'
+    DESTINATION_ADDRESS = 'FFFF'
     
     def __init__(self, connection):
         self.connection = connection
@@ -17,6 +18,6 @@ class Configuration:
             print(validation[:-1].decode())
         for i in range(1, len(arguments)):
             self.connection.write_to_mcu(arguments[i])
-            time.sleep(1.5)       
+            time.sleep(1)       
             validation = self.connection.read_from_mcu()
             print(validation[:-1].decode())

@@ -1,8 +1,8 @@
 class Header():
 
     def __init__(self):
-        # self.source = ''
-        self.destination = ''
+        self.source = b''
+        self.destination = b''
         self.flag = 0
         self.time_to_live = 0 
     
@@ -43,8 +43,18 @@ class Header():
         decremented_ttl = self.time_to_live - 1
         return decremented_ttl
 
-    # Build the message header
-    def build_header(self, source):
-        print (self.__flag)
-        print (self.__time_to_live)
-        return (source + self.destination + str(self.flag) + str(self.time_to_live)) 
+    # def build_route_request_message(self):
+    #     return 
+
+    # def build_route_reply_message(self):
+    #     return
+
+    # def build_route_request_header(self):
+    
+    # def build_route_reply_header(self):
+
+    # # Build the message header
+    # def build_header(self, source):
+    #     if self.flag == 3:
+    #         msg_header = source + destination + str(self.flag) + str(self.time_to_live)
+    #     return (source + self.destination + str(self.flag) + str(self.time_to_live)) 

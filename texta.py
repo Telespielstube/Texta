@@ -7,7 +7,6 @@ from Reader import Reader
 from Parser import Parser
 from Header import Header
 from UserInterface import UserInterface
-from Automator import Automator
 from RoutingTable import RoutingTable
 
 def main():
@@ -24,15 +23,13 @@ def main():
                             'AT+SAVE')
     routing_table = RoutingTable()
     header = Header()
-    parser = Parser(routing_table, header, configuration)
     writer = Writer(connection, header, configuration)
+    parser = Parser(routing_table, header, writer, configuration)
     reader = Reader(connection, parser)
-    automator = Automator(writer, header)
-    user_interface = UserInterface(connection, writer, reader, automator, routing_table)
+    user_interface = UserInterface(connection, writer, parser, routing_table)
     writer.start()
     reader.start()
     user_interface.start()
-    automator.start()
 
 if __name__ == '__main__':
     main()
