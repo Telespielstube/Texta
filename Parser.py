@@ -1,6 +1,6 @@
 from RoutingTable import RoutingTable
-from Header import Header
-from MessageItem import MessageItem
+from RouteRequest import RouteRequest
+from RouteReply import RouteReply
 class Parser():
 
     def __init__(self, routing_table, header, writer, configuration):
@@ -9,32 +9,40 @@ class Parser():
         self.writer = writer
         self.configuration = configuration
     
-    # flag 3 = Route Request, flag 4 = route reply, flag 5 = Route Error
-    def parse_header_flag(self, flag):
-        if flag == 3 and self.header.destination == self.configuration.MY_ADDRESS:
-            self.routing_table.add_address_to_table(self.header.source)
-        if flag == 3 and self.header.destination != self.configuration.MY_ADDRESS:
-            self.writer.route_request()
-        #if flag == 4 and self.
+    # Based on the flag, the different fields are passed into the appropriate object. 
+    def parse_header_flag(self, source, destination, flag, time_to_live, protocol_header, neighbor_node):
+        if flag == b'3':
+            requested_node = protocol_header[10:14] 
+            metric = protocol_header[14:15]
+            route_request = RouteRequest(source, destination, flag, time_to_live, requested_node, metric)
+            self.writer.route_request(route_request)
+        if flag == b'4':
+            previous_node = protocol_header[10:14]
+            end_node = protocol_header[14:18]
+            metric = protocol_header[18:19]
+            route_reply = RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric)
+            self.writer.route_reply(route_reply)
+        #if flag == b'5': 
+        #if flag == b'1':
 
-            
     # Parsers the header of the incoming message.
-    # @protocol_header    contains the header + payload as string. 
-    def parse_protocol_header(self, protocol_header):       
-        self.header.source = protocol_header[:4]#set the sliced source adress as source adress in header class
-        self.header.destination = protocol_header[4:8]
-        self.header.flag = protocol_header[8:9] # self.header.flag setter call in Python    
-        self.header.time_to_live = protocol_header[9:10]
-        self.parse_header_flag(self.header.flag)
+    # @protocol_header    contains the protocol message header. 
+    # @neighbor_node      previous node that forwarded the message.
+    def parse_protocol_header(self, protocol_header, neighbor_node):                   
+        source = protocol_header[:4]#sets source adress
+        destination = protocol_header[4:8]
+        flag = protocol_header[8:9]
+        time_to_live = protocol_header[9:10]
+        self.parse_header_flag(source, destination, flag, time_to_live, protocol_header, neighbor_node) 
 
     # Parses incoming byte stream. 
-    # @line         the incoming message received by the LoRa mcu.
-    # @transport    serial communication channel to the mcu.
+    # @mcu_header   mcu message part.
+    # @protocol_header protocol message part.
     def parse_incoming_message(self, mcu_header, protocol_header):
-        splitted = mcu_header.decode().split(',')
-        if splitted[0] == 'AT' and splitted[1] == 'OK' or splitted[0] == 'ERR: PARA' or splitted[0] == 'ERR: CMD' or splitted[0] == 'CPU: BUSY':
+        splitted_header = mcu_header[:]
+        if splitted_header[0] == 'LR':
+            neighbor_node = b'splitted_header[1]'
+            self.parse_protocol_header(protocol_header, neighbor_node)
+        else:
             pass
-        if splitted[0] == 'LR':
-            self.parse_protocol_header(protocol_header)
-    
 

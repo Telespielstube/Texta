@@ -1,4 +1,4 @@
-class MessageItem():
+class MessageItem:
     
     # Constructor for Message Object.
     # @command   
