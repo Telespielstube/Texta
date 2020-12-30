@@ -13,7 +13,9 @@ class Parser():
     def parse_header_flag(self, flag):
         if flag == 3 and self.header.destination == self.configuration.MY_ADDRESS:
             self.routing_table.add_address_to_table(self.header.source)
-        #if flag == 3 and self.header.destination != self.configuration.MY_ADDRESS:
+        if flag == 3 and self.header.destination != self.configuration.MY_ADDRESS:
+            self.writer.route_request()
+        #if flag == 4 and self.
 
             
     # Parsers the header of the incoming message.
@@ -35,11 +37,4 @@ class Parser():
         if splitted[0] == 'LR':
             self.parse_protocol_header(protocol_header)
     
-    # Parses outgoing message.
-    def parse_outgoing_message(self, message_item):
-        requested_destination = message_item.destination
-        if not self.routing_table.find_entry(requested_destination):
-            
-            self.writer.route_request()
-        else:
 

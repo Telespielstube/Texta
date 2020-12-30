@@ -8,6 +8,9 @@ class RoutingTable():
     # @routing_table   inizialises a dictionary (is a collection which is unordered, changeable and does not allow duplicates.)
     def __init__(self):
         self.routing_table = dict()
+        self.adress = None
+        self.neighbor = None
+        self.route_cost = None
 
     # Adds a new address to the routing table.
     # @address = address to add to table

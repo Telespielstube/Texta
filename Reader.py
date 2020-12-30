@@ -1,19 +1,15 @@
 import threading
 import time
-import queue
 
 from Connection import Connection
-#from Parser import Parser
+from Parser import Parser
 class Reader(threading.Thread):
 
     # Constructor for Reader class.
-    # @thread_id    thread id
-    # @name         thread name
     # @connection   connection to the serial device
-    # @read_lock   locks the reading process to the mcu
+    # @parser       Parser for incoming messages
     def __init__(self, connection, parser):
         super(Reader, self).__init__()
-        self.receive_queue = queue.Queue()
         self.connection = connection
         self.parser = parser
             
@@ -22,6 +18,7 @@ class Reader(threading.Thread):
     def print_received_message(self, message):
         print(message[:-1].decode())
     
+    # Solices the incoming message in mcu message part and protocol message part
     def slice_incoming_message(self, message):
         mcu_header = message[:11]
         protocol_message = message[11:]
@@ -38,11 +35,5 @@ class Reader(threading.Thread):
             if not message:
                 time.sleep(0.2)
                 continue
-            self.receive_queue.put(message)
+            self.parser.parse_incoming_message(self.slice_incoming_message(message) # slices incoming message in mcu and protcol part return vales are parsed.
 
-            while not self.receive_queue.empty():
-                message = self.receive_queue.get()
-                mcu_header, protocol_message = self.slice_incoming_message(message)
-                self.receive_queue.task_done()
-                #self.print_received_message(payload)
-                self.parser.parse_incoming_message(mcu_header, protocol_message)

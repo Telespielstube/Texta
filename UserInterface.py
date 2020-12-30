@@ -9,11 +9,10 @@ from RoutingTable import RoutingTable
 class UserInterface(threading.Thread):
 
     # Constructor for Reader class.
-    def __init__(self, communication, writer, parser, routing_table):
+    def __init__(self, communication, writer, routing_table):
         super(UserInterface,self).__init__()
         self.connection = communication
         self.writer = writer
-        self.parser = parser
         self.routing_table = routing_table
         
     def read_console_input(self):
@@ -26,7 +25,6 @@ class UserInterface(threading.Thread):
         destination = option[-4:] 
         if 'SEND' in command:
             message_item = MessageItem(command, message, destination)
-            self.parser.parse_outgoing_message(message_item)
         if 'ROUT' in command:
             print ('Routing Table')
             self.routing_table.show_routing_table()

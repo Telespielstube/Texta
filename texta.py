@@ -26,7 +26,7 @@ def main():
     writer = Writer(connection, header, configuration)
     parser = Parser(routing_table, header, writer, configuration)
     reader = Reader(connection, parser)
-    user_interface = UserInterface(connection, writer, parser, routing_table)
+    user_interface = UserInterface(connection, writer, routing_table)
     writer.start()
     reader.start()
     user_interface.start()
