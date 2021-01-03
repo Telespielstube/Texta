@@ -1,9 +1,12 @@
 import threading
-import time
 
 from Connection import Connection
 from Header import Header
+from Configuration import Configuration
 from MessageItem import MessageItem
+from RouteRequest import RouteRequest
+from RouteReply import RouteReply
+from TextMessage import TextMessage
 
 class Writer(threading.Thread):
     
@@ -16,20 +19,18 @@ class Writer(threading.Thread):
         self.connection = connection
         self.header = header
         self.configuration = configuration
-
-    def check_header_flag(self):
-        if self.header.flag != 0 and self.header.flag != 2 and self.header.flag != 3 and self.header.flag != 4 and self.header.flag != 5:
-            self.header.flag = 1
     
-    # Forwards the received message if destination is not own node address.
-    # def forward_message(self):
+    # Find a route to the requested node
+    def route_request(self, request_message):
+        if request_message.requested_node != self.configuraton.MY_ADDRESS:
 
-    # Find a rout to the requested node
-    def route_request(self):
 
     # Sends a reply to the source node if own address matches requested node.
     # def route_reply(self):
     #     if 
+
+    # Forwards the received message if destination is not own node address.
+    # def forward_message(self):
 
     # Prepares the message for sending.
     # @self function is a member of this object
@@ -57,10 +58,7 @@ class Writer(threading.Thread):
     
     def run(self): 
         while True:
-            if self.transmit_queue.empty():
-                time.sleep(0.5)
-            while not self.transmit_queue.empty():
-                self.message_builder()  
+            self.message_builder()  
 
                 
 

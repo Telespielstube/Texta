@@ -29,8 +29,5 @@ class RoutingTable():
         except KeyError:
             entry = b'0'
         return entry
-            
-    # # Regularyly checks the table if Node is still active
-    # def remove_vacant_nodes(self, loop):
 
 

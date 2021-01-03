@@ -17,12 +17,6 @@ class Reader(threading.Thread):
     # @message    received data encoded to utf-8
     def print_received_message(self, message):
         print(message[:-1].decode())
-    
-    # Solices the incoming message in mcu message part and protocol message part
-    def slice_incoming_message(self, message):
-        mcu_header = message[:11]
-        protocol_message = message[11:]
-        return mcu_header, protocol_message
 
     # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):
@@ -35,5 +29,5 @@ class Reader(threading.Thread):
             if not message:
                 time.sleep(0.2)
                 continue
-            self.parser.parse_incoming_message(self.slice_incoming_message(message) # slices incoming message in mcu and protcol part return vales are parsed.
+            self.parser.parse_incoming_message(message[:11], message[11:]) # slices incoming message in mcu and protcol part return vales are parsed.
 
