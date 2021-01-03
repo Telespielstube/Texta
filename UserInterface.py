@@ -1,7 +1,6 @@
 import threading
 import sys
 
-from texta import texta
 from Connection import Connection
 from MessageItem import MessageItem
 from RoutingTable import RoutingTable
@@ -26,7 +25,7 @@ class UserInterface(threading.Thread):
         destination = option[-4:] 
         if 'SEND' in command:
             message_item = MessageItem(command, message, destination)
-            
+            self.writer.message_processor(message_item)
         if 'ROUT' in command:
             print ('Routing Table')
             self.routing_table.show_routing_table()

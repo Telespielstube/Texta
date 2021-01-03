@@ -23,7 +23,7 @@ def main():
                             'AT+SAVE')
     routing_table = RoutingTable()
     header = Header()
-    writer = Writer(connection, header, configuration)
+    writer = Writer(connection, header, configuration, routing_table)
     parser = Parser(routing_table, header, writer)
     reader = Reader(connection, parser)
     user_interface = UserInterface(connection, writer, reader, routing_table)

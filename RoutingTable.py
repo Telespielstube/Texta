@@ -11,7 +11,7 @@ class RoutingTable():
     # @address = address to add to table
     def add_address_to_table(self, address): # hop, metric):
         if address not in self.routing_table:
-            self.routing_table[address] = Node(address)  
+           # self.routing_table[address] = Node(address)  
             print('Node added' + address.decode())
 
     # Prints all Nodes in routing table.   
@@ -30,4 +30,6 @@ class RoutingTable():
             entry = b'0'
         return entry
 
+    #def find_best_route(self):
+        
 
