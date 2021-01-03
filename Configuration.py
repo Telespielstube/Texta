@@ -3,8 +3,8 @@ import time
 
 from Connection import Connection
 class Configuration:
-    MY_ADDRESS = '0136'
-    DESTINATION_ADDRESS = 'FFFF'
+    MY_ADDRESS = b'0136'
+    DESTINATION_ADDRESS = b'FFFF'
     
     def __init__(self, connection):
         self.connection = connection

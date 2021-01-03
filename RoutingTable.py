@@ -30,6 +30,6 @@ class RoutingTable():
             entry = b'0'
         return entry
 
-    #def find_best_route(self):
+    #def select_best_route(self):
         
 
