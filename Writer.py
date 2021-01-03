@@ -56,6 +56,12 @@ class Writer(threading.Thread):
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, message_body.destination, 1, 10, best_route, message_body.message))
             self.build_message(message_body)
 
+    def calc_message_length(self, *message):
+        f = ''
+        for field in message:
+            f += str(field)
+            return len(f)
+
     # Prepares the message for sending.
     # @self function is a member of this object
     def build_message(self, *message_body):
@@ -68,13 +74,12 @@ class Writer(threading.Thread):
             #     print(self.connection.read_from_mcu())
             self.connection.lock()
             command_string = 'AT+SEND='
-            payload = len(message_body)
-            payload_length = 0
-            payload_length += len(payload) + 10 # MCU header length
-            command_string += str(payload_length) # concatenate message length and command
+            message_length = self.calc_message_length(message_body)  
+            message_length += message_length + 10 # MCU header length
+            command_string += str(message_length) # convert and concatenate message length and command
             self.connection.write_to_mcu(command_string)
             print(self.connection.read_from_mcu())
-            message = b''
+            message =  ''
             for field in message_body:
                 message += field
             self.connection.write_to_mcu(message)

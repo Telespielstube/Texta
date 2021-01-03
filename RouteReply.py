@@ -9,7 +9,7 @@ class RouteReply(MessageHeader):
         self.metric = metric
 
     @property
-    def previous_node_node(self):
+    def previous_node(self):
         return self.__previous_node
     
     @previous_node.setter  
@@ -17,7 +17,7 @@ class RouteReply(MessageHeader):
         self.__previous_node = previous_node
 
     @property
-    def end_node_node(self):
+    def end_node(self):
         return self.__end_node
     
     @end_node.setter  
