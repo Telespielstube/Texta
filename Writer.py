@@ -14,10 +14,9 @@ class Writer(threading.Thread):
     # @connection       connection to the serial device
     # @header           
     # @configuration    
-    def __init__(self, connection, header, configuration, routing_table):
+    def __init__(self, connection, configuration, routing_table):
         super(Writer,self).__init__()
         self.connection = connection
-        self.header = header
         self.configuration = configuration
         self.routing_table = routing_table
     
@@ -39,47 +38,52 @@ class Writer(threading.Thread):
     #     if 
 
     # Forwards the received message if destination is not own node address.
-    #def forward_message(self, text_message):
+    def forward_message(self, text_message):
+        pass
 
     # # Text message to a specific node.
-    # def text_message(self, text_message):
-    #     if text_message.next_node is not self.configuration.MY_ADDRESS:
-    #         self.forward_message(text_message)
-    #     else:
-    #         pass
-
-    def process_message(self, message_item):
-        if not self.routing_table.find_entry(message_item.destination):
-            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 3, 10, message_item.destination, 0))
+    def text_message(self, text_message):
+        if text_message.next_node != self.configuration.MY_ADDRESS:
+            self.forward_message(text_message)
         else:
-            #best_route = self.routing_table.select_best_route()
-            self.build_message(message_item)
+            self.build_message(text_message)
+
+    def process_message(self, message_body):
+        if not self.routing_table.find_entry(message_body.destination):
+            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 3, 10, message_body.destination, 0))
+        else:
+            best_route = self.routing_table.select_best_route()
+            self.text_message(TextMessage(self.configuration.MY_ADDRESS, message_body.destination, 1, 10, best_route, message_body.message))
+            self.build_message(message_body)
 
     # Prepares the message for sending.
     # @self function is a member of this object
-    def build_message(self, message_item):
-        if 'SEND' in message_item.command:
-            self.connection.lock()
-            # if message_item.destination:
-            #     self.header.destination = message_item.destination
+    def build_message(self, *message_body):
+        # if 'SEND' in message_body.command:
+        #     self.connection.lock()
+            # if message_body.destination:
+            #     self.header.destination = message_body.destination
             #     command_string = 'AT+DEST=' + self.header.destination
             #     self.connection.write_to_mcu(command_string)
             #     print(self.connection.read_from_mcu())
+            self.connection.lock()
             command_string = 'AT+SEND='
-            payload = message_item.message
+            payload = len(message_body)
             payload_length = 0
-            payload_length += len(payload) + 10
-            command_string += str(payload_length)
+            payload_length += len(payload) + 10 # MCU header length
+            command_string += str(payload_length) # concatenate message length and command
             self.connection.write_to_mcu(command_string)
             print(self.connection.read_from_mcu())
-            message = (self.header.build_header(self.configuration.MY_ADDRESS) + payload)
+            message = b''
+            for field in message_body:
+                message += field
             self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
     
     def run(self): 
         while True:
-            self.message_builder()  
+            self.build_message()  
 
                 
 

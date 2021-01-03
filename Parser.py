@@ -4,9 +4,8 @@ from RouteReply import RouteReply
 from TextMessage import TextMessage
 class Parser():
 
-    def __init__(self, routing_table, header, writer):
+    def __init__(self, routing_table, writer):
         self.routing_table = routing_table
-        self.header = header
         self.writer = writer
     
     # Based on the flag, the different fields are passed to the appropriate object. 
@@ -26,7 +25,7 @@ class Parser():
             self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
         # if flag == b'5':
         #     delete node from table
-        
+
     # Parsers the header of the incoming message.
     # @protocol_header    contains the protocol message header. 
     # @neighbor_node      previous node that forwarded the message.
