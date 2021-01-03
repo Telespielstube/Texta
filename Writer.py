@@ -21,17 +21,19 @@ class Writer(threading.Thread):
         self.routing_table = routing_table
     
     # Find a route to the request_messageed node
-    def route_request(self, request_message):
-        if request_message.request_messageed_node != self.configuration.MY_ADDRESS:
-            RouteRequest.source = request_message.source
-            RouteRequest.destination = request_message.destination
-            RouteRequest.flag = request_message.flag
-            RouteRequest.time_to_live = request_message.time_to_live - 1
-            RouteRequest.requested_node = request_message.requested_node
-            RouteRequest.metric = request_message.metric
-           # self.build_message()
-        #else:
-           # self.route_reply(RouteReply(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 4, 10, request_message.neighbor_node, request_message.source, 0))
+    def route_request(self, request):
+        if request.requested_node != self.configuration.MY_ADDRESS:
+            time_to_live = request.decrement_time_to_live(request.time_to_live)
+            if time_to_live != 0:
+                metric = request.increment_metric(request.metric)
+                build_request = request.source + request.destination + request.flag + time_to_live + request.requested_node + metric
+                self.send_message(build_request)
+            else:
+                del request
+                #self.route_error(RouteError())
+        else:
+            # add adress to table
+            self.route_reply(RouteReply(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 4, 10, request.neighbor_node, request.source, 0))
 
     # Sends a reply to the source node if own address matches request_messageed node.
     # def route_reply(self, reply_message):
@@ -56,15 +58,9 @@ class Writer(threading.Thread):
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, message_body.destination, 1, 10, best_route, message_body.message))
             self.build_message(message_body)
 
-    def calc_message_length(self, *message):
-        f = ''
-        for field in message:
-            f += str(field)
-            return len(f)
-
     # Prepares the message for sending.
     # @self function is a member of this object
-    def build_message(self, *message_body):
+    def send_message(self, message):
         # if 'SEND' in message_body.command:
         #     self.connection.lock()
             # if message_body.destination:
@@ -74,21 +70,16 @@ class Writer(threading.Thread):
             #     print(self.connection.read_from_mcu())
             self.connection.lock()
             command_string = 'AT+SEND='
-            message_length = self.calc_message_length(message_body)  
-            message_length += message_length + 10 # MCU header length
-            command_string += str(message_length) # convert and concatenate message length and command
+            command_string += len(str(message)) # convert and concatenate message length and command
             self.connection.write_to_mcu(command_string)
             print(self.connection.read_from_mcu())
-            message =  ''
-            for field in message_body:
-                message += field
             self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
     
     def run(self): 
         while True:
-            self.build_message()  
+ 
 
                 
 

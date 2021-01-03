@@ -7,22 +7,10 @@ class RouteRequest(MessageHeader):
         self.requested_node = requested_node
         self.metric = metric # route cost to the node
 
-    @property
-    def requested_node(self):
-        return self.__requested_node
-    
-    @requested_node.setter  
-    def requested_node(self, requested_node):
-        self.__requested_node = requested_node
-
-    @property
-    def metric(self):
-        return self.__metric
-
-    @metric.setter
-    def metric(self, metric):
-        self.__metric = metric
-
+    # Decrement time to live value
+    def decrement_time_to_live(self, time_to_live):
+        return time_to_live - 1
+        
     # Adds 1 to the route cost
-    def increment_metric(self):
-        return self.metric + 1
+    def increment_metric(self, metric):
+        return metric + 1
