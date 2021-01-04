@@ -23,8 +23,9 @@ class Parser():
             end_node = protocol_header[14:18]
             metric = protocol_header[18:19]
             self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
-        # if flag == b'5':
-        #     delete node from table
+        if flag == b'5':
+            unreachable_node = protocol_header[10:14]
+            self.writer.route_error(RouteError(source, destination, flag, time_to_live, unreachable_node))
 
     # Parsers the header of the incoming message.
     # @protocol_header    contains the protocol message header. 
