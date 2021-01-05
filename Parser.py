@@ -14,16 +14,16 @@ class Parser():
         if flag == b'1':
             next_node = protocol_header[10:14]
             payload = protocol_header[14:]
-            self.writer.text_message(TextMessage(source, destination, flag, time_to_live, next_node, payload))
+            self.writer.forward_message(TextMessage(source, destination, flag, time_to_live, next_node, payload))
         if flag == b'3':
             requested_node = protocol_header[10:14] 
             metric = protocol_header[14:15]
-            self.writer.route_request(RouteRequest(source, destination, flag, time_to_live, requested_node, metric))
+            self.writer.route_request(RouteRequest(source, destination, flag, time_to_live, requested_node, metric), neighbor_node)
         if flag == b'4':
             previous_node = protocol_header[10:14]
             end_node = protocol_header[14:18]
             metric = protocol_header[18:19]
-            self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
+            self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric), neighbor_node)
         # if flag == b'5':
         #     unreachable_node = protocol_header[10:14]
         #     self.writer.route_error(RouteError(source, destination, flag, time_to_live, unreachable_node))
@@ -32,7 +32,7 @@ class Parser():
     # @protocol_header    contains the protocol message header. 
     # @neighbor_node      previous node that forwarded the message.
     def parse_protocol_header(self, protocol_header, neighbor_node):                   
-        source = protocol_header[:4]#sets source adress
+        source = protocol_header[:4]
         destination = protocol_header[4:8]
         flag = protocol_header[8:9]
         time_to_live = protocol_header[9:10]
@@ -42,9 +42,9 @@ class Parser():
     # @mcu_header   mcu message part.
     # @protocol_header protocol message part.
     def parse_incoming_message(self, mcu_header, protocol_header):
-        mcu_header = mcu_header[:10]
+        neighbor_node = mcu_header[3:7]
         if mcu_header[:2] == b'LR':
-            self.parse_protocol_header(protocol_header, mcu_header[3:7])
+            self.parse_protocol_header(protocol_header, neighbor_node)
         else:
             pass
 

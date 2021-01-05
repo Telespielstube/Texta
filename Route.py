@@ -1,9 +1,9 @@
 class Route:
 
-    def __init__(self, neighbor, destination, metric):
-        self.neighbor = b''
-        self.destination = b''
-        self.metric = 0
+    def __init__(self, neighbor=None, destination=None, metric=None):
+        self.neighbor = neighbor
+        self.destination = destination
+        self.metric = metric
 
     # def __repr__(self):
     #     return {self. address, self.hop, self.metric}

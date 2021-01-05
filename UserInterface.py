@@ -25,14 +25,14 @@ class UserInterface(threading.Thread):
     def print_message(self, message):
         print(message[:-1].decode())
 
-
+    # Minimalistic menu to navigate though the chat application. 
     def select_option(self, option):
         command = option[:4] 
         message = option[5:-5] 
         destination = option[-4:] 
         if 'SEND' in command:
             message_item = MessageItem(command, message, destination)
-            self.writer.message_processor(message_item)
+            self.writer.user_input_text_message(message_item)
         if 'ROUT' in command:
             print ('Routing Table')
             self.routing_table.show_routing_table()
