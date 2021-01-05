@@ -14,10 +14,17 @@ class UserInterface(threading.Thread):
         self.writer = writer
         self.reader = reader
         self.routing_table = routing_table
-        
+
+    #reads     
     def read_console_input(self):
         command = input()
         return command
+
+    # Prints received data on screen.
+    # @message    received data encoded to utf-8
+    def print_message(self, message):
+        print(message[:-1].decode())
+
 
     def select_option(self, option):
         command = option[:4] 

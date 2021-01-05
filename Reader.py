@@ -12,11 +12,6 @@ class Reader(threading.Thread):
         super(Reader, self).__init__()
         self.connection = connection
         self.parser = parser
-            
-    # Prints received data on screen.
-    # @message    received data encoded to utf-8
-    def print_received_message(self, message):
-        print(message[:-1].decode())
 
     # Overridden Thread function to execute functions necessary to read from mcu.
     def run(self):

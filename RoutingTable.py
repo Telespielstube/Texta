@@ -8,20 +8,23 @@ class RoutingTable():
         self.route = Route(b'', b'', 0)
 
     # Adds a new address to the routing table.
-    # @address = address to add to table
+    # @neighbor
     def add_route_to_table(self, neighbor, destination, metric): # hop, metric):
         routing_table.append(self.route(neighbor, destination, metric)) 
         print('Route added')
 
-    # Prints all Nodes in routing table.   
+    # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
         for entry in self.routing_table:
-            print (entry.neighbor + ' ' + entry.destination + ' ' + entry.metric)
+            print (str(entry.neighbor) + ' ' + str(entry.destination) + ' ' + str(entry.metric))
 
+    # Finds the route with the lowest costs to the destination node.
+    # @destination    destination node to be found in list
+    # @return         neighbor node through which the destination can be reached the fastest 
     def find_best_route(self, destination):
-        sorted_list = sorted(self.routing_table, key=self.route.metric)
+        sorted_list = sorted(self.routing_table, key=lambda x: x.metric)
         for entry in sorted_list:
-            neighbor = entry.neighbor
-            
-        return neighbor, 
+            if entry.destination is destination:
+                neighbor = destination
+        return neighbor 
 
