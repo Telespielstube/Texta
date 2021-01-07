@@ -8,4 +8,4 @@ while True:
     sleep(3)
     gpiozero.led.on()
     print('Lora mcu reset successful!')
-    exit()
+    exit(0)

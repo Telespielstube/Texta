@@ -2,6 +2,7 @@ from RoutingTable import RoutingTable
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
+from RouteUnreachable import RouteUnreachable
 from TextMessage import TextMessage
 class Parser():
 
@@ -30,9 +31,11 @@ class Parser():
             metric = protocol_header[18:19]
             self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric), neighbor_node)
         # if flag == b'5':
-        #     unreachable_node = protocol_header[10:14]
-        #     self.writer.route_error(RouteError(source, destination, flag, time_to_live, unreachable_node))
+        #     vanished_node = protocol_header[10:14]
+        #     self.writer.route_error(RouteError(source, destination, flag, time_to_live, vanished_node))
         if flag == b'6':
+            unreachable_node = protocol_header[10:14]
+            self.writer.route_unreachable(RouteUnreachable(source, destination, flag, time_to_live, unreachable_node))
             # when node is unreachable via request 
 
     # Parsers the header of the incoming message.

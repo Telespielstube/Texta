@@ -7,3 +7,7 @@ class RouteRequest(MessageHeader):
         self.requested_node = requested_node
         self.metric = metric # route cost to the node
 
+    # Adds 1 to the route cost
+    def increment_metric(self, metric):
+        return self.metric + 1
+

@@ -10,9 +10,7 @@ class MessageHeader:
     def decrement_time_to_live(self, time_to_live):
         return time_to_live - 1
         
-    # Adds 1 to the route cost
-    def increment_metric(self, metric):
-        return self.metric + 1
+
 
 
 

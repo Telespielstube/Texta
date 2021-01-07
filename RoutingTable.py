@@ -3,13 +3,14 @@ class RoutingTable():
     
     # Constructor
     # @routing_table   inizialises a list. A list allows duplicates.
-    def __init__(self):
+    def __init__(self, MY_ADDRESS, metric):
         self.routing_table = [] 
+        self.add_route_to_table.append(Route(MY_ADDRESS, MY_ADDRESS, 0)
 
     # Adds a new address to the routing table.
     # @neighbor
     def add_route_to_table(self, neighbor, destination, metric): 
-        self.routing_table.append(Route(neighbor, destination, metric)) 
+        self.routing_table.append(Route(destination, neighbor, metric)) 
         print('Route added')
 
     # Prints all Nodes in routing table as readable string.   

@@ -8,4 +8,8 @@ class RouteReply(MessageHeader):
         self.end_node = end_node
         self.metric = metric
 
+    # Adds 1 to the route cost
+    def increment_metric(self, metric):
+        return self.metric + 1
+
 
