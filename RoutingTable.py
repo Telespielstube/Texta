@@ -5,18 +5,25 @@ class RoutingTable():
     # @routing_table   inizialises a list. A list allows duplicates.
     def __init__(self, MY_ADDRESS, metric):
         self.routing_table = [] 
-        self.add_route_to_table.append(Route(MY_ADDRESS, MY_ADDRESS, 0)
+        self.add_route_to_table.append(Route(MY_ADDRESS, MY_ADDRESS, 0))
 
     # Adds a new address to the routing table.
-    # @neighbor
-    def add_route_to_table(self, neighbor, destination, metric): 
-        self.routing_table.append(Route(destination, neighbor, metric)) 
-        print('Route added')
+    # @destination Destination node
+    # @neighbor    neighbor node
+    # @hop         Route cost to destination
+    def add_route_to_table(self, destination, neighbor, hop): 
+        self.routing_table.append(Route(destination, neighbor, hop)) 
+        print('Route ' + Route + ' added')
+
+    # Removes a given entry from the list
+    # @node    the node to be removed
+    def remove_route_from_table(self, node):
+        self.routing_table.remove(node)
 
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
         for entry in self.routing_table:
-            print (Route)
+            print (Route + '\r\n')
     
     # Find entry in unsorted routing table
     # @node     node to be found in routing table

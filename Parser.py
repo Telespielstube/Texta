@@ -16,26 +16,27 @@ class Parser():
     # 4 = Reply
     # 5 = Error
     # 6 = Node unreachable
-    def parse_header_flag(self, source, destination, flag, time_to_live, protocol_header, neighbor_node):
+    def parse_header_flag(self, source, flag, time_to_live, protocol_header, neighbor_node):
         if flag == b'1':
+            destination = protocol_header[6:10]
             next_node = protocol_header[10:14]
             payload = protocol_header[14:]
-            self.writer.forward_message(TextMessage(source, destination, flag, time_to_live, next_node, payload))
+            self.writer.forward_message(TextMessage(source, flag, time_to_live, destination, next_node, payload))
         if flag == b'3':
-            requested_node = protocol_header[10:14] 
-            metric = protocol_header[14:15]
-            self.writer.route_request(RouteRequest(source, destination, flag, time_to_live, requested_node, metric), neighbor_node)
+            requested_node = protocol_header[6:10] 
+            hop = protocol_header[10:11]
+            self.writer.route_request(RouteRequest(source, flag, time_to_live, requested_node, hop), neighbor_node)
         if flag == b'4':
-            previous_node = protocol_header[10:14]
-            end_node = protocol_header[14:18]
-            metric = protocol_header[18:19]
-            self.writer.route_reply(RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric), neighbor_node)
-        # if flag == b'5':
-        #     vanished_node = protocol_header[10:14]
-        #     self.writer.route_error(RouteError(source, destination, flag, time_to_live, vanished_node))
+            next_node = protocol_header[6:10]
+            end_node = protocol_header[10:4]
+            metric = protocol_header[14:15]
+            self.writer.route_reply(RouteReply(source, flag, time_to_live, next_node, end_node, hop), neighbor_node)
+        if flag == b'5':
+            vanished_node = protocol_header[6:10]
+            self.writer.route_error(RouteError(source, flag, time_to_live, vanished_node))
         if flag == b'6':
-            unreachable_node = protocol_header[10:14]
-            self.writer.route_unreachable(RouteUnreachable(source, destination, flag, time_to_live, unreachable_node))
+            unreachable_node = protocol_header[6:10]
+            self.writer.route_unreachable(RouteUnreachable(source, flag, time_to_live, unreachable_node))
             # when node is unreachable via request 
 
     # Parsers the header of the incoming message.
@@ -43,10 +44,9 @@ class Parser():
     # @neighbor_node      previous node that forwarded the message.
     def parse_protocol_header(self, protocol_header, neighbor_node):                   
         source = protocol_header[:4]
-        destination = protocol_header[4:8]
-        flag = protocol_header[8:9]
-        time_to_live = protocol_header[9:10]
-        self.parse_header_flag(source, destination, flag, time_to_live, protocol_header, neighbor_node) 
+        flag = protocol_header[4:5]
+        time_to_live = protocol_header[5:6]
+        self.parse_header_flag(source, flag, time_to_live, protocol_header, neighbor_node) 
 
     # Parses incoming byte stream. 
     # @mcu_header   mcu message part.

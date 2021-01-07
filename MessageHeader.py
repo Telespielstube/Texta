@@ -1,8 +1,7 @@
 class MessageHeader:
 
-    def __init__(self, source, destination, flag, time_to_live):
+    def __init__(self, source, flag, time_to_live):
         self.source = source
-        self.destination = destination
         self.flag = flag
         self.time_to_live = time_to_live
 

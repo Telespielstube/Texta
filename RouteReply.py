@@ -2,14 +2,14 @@ from MessageHeader import MessageHeader
 
 class RouteReply(MessageHeader):
 
-    def __init__(self, source, destination, flag, time_to_live, previous_node, end_node, metric):
-        super().__init__(source, destination, flag, time_to_live)
-        self.previous_node = previous_node
-        self.end_node = end_node
-        self.metric = metric
-
+    def __init__(self, source, flag, time_to_live, hop, end_node, next_node):
+        super().__init__(source, flag, time_to_live)
+        self.hop = hop
+        self.end_node = end_node # request message origin
+        self.next_node = next_node # Neighbor who sent the request
+        
     # Adds 1 to the route cost
-    def increment_metric(self, metric):
-        return self.metric + 1
+    def increment_hop(self, hop):
+        return self.hop + 1
 
 
