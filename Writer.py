@@ -25,7 +25,7 @@ class Writer(threading.Thread):
     
     # Find a route to the request_message node
     def route_request(self, request, neighbor_node):
-        if request.requested_node != self.configuration.MY_ADDRESS:
+        if (request.requested_node != self.configuration.MY_ADDRESS) and (request.source != self.routing_table.find_entry(request.source)):
             self.routing_table.add_route_to_table(neighbor_node, request.source, request.metric) 
             time_to_live = request.decrement_time_to_live(request.time_to_live)
             if time_to_live != 0:
@@ -33,12 +33,14 @@ class Writer(threading.Thread):
                 self.build_message = self.message_to_string(request, neighbor_node) 
                 self.send_message()
             else:
-                pass
-               # del request
-               # self.route_error(RouteError(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 5, 10, request.requested_node))
-        else:
+                del request
+                # node unreachable
+        if (request.source is routing_table.find_entry()):
+            del request
+        if (request.requested_node == self.configuration.MY_ADDRESS):
             self.routing_table.add_route_to_table(neighbor_node, request.source, request.metric)
             self.route_reply(RouteReply(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 4, 10, request.neighbor_node, request.source, 0))
+            #self.route_error(RouteError(self.configuration.MY_ADDRESS, self.configuration.DESTINATION_ADDRESS, 5, 10, request.requested_node))
 
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))

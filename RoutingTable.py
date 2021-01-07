@@ -15,7 +15,17 @@ class RoutingTable():
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
         for entry in self.routing_table:
-            print (str(entry.neighbor) + ' ' + str(entry.destination) + ' ' + str(entry.metric))
+            print (Route)
+    
+    # Find entry in unsorted routing table
+    # @node     node to be found in routing table
+    # @return   found node  
+    def find_entry(self, node):
+        found = b''
+        for entry in self.routing_table:
+            if entry.source is node:
+                found = entry.source
+        return found
 
     # Finds the route with the lowest costs to the destination node.
     # @destination    destination node to be found in list

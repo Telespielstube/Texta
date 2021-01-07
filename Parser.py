@@ -10,6 +10,11 @@ class Parser():
         self.writer = writer
     
     # Based on the flag, the different fields are passed to the appropriate object. 
+    # 1 = Textmassage
+    # 3 = Request
+    # 4 = Reply
+    # 5 = Error
+    # 6 = Node unreachable
     def parse_header_flag(self, source, destination, flag, time_to_live, protocol_header, neighbor_node):
         if flag == b'1':
             next_node = protocol_header[10:14]
@@ -27,6 +32,8 @@ class Parser():
         # if flag == b'5':
         #     unreachable_node = protocol_header[10:14]
         #     self.writer.route_error(RouteError(source, destination, flag, time_to_live, unreachable_node))
+        if flag == b'6':
+            # when node is unreachable via request 
 
     # Parsers the header of the incoming message.
     # @protocol_header    contains the protocol message header. 

@@ -1,12 +1,11 @@
-from gpiozero import LED
+import gpiozero
 from time import sleep
 
 led = LED(18)
 
-while True:
-    led.off()
+while True:   
+    gpiozero.led.off()
     sleep(3)
-    led.on()
+    gpiozero.led.on()
     print('Lora mcu reset successful!')
-
     exit()
