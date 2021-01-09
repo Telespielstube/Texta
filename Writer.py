@@ -129,7 +129,7 @@ class Writer(threading.Thread):
     def message_to_string(self, *arguments):
         message = ''
         for field in arguments:
-            message += str(field)
+            message += str(field, 'utf-8')
         return message
 
     # Overwritten thread function.
