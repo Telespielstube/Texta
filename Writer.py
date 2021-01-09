@@ -129,8 +129,8 @@ class Writer(threading.Thread):
     def message_to_string(self, *arguments):
         message = ''
         for field in arguments:
-            message += str(field, 'utf-8')
-        return message
+            message += str(field)
+        return message.encode('utf-8')
 
     # Overwritten thread function.
     def run(self): 
