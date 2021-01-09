@@ -109,13 +109,13 @@ class Writer(threading.Thread):
           #  # await route reply before sending out the message
         #else:
          #   print(str(best_route))
-        self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 10, user_message.destination, user_message.destination, user_message.message))
+        self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, user_message.destination, user_message.message))
 
     # Prepares the message for sending.
     # @message      holds all specific fields the message object has
     def send_message(self):
             self.connection.lock()
-            print(self.build_message) # prints outgoing message
+            print(self.build_message)
             command_string = 'AT+SEND='
             command_string += str(len(self.build_message))
             self.connection.write_to_mcu(command_string)
@@ -130,7 +130,7 @@ class Writer(threading.Thread):
         message = ''
         for field in arguments:
             message += str(field)
-        return message.encode('utf-8')
+        return message
 
     # Overwritten thread function.
     def run(self): 
