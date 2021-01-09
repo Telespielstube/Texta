@@ -15,6 +15,16 @@ class RoutingTable():
         self.routing_table.append(Route(destination, neighbor, hop)) 
         print('Route added')
 
+    # Finds duplicated routes 
+    def find_route_in_table(self, request, neighbor):
+        found = True
+        for entry in self.routing_table:
+            if entry.destination is request.source and entry.neighbor == neighbor and entry.hop is request.hop:
+                found = True
+            else:
+                found = False
+            return found
+
     # Removes a given entry from the list
     # @node    the node to be removed
     def remove_route_from_table(self, node):

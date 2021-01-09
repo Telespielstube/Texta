@@ -32,7 +32,7 @@ class UserInterface(threading.Thread):
         destination = option[-4:] 
         if 'SEND' in command:
             message_item = MessageItem(command, message, destination)
-            self.writer.user_input_text_message(message_item)
+            self.writer.user_input(message_item)
         if 'ROUT' in command:
             print ('Routing Table')
             self.routing_table.show_routing_table()

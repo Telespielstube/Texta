@@ -6,8 +6,8 @@ class MessageHeader:
         self.time_to_live = time_to_live
 
     # Decrement time to live value
-    def decrement_time_to_live(self, time_to_live):
-        return time_to_live - 1
+    def decrement_time_to_live(self):
+        return self.time_to_live - 1
         
 
 
