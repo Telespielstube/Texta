@@ -108,13 +108,14 @@ class Writer(threading.Thread):
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 10, user_message.destination, 0), self.configuration.MY_ADDRESS)
             # await route reply before sending out the message
         else:
+            print(str(best_route))
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 10, best_route, user_message.next_node, user_message.message))
 
     # Prepares the message for sending.
     # @message      holds all specific fields the message object has
     def send_message(self):
             self.connection.lock()
-            print(self.build_message)
+            print(self.build_message) # prints outgoing message
             command_string = 'AT+SEND='
             command_string += str(len(self.build_message))
             self.connection.write_to_mcu(command_string)

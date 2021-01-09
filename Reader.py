@@ -25,4 +25,4 @@ class Reader(threading.Thread):
                 time.sleep(0.2)
                 continue
             self.parser.parse_incoming_message(message[:11], message[11:]) # slices incoming message in mcu and protcol part return vales are parsed.
-
+            print(message)
