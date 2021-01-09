@@ -103,13 +103,13 @@ class Writer(threading.Thread):
     # Message from the user interface
     # @user_message    text message        
     def user_input_text_message(self, user_message):
-        best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
-        if not best_route:
-            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 10, user_message.destination, 0), self.configuration.MY_ADDRESS)
-            # await route reply before sending out the message
-        else:
-            print(str(best_route))
-            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 10, best_route, user_message.next_node, user_message.message))
+        #best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
+        #if not best_route:
+         #   self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 10, user_message.destination, 0), self.configuration.MY_ADDRESS)
+          #  # await route reply before sending out the message
+        #else:
+         #   print(str(best_route))
+        self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 10, user_message.destination, user_message.destination, user_message.message))
 
     # Prepares the message for sending.
     # @message      holds all specific fields the message object has
