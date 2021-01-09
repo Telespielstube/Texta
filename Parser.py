@@ -1,3 +1,4 @@
+import base64
 from RoutingTable import RoutingTable
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
@@ -23,19 +24,20 @@ class Parser():
             payload = protocol_header[14:]
             self.writer.forward_message(TextMessage(source, flag, time_to_live, destination, next_node, payload))
         if flag == b'3':
-            requested_node = protocol_header[6:10] 
-            hop = protocol_header[10:11]
-            self.writer.route_request(RouteRequest(source, flag, time_to_live, requested_node, hop), neighbor_node)
+            hop = int.from_bytes(protocol_header[6:7], 'big')
+           # print ('parser_header: hops: ' + str(hop.to_bytes(1, 'big'), 'utf-8'))
+            requested_node = protocol_header[7:11]
+            self.writer.route_request(RouteRequest(source, flag, time_to_live, hop, requested_node), neighbor_node)
         if flag == b'4':
-            next_node = protocol_header[6:10]
-            end_node = protocol_header[10:4]
-            metric = protocol_header[14:15]
-            self.writer.route_reply(RouteReply(source, flag, time_to_live, next_node, end_node, hop), neighbor_node)
+            hop = int.from_bytes(protocol_header[17:18], 'big')
+            end_node = protocol_header[18:22]
+            next_node = protocol_header[22:]
+            self.writer.route_reply(RouteReply(source, flag, time_to_live, hop, end_node, next_node), neighbor_node)
         if flag == b'5':
-            vanished_node = protocol_header[6:10]
+            vanished_node = protocol_header[17:21]
             self.writer.route_error(RouteError(source, flag, time_to_live, vanished_node))
         if flag == b'6':
-            unreachable_node = protocol_header[6:10]
+            unreachable_node = protocol_header[17:21]
             self.writer.route_unreachable(RouteUnreachable(source, flag, time_to_live, unreachable_node))
             # when node is unreachable via request 
 
@@ -45,7 +47,7 @@ class Parser():
     def parse_protocol_header(self, protocol_header, neighbor_node):                   
         source = protocol_header[:4]
         flag = protocol_header[4:5]
-        time_to_live = protocol_header[5:6]
+        time_to_live = int.from_bytes(protocol_header[5:6], 'big')
         self.parse_header_flag(source, flag, time_to_live, protocol_header, neighbor_node) 
 
     # Parses incoming byte stream. 

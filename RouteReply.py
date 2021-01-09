@@ -8,8 +8,9 @@ class RouteReply(MessageHeader):
         self.end_node = end_node # request message origin
         self.next_node = next_node # Neighbor who sent the request
         
-    # Adds 1 to the route cost
+    # Adds 1 to the route cost by converting bytes to int and backwards
     def increment_hop(self, hop):
-        return self.hop + 1
+        return hop + 1
+        
 
 
