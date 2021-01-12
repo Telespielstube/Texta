@@ -1,5 +1,4 @@
-import serial
-import time
+import serial, time
 
 from Connection import Connection
 class Configuration:

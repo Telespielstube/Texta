@@ -45,8 +45,8 @@ class RoutingTable():
                 found = entry.source
         return found
 
-    # Finds the route with the lowest costs to the destination node.
-    # @destination    destination node to be found in list
+    # Finds the route with the lowest costs to the destination node by sorting the table by hop.
+    # @destination    destination node to be found in 
     # @return         neighbor node through which the destination can be reached the fastest 
     def find_best_route(self, destination):
         sorted_list = sorted(self.routing_table, key=lambda x: x.hop)

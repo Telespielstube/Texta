@@ -1,5 +1,4 @@
-import serial
-import threading
+import serial, threading
 
 class Connection: 
   

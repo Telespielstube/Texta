@@ -1,5 +1,4 @@
-import threading
-from time import sleep
+import threading, time
 
 from Connection import Connection
 from Configuration import Configuration
@@ -12,7 +11,9 @@ from RouteUnreachable import RouteUnreachable
 from TextMessage import TextMessage
 from UserInterface import UserInterface
 class Writer(threading.Thread):
-    
+    WAIT_TO_CHECK_TABLE_ENTRY = 5
+    WAIT_TO_SEND_MESSAGE_AGAIN = 10
+
     # Constructor for Writer class.
     # @connection       connection to the serial device
     # @header           
@@ -22,8 +23,11 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.build_message = ''
-    
+        self.pending_message_transfer = dict()
+        self.ticker = threading.Event()
+        self.pending_message_destination = ''
+        self.user_message = MessageItem()
+
     # Find a route to the request_message node
     # @request          Request message object.
     # @neighbor_node    Neighbor node address.
@@ -55,7 +59,7 @@ class Writer(threading.Thread):
         if reply.end_node != self.configuration.MY_ADDRESS:
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             time_to_live = reply.decrement_time_to_live()
-            if time_to_live != 0:
+            if time_to_live >  0:
                 reply.hop = reply.increment_hop()
                 self.send_message(self.message_to_string(reply, neighbor_node))
                 print('Reply sent.')
@@ -100,9 +104,9 @@ class Writer(threading.Thread):
     def user_input(self, user_message):
         best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
         if not best_route:
-            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
-            #setInterval(self.routing_table.find_best_route(user_message.destination), 10)
-            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
+            self.pending_message_destination  = self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
+            self.user_message = user_message
+            self.pending_text_message_table(self.pending_message_destination.destination , user_message)
         else:
             print(str(best_route))
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
@@ -131,6 +135,13 @@ class Writer(threading.Thread):
     # Overwritten thread function.
     def run(self): 
         while True:
-            sleep(0.2)
+            if not self.pending_message_transfer(self.pending_message_destination, self.user_message) and self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY):
+                    self.user_input(self.user_message)
+            else:
+                pass
+            # futhermore check the acknoledgement table if ACK paket arrived for the sent text message.
+            
+            
+            
             
 

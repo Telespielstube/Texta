@@ -1,4 +1,3 @@
-import base64
 from RoutingTable import RoutingTable
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
@@ -12,11 +11,7 @@ class Parser():
         self.writer = writer
     
     # Based on the flag, the different fields are passed to the appropriate object. 
-    # 1 = Textmassage
-    # 3 = Request
-    # 4 = Reply
-    # 5 = Error
-    # 6 = Node unreachable
+    # 1 = Textmassage, 3 = Request, 4 = Reply, 5 = Error, 6 = Node unreachable
     def parse_header_flag(self, source, flag, time_to_live, protocol_header, neighbor_node):
         if flag == b'1':
             destination = protocol_header[6:10]
@@ -39,7 +34,6 @@ class Parser():
         if flag == b'6':
             unreachable_node = protocol_header[17:21]
             self.writer.route_unreachable(RouteUnreachable(source, flag, time_to_live, unreachable_node))
-            # when node is unreachable via request 
 
     # Parsers the header of the incoming message.
     # @protocol_header    contains the protocol message header. 
@@ -51,8 +45,8 @@ class Parser():
         self.parse_header_flag(source, flag, time_to_live, protocol_header, neighbor_node) 
 
     # Parses incoming byte stream. 
-    # @mcu_header   mcu message part.
-    # @protocol_header protocol message part.
+    # @mcu_header       mcu message part.
+    # @protocol_header  protocol message part.
     def parse_incoming_message(self, mcu_header, protocol_header):
         neighbor_node = mcu_header[3:7]
         if mcu_header[:2] == b'LR':

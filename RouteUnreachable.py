@@ -6,3 +6,7 @@ class RouteUnreachable(MessageHeader):
         super().__init__(source, flag, time_to_live)
         self.unreachable_node = unreachable_node
     
+    def __str__(self):
+        return (self.source.decode( 'utf-8') + str(self.flag) + str(self.time_to_live) + str(self.unreachable_node).decode('utf-8'))
+   
+    
