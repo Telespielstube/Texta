@@ -32,12 +32,19 @@ class Writer(threading.Thread):
     # @request          Request message object.
     # @neighbor_node    Neighbor node address.
     def route_request(self, request, neighbor_node):
-        if request.requested_node is self.routing_table.find_entry(request.requested_node):
+        if request.requested_node == self.configuration.MY_ADDRESS:
+            print('Request reached end node')
+            self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
+            self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node))
+        # if requested node is already in table send reply
+        elif request.requested_node is self.routing_table.find_entry(request.requested_node):
             self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0')
+        #if source is my adress do nothing
         elif request.source == self.configuration.MY_ADDRESS:
             pass
         else:
-            if not self.routing_table.find_route_in_table(request, neighbor_node):
+            # if request already has an route entry in table do not add it and forward request./
+            if not self.routing_table.search_duplicate_route_in_table(request.source, neighbor_node, request.hop):
                 request.hop = request.increment_hop() 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop) 
                 time_to_live = request.decrement_time_to_live()
@@ -46,27 +53,33 @@ class Writer(threading.Thread):
                     print('Request forwarded')
                 else:
                     self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, request.requested_node))
-        if request.requested_node is self.configuration.MY_ADDRESS:
-            print('Request reached end node')
-            self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-            self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node))
+            else:
+                self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0') 
 
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
     # reply            Reply message object.
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
-        if reply.end_node != self.configuration.MY_ADDRESS:
+        if reply.end_node == self.configuration.MY_ADDRESS:
+            print('Reply reached end node')
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             time_to_live = reply.decrement_time_to_live()
-            if time_to_live > 0:
-                reply.hop = reply.increment_hop()
-                self.send_message(self.message_to_string(reply, neighbor_node))
-                print('Reply sent.')
+        elif reply.source == self.configuration.MY_ADDRESS:
+            pass
+        elif reply.end_node is self.routing_table.find_route_in_table(reply.source, reply.hop, neighbor_node):
+            pass
+        else:
+            # if reply already has an route entry in table do not add it and forward reply.
+            if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
+                reply.hop = reply.increment_hop() 
+                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop) 
+                time_to_live = reply.decrement_time_to_live()
+                if time_to_live > 0:
+                    self.send_message(self.message_to_string(reply, neighbor_node))
+                    print('Reply sent.')
             else:
                 self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.end_node))
-        else:
-            self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
 
     # Prepares the route message for sending. 
     # error    RouteError message object
