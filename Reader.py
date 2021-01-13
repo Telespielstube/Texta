@@ -23,4 +23,5 @@ class Reader(threading.Thread):
             if not message:
                 time.sleep(0.2)
                 continue
-            print(message) 
+            self.parser.parse_incoming_message(message[:11], message[11:])
+            print('Reader:' + message.decode()) 
