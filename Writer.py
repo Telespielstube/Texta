@@ -112,12 +112,12 @@ class Writer(threading.Thread):
         print('Writer:' + user_message.command + user_message.message + user_message.destination)       
         best_route = self.routing_table.find_best_route(user_message.destination)
         if not best_route: # best route means the neighbor with the lowest costs to the destination. :
-            print(Route)
+            print(best_route.decode())
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.user_message = user_message
             self.pending_message_table[user_message.destination] = user_message
         else:
-            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route.neighbor, user_message.message))
+            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
