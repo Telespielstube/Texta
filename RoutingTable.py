@@ -54,5 +54,5 @@ class RoutingTable():
             if entry.destination == destination:
                 Route.neighbor = entry.destination
                 print('Routing table:' + Route)
-        return Route 
+        return Route.neighbor 
 
