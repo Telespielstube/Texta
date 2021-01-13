@@ -51,9 +51,7 @@ class RoutingTable():
     def find_best_route(self, destination):
         neighbor = b''
         for entry in sorted(self.routing_table, key=lambda Route: Route.hop):
-            print(entry)
             if entry.destination == destination.encode():
-               neighbor = entry.neighbor 
-               print(neighbor)
-            return neighbor 
+               print(entry.neighbor)
+            return entry.neighbor 
 

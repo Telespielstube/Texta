@@ -134,12 +134,12 @@ class Writer(threading.Thread):
         message_as_string = ''
         for field in arguments:
             message_as_string += str(field)
-        return message_as_string.encode()
+        return message_as_string
 
     # Overwritten thread function.
     def run(self): 
         while True:
-            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_table(self.pending_message_destination, self.user_message): 
+            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY): 
                     self.user_input(self.user_message)
             else:
                 pass
