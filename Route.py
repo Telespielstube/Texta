@@ -1,6 +1,6 @@
 class Route:
 
-    def __init__(self, destination=None, neighbor=None, hop=None):
+    def __init__(self, destination, neighbor, hop):
         self.destination = destination
         self.neighbor = neighbor
         self.hop = hop
