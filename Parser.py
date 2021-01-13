@@ -20,7 +20,7 @@ class Parser():
             self.writer.forward_message(TextMessage(source, flag, time_to_live, destination, next_node, payload))
         if flag == b'3':
             hop = int.from_bytes(protocol_header[6:7], 'big')
-           # print ('parser_header: hops: ' + str(hop.to_bytes(1, 'big'), 'utf-8'))
+            print('Parser, Hop as int:' + int(hop, base=10))
             requested_node = protocol_header[7:11]
             self.writer.route_request(RouteRequest(source, flag, time_to_live, hop, requested_node), neighbor_node)
         if flag == b'4':
