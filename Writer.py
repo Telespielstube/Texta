@@ -12,9 +12,9 @@ from TextMessage import TextMessage
 from UserInterface import UserInterface
 
 class Writer(threading.Thread):
-    WAIT_TO_CHECK_TABLE_ENTRY = 5
-    WAIT_TO_SEND_MESSAGE_AGAIN = 10
-    CHECK_ACk_LIST = 8
+    WAIT_TO_CHECK_TABLE_ENTRY = 3
+    WAIT_TO_SEND_MESSAGE_AGAIN = 6
+    CHECK_ACK_LIST = 5
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
@@ -25,10 +25,8 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.pending_message_table = dict()
+        self.pending_message_list = []
         self.ticker = threading.Event()
-        self.pending_message_destination = ''
-        self.user_message = MessageItem()
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -110,11 +108,18 @@ class Writer(threading.Thread):
         best_route = self.routing_table.find_best_route(user_message.destination)
         if not best_route: # best route means the neighbor with the lowest costs to the destination. :
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
-            self.user_message = user_message
-            self.pending_message_table[user_message.destination] = user_message
+            self.pending_message_list.append(user_message)
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
+
+    # Converts all different data types of the message to a utf-8 string.
+    # @arguments    all fields of the message
+    def message_to_string(self, *arguments):
+        message_as_string = ''
+        for field in arguments:
+            message_as_string += str(field)
+        return message_as_string
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
@@ -127,19 +132,11 @@ class Writer(threading.Thread):
             self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
-    
-    # Converts all different data types of the message to a utf-8 string.
-    # @arguments    all fields of the message
-    def message_to_string(self, *arguments):
-        message_as_string = ''
-        for field in arguments:
-            message_as_string += str(field)
-        return message_as_string.encode()
 
-    # Overwritten thread function.
+    # Overwritten thread run() function. Checks regurarily the entries for further processing the messages.
     def run(self): 
         while True:
-            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_table(self.pending_message_destination, self.user_message): 
+            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_list: 
                     self.user_input(self.user_message)
             else:
                 pass

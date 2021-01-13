@@ -7,6 +7,6 @@ class RouteUnreachable(MessageHeader):
         self.unreachable_node = unreachable_node
     
     def __str__(self):
-        return str(self.source) + str(self.flag) + str(self.time_to_live) + str(self.unreachable_node)
+        return self.source.decode() + str(self.flag) + str(self.time_to_live) + self.unreachable_node.decode()
    
     

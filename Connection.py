@@ -21,8 +21,8 @@ class Connection:
     def close_connection(self):
         self.serial_connection.close()
 
-    # Writes data to the serial device
-    # @message  data to send
+    # Adding carriage return and writes data to the serial device 
+    # @message      data to send
     def write_to_mcu(self, message):
         self.serial_connection.write((message + '\r\n').encode())
     

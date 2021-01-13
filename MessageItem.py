@@ -7,3 +7,4 @@ class MessageItem:
 
     def __str__(self):
         return self.command + self.message + self.destination
+ 
