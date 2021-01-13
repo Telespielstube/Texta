@@ -10,11 +10,9 @@ from RoutingTable import RoutingTable
 
 def main():   
     connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
-    #connection = Connection('/dev/ttys005', 115200, 8, 'N', 1, 2)
     connection.connect_device()
     configuration = Configuration(connection)
-    configuration.config_module('AT+RST', 
-                            'AT+CFG=433000000,5,6,12,1,1,0,0,0,0,3000,8,4', 
+    configuration.config_module('AT+RST', 'AT+CFG=433000000,5,6,12,1,1,0,0,0,0,3000,8,4', 
                             'AT+ADDR=0136',
                             'AT+DEST=FFFF',
                             'AT+RX',
