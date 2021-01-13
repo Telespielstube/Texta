@@ -108,9 +108,9 @@ class Writer(threading.Thread):
     def user_input(self, user_message):
         best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
         if not best_route:
-            self.pending_message_destination  = self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
+            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.user_message = user_message
-            self.pending_message_table(self.pending_message_destination.destination , user_message)
+            self.pending_message_table[user_message.destination] = user_message
         else:
             print(str(best_route))
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))

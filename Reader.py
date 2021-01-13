@@ -23,5 +23,4 @@ class Reader(threading.Thread):
             if not message:
                 time.sleep(0.2)
                 continue
-              # slices incoming message in mcu and protcol part return vales are parsed.
-            print('Reader:' + message) # 
+            print(message) 

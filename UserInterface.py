@@ -1,5 +1,4 @@
-import threading
-import sys
+import threading, sys
 
 from Connection import Connection
 from MessageItem import MessageItem
