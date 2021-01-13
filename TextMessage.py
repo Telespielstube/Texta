@@ -10,4 +10,4 @@ class TextMessage(MessageHeader):
 
     # Represents the object as utf-8 string.    
     def __str__(self):
-        return str(self.source, 'utf-8') + str(self.flag) + str(self.time_to_live) + str(self.destination, 'utf-8') + str(self.next_node, 'utf-8:') + str(self.payload)
+        return str(self.source) + str(self.flag) + str(self.time_to_live) + str(self.destination) + str(self.next_node) + str(self.payload)

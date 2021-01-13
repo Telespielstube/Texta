@@ -133,7 +133,7 @@ class Writer(threading.Thread):
     def message_to_string(self, *arguments):
         message_as_string = ''
         for field in arguments:
-            message_as_string += str(field) # it is probably not working. If so delete decode('utf-8')
+            message_as_string += field.encode() # it is probably not working. If so delete decode('utf-8')
         return message_as_string
 
     # Overwritten thread function.
