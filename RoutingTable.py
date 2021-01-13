@@ -36,8 +36,8 @@ class RoutingTable():
             print (entry)
     
     # Find entry in unsorted routing table
-    # @node     node to be found in routing table
-    # @return   found node  
+    # @node     node address to be found in routing table
+    # @return   found node address  
     def find_entry(self, node):
         found = b''
         for entry in self.routing_table:

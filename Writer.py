@@ -13,6 +13,7 @@ from UserInterface import UserInterface
 class Writer(threading.Thread):
     WAIT_TO_CHECK_TABLE_ENTRY = 5
     WAIT_TO_SEND_MESSAGE_AGAIN = 10
+    CHECK_ACk_LIST = 8
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
@@ -23,7 +24,7 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.pending_message_transfer = dict()
+        self.pending_message_table = dict()
         self.ticker = threading.Event()
         self.pending_message_destination = ''
         self.user_message = MessageItem()
@@ -72,7 +73,7 @@ class Writer(threading.Thread):
     # error    RouteError message object
     def route_error(self, error):
         self.send_message(self.message_to_string(error))
-        print('Error forwarded')
+        print('Route Error forwarded')
 
     # Prepares the message if the requested node is unreachable
     # unreachable  RouteUnreachable message object
@@ -106,40 +107,42 @@ class Writer(threading.Thread):
         if not best_route:
             self.pending_message_destination  = self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.user_message = user_message
-            self.pending_text_message_table(self.pending_message_destination.destination , user_message)
+            self.pending_message_table(self.pending_message_destination.destination , user_message)
         else:
             print(str(best_route))
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
 
-    # Prepares the message for sending.
+    # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
-    def send_message(self):
+    def send_message(self, message):
             self.connection.lock()
-            print(self.build_message)
             command_string = 'AT+SEND='
-            command_string += str(len(self.build_message))
+            command_string += str(len(message))
             self.connection.write_to_mcu(command_string)
             print(self.connection.read_from_mcu())
-            self.connection.write_to_mcu(self.build_message)
+            self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
     
-    # Converts all different data type of the message to a uniform string type
+    # Converts all different data types of the message to a utf-8 string.
     # @arguments    all fields of the message
     def message_to_string(self, *arguments):
-        message = ''
+        message_as_string = ''
         for field in arguments:
-            message += str(field)
-        return message
+            message_as_string += str(field) # it is probably not working. If so delete decode('utf-8')
 
     # Overwritten thread function.
     def run(self): 
         while True:
-            if not self.pending_message_transfer(self.pending_message_destination, self.user_message) and self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY):
+            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_table(self.pending_message_destination, self.user_message): 
                     self.user_input(self.user_message)
             else:
                 pass
-            # futhermore check the acknoledgement table if ACK paket arrived for the sent text message.
+            # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
+            #     remove_entry()
+            # else:
+            #     if ack hast arrived after 3 resents the the destination gets deleted from 
+            
             
             
             
