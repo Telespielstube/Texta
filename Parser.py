@@ -29,8 +29,8 @@ class Parser():
             next_node = protocol_header[22:]
             self.writer.route_reply(RouteReply(source, flag, time_to_live, hop, end_node, next_node), neighbor_node)
         if flag == b'5':
-            vanished_node = protocol_header[17:21]
-            self.writer.route_error(RouteError(source, flag, time_to_live, vanished_node))
+            broken_node = protocol_header[17:21]
+            self.writer.route_error(RouteError(source, flag, time_to_live, broken_node))
         if flag == b'6':
             unreachable_node = protocol_header[17:21]
             self.writer.route_unreachable(RouteUnreachable(source, flag, time_to_live, unreachable_node))

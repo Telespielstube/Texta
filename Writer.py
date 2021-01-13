@@ -60,7 +60,7 @@ class Writer(threading.Thread):
         if reply.end_node != self.configuration.MY_ADDRESS:
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             time_to_live = reply.decrement_time_to_live()
-            if time_to_live >  0:
+            if time_to_live > 0:
                 reply.hop = reply.increment_hop()
                 self.send_message(self.message_to_string(reply, neighbor_node))
                 print('Reply sent.')
@@ -72,6 +72,9 @@ class Writer(threading.Thread):
     # Prepares the route message for sending. 
     # error    RouteError message object
     def route_error(self, error):
+        if self.routing_table.find_route_in_table(error.broken_node, error.neighbor_node):
+            self.routing_table.remove_route_from_table()
+            
         self.send_message(self.message_to_string(error))
         print('Route Error forwarded')
 

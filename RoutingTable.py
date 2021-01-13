@@ -27,8 +27,8 @@ class RoutingTable():
 
     # Removes a given entry from the list
     # @node    the node to be removed
-    def remove_route_from_table(self, node):
-        self.routing_table.remove(node)
+    def remove_route_from_table(self, broken_node):
+        self.routing_table.remove(broken_node)
 
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
@@ -45,7 +45,7 @@ class RoutingTable():
                 found = entry.source
         return found
 
-    # Finds the route with the lowest costs to the destination node by sorting the table by hop.
+    # Finds the route with the lowest costs to the destination node by sorting the table by the hop field.
     # @destination    destination node to be found in 
     # @return         neighbor node through which the destination can be reached the fastest 
     def find_best_route(self, destination):
@@ -54,6 +54,6 @@ class RoutingTable():
         for entry in sorted_list:
             if entry.destination == destination:
                 neighbor = entry.destination
-                print(neighbor)
+                print('Routing table:' + neighbor)
         return neighbor 
 

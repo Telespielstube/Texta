@@ -7,5 +7,5 @@ class RouteError(MessageHeader):
         self.broken_node = broken_node
 
     def __str__(self):
-        return (self.source.decode('utf-8') + str(self.flag) + str(self.time_to_live) + str(self.broken_node).decode('utf-8'))
+        return self.source.decode() + str(self.flag) + str(self.time_to_live) + str(self.broken_node).decode()
    
