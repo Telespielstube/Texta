@@ -50,10 +50,9 @@ class RoutingTable():
     # @return         neighbor node through which the destination can be reached the fastest 
     def find_best_route(self, destination):
         sorted_list = sorted(self.routing_table, key=lambda x: x.hop)
-        neighbor = b''
         for entry in sorted_list:
             if entry.destination == destination:
-                neighbor = entry.destination
-                print('Routing table:' + neighbor)
-        return neighbor 
+                Route.neighbor = entry.destination
+                print('Routing table:' + Route)
+        return Route 
 

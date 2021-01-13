@@ -10,6 +10,8 @@ from RouteError import RouteError
 from RouteUnreachable import RouteUnreachable
 from TextMessage import TextMessage
 from UserInterface import UserInterface
+from Route import Route
+
 class Writer(threading.Thread):
     WAIT_TO_CHECK_TABLE_ENTRY = 5
     WAIT_TO_SEND_MESSAGE_AGAIN = 10
@@ -28,6 +30,7 @@ class Writer(threading.Thread):
         self.ticker = threading.Event()
         self.pending_message_destination = ''
         self.user_message = MessageItem()
+        self.best_route = Route()
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -106,15 +109,15 @@ class Writer(threading.Thread):
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
-        print('Writer:' + user_message.command + user_message.message + user_message.destination) 
-        best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
-        if not best_route:
+        print('Writer:' + user_message.command + user_message.message + user_message.destination)       
+        best_route = self.routing_table.find_best_route(user_message.destination)
+        if not best_route: # best route means the neighbor with the lowest costs to the destination. :
+            print(Route)
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.user_message = user_message
             self.pending_message_table[user_message.destination] = user_message
         else:
-            print(str(best_route))
-            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
+            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route.neighbor, user_message.message))
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
