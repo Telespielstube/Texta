@@ -100,20 +100,20 @@ class Writer(threading.Thread):
     # user_message    MessageItem object. Represents the user input.
     def text_message(self, user_message):
         self.send_message(self.message_to_string(user_message))
-        print('Text message sent. ')
+        print('Text message sent')
 
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
         best_route = self.routing_table.find_best_route(user_message.destination)
-        if not best_route: # best route means the neighbor with the lowest costs to the destination. :
+        if not best_route: # best route means the neighbor with the lowest costs to the destination. 
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.pending_message_list.append(user_message)
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
-
-    # Converts all different data types of the message to a utf-8 string.
+    
+    # Converts all different data types of the message to string.
     # @arguments    all fields of the message
     def message_to_string(self, *arguments):
         message_as_string = ''
@@ -137,7 +137,7 @@ class Writer(threading.Thread):
     def run(self): 
         while True:
             if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_list: 
-                    self.user_input(self.user_message)
+                self.user_input(self.pending_message_list.pop(0))
             else:
                 pass
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
