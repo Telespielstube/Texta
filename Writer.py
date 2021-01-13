@@ -133,6 +133,14 @@ class Writer(threading.Thread):
             print(self.connection.read_from_mcu())
             self.connection.unlock()
 
+    # Converts all different data types of the message to a utf-8 string.
+    # @arguments    all fields of the message
+    def message_to_string(self, *arguments):
+        message_as_string = ''
+        for field in arguments:
+            message_as_string += str(field)
+        return message_as_string
+
     # Overwritten thread run() function. Checks regurarily the entries for further processing the messages.
     def run(self): 
         while True:
