@@ -106,6 +106,7 @@ class Writer(threading.Thread):
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
+        print('Writer:' + user_message.command + user_message.message + user_message.destination) 
         best_route = self.routing_table.find_best_route(user_message.destination) # best route means the neighbor with the lowest costs to the destination. 
         if not best_route:
             self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
@@ -134,7 +135,7 @@ class Writer(threading.Thread):
         for field in arguments:
             message_as_string += str(field) # it is probably not working. If so delete decode('utf-8')
         return message_as_string
-        
+
     # Overwritten thread function.
     def run(self): 
         while True:
