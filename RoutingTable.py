@@ -52,7 +52,6 @@ class RoutingTable():
         sorted_list = sorted(self.routing_table, key=lambda x: x.hop)
         for entry in sorted_list:
             if entry.destination == destination:
-                Route.neighbor = entry.destination
-                print('Routing table:' + Route)
-        return Route.neighbor 
+               neighbor = entry.neighbor 
+        return neighbor 
 
