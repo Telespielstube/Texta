@@ -3,6 +3,7 @@ from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
 from TextMessage import TextMessage
+
 class Parser():
 
     def __init__(self, routing_table, writer):
@@ -36,6 +37,3 @@ class Parser():
         mcu_field = mcu_header.split(b',')
         if mcu_field[0] == b'LR':
             self.parse_header(protocol_header, mcu_field[1])
-        else:
-            pass
-

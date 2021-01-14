@@ -42,9 +42,8 @@ class Writer(threading.Thread):
         #if source is my adress do nothing
         elif request.source == self.configuration.MY_ADDRESS:
             print('Request source is 0136')
-            pass
         else:
-            # if request already has an route entry in table do not add it and forward request./
+            # if request already has an route entry in table do not add it and forward request.
             if not self.routing_table.search_duplicate_route_in_table(request.source, neighbor_node, request.hop):
                 request.hop = request.increment_hop() 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop) 
@@ -54,7 +53,6 @@ class Writer(threading.Thread):
                     print('Request forwarded')
                 else:
                    pass
-                   # self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, request.requested_node))
             else:
                 self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0') 
 
@@ -81,12 +79,6 @@ class Writer(threading.Thread):
                 if time_to_live > 0:
                     self.send_message(self.message_to_string(reply, neighbor_node))
                     print('Reply sent.')
-                else:
-                    pass
-                  #  self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.requested_node))
-            else:
-                pass
-                # self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.end_node))
 
     # Prepares the route message for sending. 
     # error    RouteError message object
@@ -96,12 +88,6 @@ class Writer(threading.Thread):
             
         self.send_message(self.message_to_string(error))
         print('Route Error forwarded')
-
-    # Prepares the message if the requested node is unreachable
-    # unreachable  RouteUnreachable message object
-    def route_unreachable(self, unreachable):
-        self.send_message(self.message_to_string(unreachable))
-        print('Route unreachable sent.')
 
     # Forwards the received message if destination is not own address.
     # text_message    TextMessage to be forwarded to next node.
@@ -132,14 +118,15 @@ class Writer(threading.Thread):
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
-    
+
     # Converts all different data types of the message to string.
     # @arguments    all fields of the message
     def message_to_string(self, *arguments):
-        message_as_string = ''
+        separator = '|'
+        separated_message = ''
         for field in arguments:
-            message_as_string += str(field)
-        return message_as_string
+            separated_message += separator.join(str(field))
+        return separated_message
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
