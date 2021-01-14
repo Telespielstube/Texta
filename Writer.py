@@ -7,7 +7,7 @@ from MessageItem import MessageItem
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
-from RouteUnreachable import RouteUnreachable
+#from RouteUnreachable import RouteUnreachable
 from TextMessage import TextMessage
 from UserInterface import UserInterface
 
@@ -41,6 +41,7 @@ class Writer(threading.Thread):
             self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0')
         #if source is my adress do nothing
         elif request.source == self.configuration.MY_ADDRESS:
+            print('Request source is 0136')
             pass
         else:
             # if request already has an route entry in table do not add it and forward request./
@@ -52,7 +53,8 @@ class Writer(threading.Thread):
                     self.send_message(self.message_to_string(request, neighbor_node) )
                     print('Request forwarded')
                 else:
-                    self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, request.requested_node))
+                   pass
+                   # self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, request.requested_node))
             else:
                 self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0') 
 
@@ -66,11 +68,12 @@ class Writer(threading.Thread):
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             time_to_live = reply.decrement_time_to_live()
         elif reply.source == self.configuration.MY_ADDRESS:
+            print('reply source is 0136')
             pass
-        elif reply.end_node is self.routing_table.find_route_in_table(reply.source, reply.hop, neighbor_node):
-            pass
+        # elif reply.end_node is self.routing_table.search_duplicate_route_in_table(reply.source, reply.hop, neighbor_node):
+        #     pass
         else:
-            # if reply already has an route entry in table do not add it and forward reply.
+            # if reply already has a route entry for route in table do not add it and forward reply.
             if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
                 reply.hop = reply.increment_hop() 
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop) 
@@ -78,8 +81,12 @@ class Writer(threading.Thread):
                 if time_to_live > 0:
                     self.send_message(self.message_to_string(reply, neighbor_node))
                     print('Reply sent.')
+                else:
+                    pass
+                  #  self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.requested_node))
             else:
-                self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.end_node))
+                pass
+                # self.route_unreachable(RouteUnreachable(self.configuration.MY_ADRESS, 6, 9, reply.end_node))
 
     # Prepares the route message for sending. 
     # error    RouteError message object
