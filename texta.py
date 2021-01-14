@@ -13,7 +13,7 @@ def main():
     connection.connect_device()
     configuration = Configuration(connection)
     configuration.config_module('AT+RST', 
-                            'AT+CFG=433000000,5,6,12,1,1,0,0,0,0,3000,8,4', 
+                            'AT+CFG=433500000,5,6,12,1,1,0,0,0,0,3000,8,4', 
                             'AT+ADDR=0136',
                             'AT+DEST=FFFF',
                             'AT+RX',
