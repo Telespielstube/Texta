@@ -60,8 +60,9 @@ class Writer(threading.Thread):
     # reply            Reply message object.
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
-        if reply.end_node == self.configuration.MY_ADDRESS:
+        if reply.end_node == self.configuration.MY_ADDRESS and reply.source == self.configuration.MY_ADDRESS:
             print('Reply reached end node')
+        if reply.end_node == self.configuration.MY_ADDRESS and reply.source != self.configuration.MY_ADDRESS:    
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
         # if reoute reply reachend the source address of its request message.
         elif reply.source == self.configuration.MY_ADDRESS:
@@ -149,6 +150,7 @@ class Writer(threading.Thread):
     
     # Finds the matching table entry for the waiting message
     def get_pending_message_route(self):
+        found_message = MessageItem()
         for message in self.pending_message_list:
             for route in self.routing_table:
                 if message.destination is route.destination:
@@ -160,15 +162,10 @@ class Writer(threading.Thread):
         while True:
             if self.pending_message_list:
                 message = self.get_pending_message_route() 
+                print(message)
                 self.user_input(message)
                 self.pending_message_list.remove(message)
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:
             #     if ack hast arrived after 3 resents the the destination gets removed  
-            
-            
-            
-            
-            
-
