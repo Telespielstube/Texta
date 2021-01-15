@@ -13,8 +13,8 @@ from UserInterface import UserInterface
 
 class Writer(threading.Thread):
     WAIT_TO_CHECK_TABLE_ENTRY = 3
-    WAIT_TO_SEND_MESSAGE_AGAIN = 6
-    CHECK_ACK_LIST = 5
+    WAIT_TO_SEND_MESSAGE_AGAIN = 5
+    CHECK_ACK_LIST = 3
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
@@ -26,6 +26,7 @@ class Writer(threading.Thread):
         self.configuration = configuration
         self.routing_table = routing_table
         self.pending_message_list = []
+        self.ack_message_list = []
         self.ticker = threading.Event()
 
     # Find a route to the request_message node
@@ -35,13 +36,13 @@ class Writer(threading.Thread):
         if request.requested_node == self.configuration.MY_ADDRESS:
             print('Request reached end node')
             self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-            self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node))
+            self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0')
         # if requested node is already in table send reply
         elif request.requested_node is self.routing_table.find_entry(request.requested_node):
-            self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0')
+            self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0')
         #if source is my adress do nothing
         elif request.source == self.configuration.MY_ADDRESS:
-            print('Request source is 0136')
+            print('Request reached request source,')
         else:
             # if request already has an route entry in table do not add it and forward request.
             if not self.routing_table.search_duplicate_route_in_table(request.source, neighbor_node, request.hop):
@@ -51,10 +52,8 @@ class Writer(threading.Thread):
                 if time_to_live > 0:
                     self.send_message(self.message_to_string(request, neighbor_node) )
                     print('Request forwarded')
-                else:
-                   pass
             else:
-                self.route_reply(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node), b'0') 
+                self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0') 
 
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
@@ -63,22 +62,28 @@ class Writer(threading.Thread):
     def route_reply(self, reply, neighbor_node):
         if reply.end_node == self.configuration.MY_ADDRESS:
             print('Reply reached end node')
-            self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
-            time_to_live = reply.decrement_time_to_live()
+            self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+        # if reoute reply reachend the source address of its request message.
         elif reply.source == self.configuration.MY_ADDRESS:
-            print('reply source is 0136')
-            pass
-        # elif reply.end_node is self.routing_table.search_duplicate_route_in_table(reply.source, reply.hop, neighbor_node):
-        #     pass
-        else:
-            # if reply already has a route entry for route in table do not add it and forward reply.
-            if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
-                reply.hop = reply.increment_hop() 
-                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop) 
-                time_to_live = reply.decrement_time_to_live()
-                if time_to_live > 0:
-                    self.send_message(self.message_to_string(reply, neighbor_node))
-                    print('Reply sent.')
+            print('Reply reached reply sender.')            
+        elif reply.next_node == self.configuration.MY_ADDRESS:
+            if reply.time_to_live > 0:
+                self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+                reply.decrement_time_to_live(reply.time_to_live)
+                self.send_message(self.message_to_string(reply, neighbor_node))
+                print('Reply sent forwarded .')
+        # if reply.source is not in my table and next_node is different from mine
+        else reply.source is not self.routing_table.find_entry() and reply.next_node != self.configuration.MY_ADDRESS:
+            print('Reply: Node which sent request is not in my table.')
+        # else:
+         #     # if reply already has a route entry for route in table do not add it and forward reply.
+        #     #if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
+        #         reply.hop = reply.increment_hop() 
+        #         self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop) 
+        #         if reply.time_to_live > 0:
+        #             reply.time_to_live = reply.decrement_time_to_live()
+        #             self.send_message(self.message_to_string(reply, neighbor_node))
+        #             print('Reply sent forwarded .')
 
     # Prepares the route message for sending. 
     # error    RouteError message object
@@ -119,14 +124,14 @@ class Writer(threading.Thread):
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, best_route, user_message.message))
 
-    # Converts all different data types of the message to string.
-    # @arguments    all fields of the message
-    def message_to_string(self, *arguments):
-        separator = '|'
+    # Converts all different data types of the message to string and adds the field seperator.
+    # @message    ields of the message  
+    def message_to_string(self, message): 
+        seperator = '|'
         separated_message = ''
-        for field in arguments:
-            separated_message += separator.join(str(field))
-        return separated_message
+        for attr, value in message.__dict__.items():
+            separated_message += str(value) + seperator
+        return seperator + separated_message + seperator
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
@@ -139,26 +144,26 @@ class Writer(threading.Thread):
             self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
+    
+    # Finds the matching table entry for the waiting message
+    def get_pending_message_route(self):
+        for message in self.pending_message_list:
+            for route in self.routing_table:
+                if message.destination is route.destination:
+                    found_message = message
+                return found_message 
 
-    # Converts all different data types of the message to a utf-8 string.
-    # @arguments    all fields of the message
-    def message_to_string(self, *arguments):
-        message_as_string = ''
-        for field in arguments:
-            message_as_string += str(field)
-        return message_as_string
-
-    # Overwritten thread run() function. Checks regurarily the entries for further processing the messages.
+    # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
     def run(self): 
         while True:
-            if self.ticker.wait(Writer.WAIT_TO_CHECK_TABLE_ENTRY) and self.pending_message_list: 
-                self.user_input(self.pending_message_list.pop(0))
-            else:
-                pass
+            if self.pending_message_list > 0:
+                message = self.get_pending_message_route() 
+                self.user_input(message)
+                self.pending_message_list.remove(message)
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:
-            #     if ack hast arrived after 3 resents the the destination gets deleted from 
+            #     if ack hast arrived after 3 resents the the destination gets removed  
             
             
             
