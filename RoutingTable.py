@@ -12,14 +12,9 @@ class RoutingTable():
     # @neighbor    neighbor node
     # @hop         Route cost to destination
     def add_route_to_table(self, destination, neighbor, hop): 
-        existing_node = self.find_entry(destination)
-        if not existing_node:
-            self.routing_table.append(Route(destination, neighbor, hop)) 
-            print('Route added')
-        else:
-            print('Node already added')
+        self.routing_table.append(Route(destination, neighbor, hop)) 
+        print('Route added')
         
-
     # Removes a given entry from the list
     # @node    the node to be removed
     def remove_route_from_table(self, broken_node):
@@ -33,20 +28,20 @@ class RoutingTable():
     # Find entry in unsorted routing table
     # @node     node address to be found in routing table
     # @return   found node address  
-    def find_entry(self, node):
-        found = b''
+    def search_entry(self, node):
+        found = False
         for entry in self.routing_table:
             if entry.destination is node:
-                found = entry.destination
+                found = True
         return found
 
     # Finds the route with the lowest costs to the destination node by sorting the table by the hop field.
     # @destination    destination node to be found in 
     # @return         neighbor node through which the destination can be reached the fastest 
-    def find_best_route(self, destination):
+    def find_route(self, destination):
         neighbor = b''
         for entry in sorted(self.routing_table, key=lambda Route: Route.hop):
             if entry.destination == destination.encode():
                print(entry.neighbor)
-            return entry.neighbor 
+        return entry.neighbor
 

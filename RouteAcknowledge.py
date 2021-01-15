@@ -7,6 +7,6 @@ class RouteAcknowledge(MessageHeader):
         self.ack_node = ack_node
     
     def __str__(self):
-        return self.source.decode() + str(self.flag) + str(self.time_to_live) + self.ack_node.decode()
+        return self.source + str(self.flag) + str(self.time_to_live) + self.ack_node
    
     

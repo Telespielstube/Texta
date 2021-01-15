@@ -6,4 +6,4 @@ class Route:
         self.hop = hop
     
     def __str__(self):
-        return (str(self.destination) +  '\t' + str(self.neighbor))
+        return (str(self.destination) +  '\t' + str(self.neighbor) + '\t' + str(self.hop))

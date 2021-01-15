@@ -9,11 +9,11 @@ class RouteReply(MessageHeader):
         self.next_node = next_node # Neighbor who sent the request
         
     def __str__(self):
-        return self.source.decode() + str(self.flag) + str(self.time_to_live) + str(self.hop) + self.end_node.decode() + self.next_node.decode()
+        return self.source + str(self.flag) + str(self.time_to_live) + str(self.hop) + self.end_node + self.next_node
     
     # Adds 1 to the route cost by converting bytes to int and backwards
     def increment_hop(self):
-        return self.hop + 1
+        return int(self.hop) + 1
         
 
 
