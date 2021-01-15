@@ -12,7 +12,11 @@ class RoutingTable():
     # @neighbor    neighbor node
     # @hop         Route cost to destination
     def add_route_to_table(self, destination, neighbor, hop): 
-        self.routing_table.append(Route(destination, neighbor, hop)) 
+        existing_node = self.find_entry(destination)
+        if not existing_node:
+            self.routing_table.append(Route(destination, neighbor, hop)) 
+        else:
+            print('Node already added.')
         print('Route added')
 
     # Removes a given entry from the list
