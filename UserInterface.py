@@ -1,7 +1,7 @@
 import threading, sys
 
 from Connection import Connection
-from MessageItem import MessageItem
+from UserMessage import UserMessage
 from RoutingTable import RoutingTable
 
 class UserInterface(threading.Thread):
@@ -30,8 +30,8 @@ class UserInterface(threading.Thread):
         message = option[5:-5] 
         destination = option[-4:] 
         if 'SEND' in command:
-            message_item = MessageItem(command, message, destination)
-            self.writer.user_input(message_item)
+            user_message = UserMessage(command, message, destination)
+            self.writer.user_input(user_message)
         if 'ROUT' in command:
             print ('Routing Table')
             self.routing_table.show_routing_table()

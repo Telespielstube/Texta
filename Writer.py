@@ -3,18 +3,15 @@ import threading, time
 from Connection import Connection
 from Configuration import Configuration
 from RoutingTable import RoutingTable
-from MessageItem import MessageItem
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
 from RouteAcknowledge import RouteAcknowledge
 from TextMessage import TextMessage
+from UserMessage import UserMessage
 from UserInterface import UserInterface
 
 class Writer(threading.Thread):
-    WAIT_TO_CHECK_TABLE_ENTRY = 3
-    WAIT_TO_SEND_MESSAGE_AGAIN = 5
-    CHECK_ACK_LIST = 3
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
@@ -27,45 +24,40 @@ class Writer(threading.Thread):
         self.routing_table = routing_table
         self.pending_message_list = []
         self.ack_message_list = []
-        self.ticker = threading.Event()
+       # self.ticker = threading.Event()
 
     # Find a route to the request_message node
     # @request          Request message object.
-    # @neighbor_node    Neighbor node address.
+    # @n
     def route_request(self, request, neighbor_node):
+        if request.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(request.source):
+            print('Request reached request source,')
+            return
         if request.requested_node == self.configuration.MY_ADDRESS:
             print('Request reached end node')
-            self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-            self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0')
-        # if requested node is already in table send reply
-        elif request.requested_node is self.routing_table.find_entry(request.requested_node):
-            self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0')
-        #if source is my adress do nothing
-        elif request.source == self.configuration.MY_ADDRESS:
-            print('Request reached request source,')
+            if not self.routing_table.search_entry(request.source):  
+                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
+                print('Route to source added')       
+            self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0'))
         else:
-            # if request already has an route entry in table do not add it and forward request.
-            if not self.routing_table.search_duplicate_route_in_table(request.source, neighbor_node, request.hop):
-                request.hop = request.increment_hop() 
-                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop) 
-                time_to_live = request.decrement_time_to_live()
-                if time_to_live > 0:
-                    self.send_message(self.message_to_string(request, neighbor_node) )
-                    print('Request forwarded')
-            else:
-                self.route_reply(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node), b'0') 
-
+            if not self.routing_table.search_entry(request.source): 
+                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
+            # do i have the requested node adress in table
+            if self.routing_table.search_entry(request.requested_node):
+                self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, request.requested_node, neighbor_node), b'0'))
+            elif request.decrement_time_to_live() > 0:
+                self.send_message(self.message_to_string(request, neighbor_node) )
+                print('Request forwarded')
+    
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
     # reply            Reply message object.
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
-        if reply.end_node == self.configuration.MY_ADDRESS and reply.source == self.configuration.MY_ADDRESS:
+        if reply.end_node == self.configuration.MY_ADDRESS:
             print('Reply reached end node')
-        if reply.end_node == self.configuration.MY_ADDRESS and reply.source != self.configuration.MY_ADDRESS:    
-            self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
-        # if reoute reply reachend the source address of its request message.
-        elif reply.source == self.configuration.MY_ADDRESS:
+            self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
+        if reply.source == self.configuration.MY_ADDRESS:
             print('Reply reached reply sender.')            
         elif reply.next_node == self.configuration.MY_ADDRESS:
             if reply.time_to_live > 0:
@@ -73,25 +65,13 @@ class Writer(threading.Thread):
                 reply.decrement_time_to_live(reply.time_to_live)
                 self.send_message(self.message_to_string(reply, neighbor_node))
                 print('Reply sent forwarded .')
-        # if reply.source is not in my table and next_node is different from mine
-        # else reply.source is not self.routing_table.find_entry() and reply.next_node != self.configuration.MY_ADDRESS:
-        #     print('Reply: Node which sent request is not in my table.')
-        # else:
-         #     # if reply already has a route entry for route in table do not add it and forward reply.
-        #     #if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
-        #         reply.hop = reply.increment_hop() 
-        #         self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop) 
-        #         if reply.time_to_live > 0:
-        #             reply.time_to_live = reply.decrement_time_to_live()
-        #             self.send_message(self.message_to_string(reply, neighbor_node))
-        #             print('Reply sent forwarded .')
-
+    
     # Prepares the route message for sending. 
     # error    RouteError message object
     def route_error(self, error):
-        if self.routing_table.find_route_in_table(error.broken_node, error.neighbor_node):
+        if self.routing_table.find_route(error.broken_node, error.neighbor_node):
             self.routing_table.remove_route_from_table()
-            
+           
         self.send_message(self.message_to_string(error))
         print('Route Error forwarded')
 
@@ -99,8 +79,7 @@ class Writer(threading.Thread):
     # text_message    TextMessage to be forwarded to next node.
     def forward_message(self, text_message):
         if text_message.next_node != self.configuration.MY_ADDRESS:
-            time_to_live = text_message.decrement_time_to_live(text_message.time_to_live)
-            if time_to_live > 0:
+            if text_message.decrement_time_to_live(text_message.time_to_live) > 0:
                 self.send_message(self.message_to_string(text_message))
                 print('Text message forwarded.')
             else:
@@ -117,9 +96,9 @@ class Writer(threading.Thread):
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
-        best_route = self.routing_table.find_best_route(user_message.destination)
+        best_route = self.routing_table.find_route(user_message.destination)
         if not best_route: # best route means the neighbor with the lowest costs to the destination. 
-            self.route_request(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
+            self.send_message(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0), self.configuration.MY_ADDRESS)
             self.pending_message_list.append(user_message)
             print('Message is pending')
         else:
@@ -147,24 +126,16 @@ class Writer(threading.Thread):
             self.connection.write_to_mcu(message)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
-    
-    # Finds the matching table entry for the waiting message
-    def get_pending_message_route(self):
-        found_message = MessageItem()
-        for message in self.pending_message_list:
-            for route in self.routing_table:
-                if message.destination is route.destination:
-                    found_message = message
-                return found_message 
 
     # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
     def run(self): 
         while True:
-            if self.pending_message_list:
-                message = self.get_pending_message_route() 
+            if not self.pending_message_list:
+                message = UserMessage.get_pending_message_route(self.routing_table, self.pending_message_list)
                 print(message)
                 self.user_input(message)
                 self.pending_message_list.remove(message)
+                
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:
