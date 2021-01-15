@@ -2,7 +2,7 @@ import serial, time
 
 from Connection import Connection
 class Configuration:
-    MY_ADDRESS = b'0136'
+    MY_ADDRESS = '0136'
     
     def __init__(self, connection):
         self.connection = connection

@@ -131,7 +131,7 @@ class Writer(threading.Thread):
         separated_message = ''
         for attr, value in message.__dict__.items():
             separated_message += str(value) + seperator
-        return seperator + separated_message + seperator
+        return seperator + separated_message
 
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
