@@ -34,4 +34,4 @@ class Parser():
     def parse_incoming_message(self, mcu_header, protocol_header):
         mcu_field = mcu_header.split(b',')
         if mcu_field[0] == b'LR':
-            self.parse_header(protocol_header.encode(), mcu_field[1].encode())
+            self.parse_header(protocol_header.decode(), mcu_field[1].decode())

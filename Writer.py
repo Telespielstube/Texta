@@ -156,7 +156,7 @@ class Writer(threading.Thread):
     # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
     def run(self): 
         while True:
-            if self.pending_message_list > 0:
+            if self.pending_message_list:
                 message = self.get_pending_message_route() 
                 self.user_input(message)
                 self.pending_message_list.remove(message)
