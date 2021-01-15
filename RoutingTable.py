@@ -15,9 +15,10 @@ class RoutingTable():
         existing_node = self.find_entry(destination)
         if not existing_node:
             self.routing_table.append(Route(destination, neighbor, hop)) 
+            print('Route added')
         else:
-            print('Node already added.')
-        print('Route added')
+            print('Node already added')
+        
 
     # Removes a given entry from the list
     # @node    the node to be removed
@@ -36,7 +37,7 @@ class RoutingTable():
         found = b''
         for entry in self.routing_table:
             if entry.destination is node:
-                found = entry.source
+                found = entry.destination
         return found
 
     # Finds the route with the lowest costs to the destination node by sorting the table by the hop field.
