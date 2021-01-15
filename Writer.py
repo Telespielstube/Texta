@@ -73,8 +73,8 @@ class Writer(threading.Thread):
                 self.send_message(self.message_to_string(reply, neighbor_node))
                 print('Reply sent forwarded .')
         # if reply.source is not in my table and next_node is different from mine
-        else reply.source is not self.routing_table.find_entry() and reply.next_node != self.configuration.MY_ADDRESS:
-            print('Reply: Node which sent request is not in my table.')
+        # else reply.source is not self.routing_table.find_entry() and reply.next_node != self.configuration.MY_ADDRESS:
+        #     print('Reply: Node which sent request is not in my table.')
         # else:
          #     # if reply already has a route entry for route in table do not add it and forward reply.
         #     #if not self.routing_table.search_duplicate_route_in_table(reply.source, neighbor_node, reply.hop):
