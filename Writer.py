@@ -7,7 +7,7 @@ from MessageItem import MessageItem
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
-#from RouteUnreachable import RouteUnreachable
+from RouteAcknowledge import RouteAcknowledge
 from TextMessage import TextMessage
 from UserInterface import UserInterface
 
@@ -130,6 +130,8 @@ class Writer(threading.Thread):
         seperator = '|'
         separated_message = ''
         for attr, value in message.__dict__.items():
+            if type(value) == bytes:
+                value = value.decode()
             separated_message += str(value) + seperator
         return seperator + separated_message
 
