@@ -8,6 +8,6 @@ class TextMessage(MessageHeader):
         self.next_node = next_node
         self.payload = payload 
 
-    # Represents the object as utf-8 string.    
-    def __str__(self):
-        return self.source + str(self.flag) + str(self.time_to_live) + str(self.destination) + self.next_node + str(self.payload)
+    # # Represents the object as utf-8 string.    
+    # def __str__(self):
+    #     return self.source + str(self.flag) + str(self.time_to_live) + str(self.destination) + self.next_node + str(self.payload)

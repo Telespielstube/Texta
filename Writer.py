@@ -24,7 +24,6 @@ class Writer(threading.Thread):
         self.routing_table = routing_table
         self.pending_message_list = []
         self.ack_message_list = []
-       # self.ticker = threading.Event()
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -38,13 +37,14 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(request.source):  
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
                 print('Route to source adress added')       
-            self.send_message(message_to_string(RouteReply(request.source, 4, 8, 0, self.configuration.MY_ADDRESS, neighbor_node)))
+            self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source): 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-            if self.routing_table.search_entry(request.requested_node):
-                self.send_message(message_to_string(RouteReply(request.source, 4, 8, 0, request.requested_node, neighbor_node)))
+            if self.routing_table.search_entry(request.requested_node):  
+                self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, request.requested_node, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
+                request.increment_hop(request.hop)
                 self.send_message(self.message_to_string(request))
                 print('Request forwarded')
     
@@ -63,13 +63,15 @@ class Writer(threading.Thread):
             if reply.decrement_time_to_live() > 0:
                 if not self.routing_table.search_entry(reply.source):
                     self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+                reply.increment_hop(reply.hop)    
                 self.send_message(self.message_to_string(reply))
-                print('Reply sent forwarded.')
-            else:
+                print('Reply forwarded.')
+            else: 
                 print('ttl = 0 reply deleted')
+                return
         else:
             print('Next node differs from my adress. Reply deleted')
-            pass
+            return
     
     # Prepares the route message for sending. 
     # error    RouteError message object
@@ -100,13 +102,13 @@ class Writer(threading.Thread):
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
-        best_route = self.routing_table.find_route(user_message.destination)
-        if not best_route: # best route means the neighbor with the lowest costs to the destination. 
-            self.send_message(RouteRequest(self.configuration.MY_ADDRESS, 3, 8, user_message.destination, 0), self.configuration.MY_ADDRESS)
+        route = self.routing_table.find_route(user_message.destination)
+        if not route: # best route means the neighbor with the lowest costs to the destination. 
+            self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0)))
             self.pending_message_list.append(user_message)
             print('Message is pending')
         else:
-            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 8, user_message.destination, best_route, user_message.message))
+            self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
 
     # Converts all different data types of the message to string and adds the field seperator.
     # @message    ields of the message  
@@ -114,6 +116,8 @@ class Writer(threading.Thread):
         separator = '|'
         separated_message = ''
         for attr, value in message.__dict__.items():
+            if type(value) == bytes:
+                value = value.decode() 
             separated_message += str(value) + separator
         return separator + separated_message 
 
@@ -131,21 +135,27 @@ class Writer(threading.Thread):
 
   # Finds the matching table entry for the waiting message
     def get_pending_message_route(self):
-        for message in self.pending_message_list:
-            for route in self.routing_table:
-                if message.destination is route.destination:
+        for attribute, value in self.routing_table.__dict__.items():   
+            for message in self.pending_message_list:        
+                if message.destination is attribute.destination.decode():
+                    print(message.destination)
                     found_message = message
+                    print(found_message)
                 return found_message 
 
     # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
-    # def run(self): 
-    #     while True:
-    #         if not self.pending_message_list:
-    #             message = self.get_pending_message_route()
-    #             print(message)
-    #             self.user_input(message)
-    #             self.pending_message_list.remove(message)
-                
+    def run(self): 
+        while True:
+            if self.pending_message_list:
+                message = self.get_pending_message_route()
+                if message:
+                    print(message)
+                    self.user_input(message)
+                    self.pending_message_list.remove(message)
+                else:
+                    return
+            else:    
+                return
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:

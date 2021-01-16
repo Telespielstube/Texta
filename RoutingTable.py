@@ -31,17 +31,17 @@ class RoutingTable():
     def search_entry(self, node):
         found = False
         for entry in self.routing_table:
-            if entry.destination is node:
+            if entry.destination == node:
                 found = True
         return found
 
     # Finds the route with the lowest costs to the destination node by sorting the table by the hop field.
-    # @destination    destination node to be found in 
-    # @return         neighbor node through which the destination can be reached the fastest 
+    # @destination    destination node to be found in table 
+    # @return         neighbor node the destination can be reached the fastest 
     def find_route(self, destination):
         neighbor = b''
         for entry in sorted(self.routing_table, key=lambda Route: Route.hop):
             if entry.destination == destination.encode():
-               print(entry.neighbor)
-        return entry.neighbor
+               neighbor = entry.neighbor
+        return neighbor
 

@@ -6,6 +6,5 @@ class RouteError(MessageHeader):
         super().__init__(source, flag, time_to_live)
         self.broken_node = broken_node
 
-    def __str__(self):
-        return self.source + str(self.flag) + str(self.time_to_live) + self.broken_node
-   
+    # def __str__(self):
+    #     return self.source + str(self.flag) + str(self.time_to_live) + self.broken_node

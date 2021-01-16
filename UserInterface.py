@@ -14,7 +14,7 @@ class UserInterface(threading.Thread):
         self.reader = reader
         self.routing_table = routing_table
 
-    #reads     
+    #reads user input.    
     def read_console_input(self):
         command = input()
         return command
