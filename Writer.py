@@ -37,7 +37,7 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(request.source):  
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
                 print('Route to source adress added')       
-            self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
+            self.send_message(self.message_to_string(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source): 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
@@ -104,7 +104,7 @@ class Writer(threading.Thread):
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route: # best route means the neighbor with the lowest costs to the destination. 
-            self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, user_message.destination, 0)))
+            self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination)))
             self.pending_message_list.append(user_message)
             print('Message is pending')
         else:
