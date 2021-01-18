@@ -42,7 +42,7 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(request.source): 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
             if self.routing_table.search_entry(request.requested_node):  
-                self.send_message(message_to_string(RouteReply(request.source, 4, 9, 0, request.requested_node, neighbor_node)))
+                self.send_message(self.message_to_string(RouteReply(request.source, 4, 9, 0, request.requested_node, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
                 request.increment_hop(request.hop)
                 self.send_message(self.message_to_string(request))
