@@ -58,12 +58,12 @@ class Writer(threading.Thread):
         if reply.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(reply.source):
             print('Reply reached reply sender.') 
             pass   
-        if reply.end_node == self.configuration.MY_ADDRESS:
+        if reply.end_node == self.configuration.MY_ADDRESS and reply.next_node !=  self.configuration.MY_ADDRESS:
             print('Reply reached end node')
             if not self.routing_table.search_entry(reply.source):  
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)       
         else:
-            if reply.end_node != self.configuration.MY_ADRESS and reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+            if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
                 self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
                 if reply.decrement_time_to_live() > 0:              
                     reply.increment_hop(reply.hop)    
