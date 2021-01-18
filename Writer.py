@@ -55,25 +55,26 @@ class Writer(threading.Thread):
     # reply            Reply message object.
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
+        if reply.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(reply.source):
+            print('Reply reached reply sender.') 
+            pass   
         if reply.end_node == self.configuration.MY_ADDRESS:
             print('Reply reached end node')
             if not self.routing_table.search_entry(reply.source):  
-                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
-        if reply.source == self.configuration.MY_ADDRESS:
-            print('Reply reached reply sender.') 
-            pass              
-        elif reply.end_node != self.configuration.MY_ADRESS and reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
-            self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
-            if reply.decrement_time_to_live() > 0:              
-                reply.increment_hop(reply.hop)    
-                self.send_message(self.message_to_string(reply))
-                print('Reply forwarded.')
-            else: 
-                print('ttl = 0 reply deleted')
-                pass
+                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)       
         else:
-            print('Next node differs from my adress. Reply deleted')
-            pass
+            if reply.end_node != self.configuration.MY_ADRESS and reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+                self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+                if reply.decrement_time_to_live() > 0:              
+                    reply.increment_hop(reply.hop)    
+                    self.send_message(self.message_to_string(reply))
+                    print('Reply forwarded.')
+                else: 
+                    print('ttl = 0 reply deleted')
+                    pass
+            else:
+                print('Next node differs from my adress. Reply deleted')
+                pass
     
     # Prepares the route message for sending. 
     # error    RouteError message object
