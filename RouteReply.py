@@ -13,7 +13,7 @@ class RouteReply(MessageHeader):
     
     # Adds 1 to the route cost by converting bytes to int and backwards
     def increment_hop(self):
-        return int(self.hop.decode()) + 1
+        return self.hop + 1
         
 
 

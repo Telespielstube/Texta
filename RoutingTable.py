@@ -41,7 +41,7 @@ class RoutingTable():
     def find_route(self, destination):
         neighbor = b''
         for entry in sorted(self.routing_table, key=lambda Route: Route.hop):
-            if int(entry.destination) == int(destination.encode()):
+            if entry.destination == destination.encode():
                neighbor = entry.neighbor
         return neighbor
 

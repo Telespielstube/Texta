@@ -31,7 +31,6 @@ class Writer(threading.Thread):
     def route_request(self, request, neighbor_node):
         if request.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(request.source):
             print('Request reached request source,')
-            pass
         if request.requested_node == self.configuration.MY_ADDRESS:
             print('Request reached end node')
             if not self.routing_table.search_entry(request.source):  
