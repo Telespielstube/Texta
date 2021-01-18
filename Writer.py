@@ -44,7 +44,7 @@ class Writer(threading.Thread):
             if self.routing_table.search_entry(request.requested_node):  
                 self.send_message(self.message_to_string(RouteReply(request.source, 4, 9, 0, request.requested_node, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
-                request.increment_hop(request.hop)
+                request.increment_hop()
                 self.send_message(self.message_to_string(request))
                 print('Request forwarded')
             else:
