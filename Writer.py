@@ -90,9 +90,8 @@ class Writer(threading.Thread):
             if text_message.decrement_time_to_live(text_message.time_to_live) > 0:
                 self.send_message(self.message_to_string(text_message))
                 print('Text message forwarded.')
-            else:
-                self.route_error(RouteError(self.configuration.MY_ADDRESS, 5, 9, text_message.destination))
-        else:
+          
+        if text_message.end_node  == self.configuration.MY_ADDRESS:
             UserInterface.print_message(text_message.source, text_message.payload)
     
     # Prepares the user text message for sending.
@@ -140,24 +139,24 @@ class Writer(threading.Thread):
         for attribute, value in self.routing_table.__dict__.items():   
             for message in self.pending_message_list:        
                 if message.destination is attribute.destination.decode():
-                    print(message.destination)
+                    print('Pending message dest: ' + message.destination)
                     found_message = message
-                    print(found_message)
+                    print('Pending message: ' + found_message)
                 return found_message 
 
     # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
     def run(self): 
         while True:
-            if self.pending_message_list:
+            if self.pending_message_list: # if penidng message list has at least one entry
                 message = self.get_pending_message_route()
                 if message:
                     print(message)
                     self.user_input(message)
                     self.pending_message_list.remove(message)
                 else:
-                    return
+                    pass
             else:    
-                return
+                pass
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:
