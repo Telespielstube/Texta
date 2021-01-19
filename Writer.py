@@ -87,7 +87,7 @@ class Writer(threading.Thread):
     # text_message    TextMessage to be forwarded to next node.
     def forward_message(self, text_message):
         if text_message.next_node != self.configuration.MY_ADDRESS:
-            if text_message.decrement_time_to_live(text_message.time_to_live) > 0:
+            if text_message.decrement_time_to_live() > 0:
                 self.send_message(self.message_to_string(text_message))
                 print('Text message forwarded.')
           
