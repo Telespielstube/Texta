@@ -3,6 +3,7 @@ from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
 from TextMessage import TextMessage
+from RouteAcknowledgement import RouteAcknowledgement
 
 class Parser():
 
@@ -17,6 +18,8 @@ class Parser():
         protocol_field = protocol_header.split(b'|')
         if protocol_field[2] == b'1':
             self.writer.forward_message(TextMessage(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4], protocol_field[5], protocol_field[6]))
+        if protocol_field[2] == b'2':
+            self.writer.acknowledgment_message(RouteAcknowledgement(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]))
         if protocol_field[2] == b'3':           
             self.writer.route_request(RouteRequest(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
         if protocol_field[2] == b'4':

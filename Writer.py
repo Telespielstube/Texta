@@ -100,6 +100,10 @@ class Writer(threading.Thread):
         self.send_message(self.message_to_string(user_message))
         print('Text message sent')
 
+    def route_ack(self, ack_message):
+        self.ack_message_list.remove(ack_message.ack_node)
+        print('Removed acknowleding node from list')
+
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
@@ -150,7 +154,7 @@ class Writer(threading.Thread):
             if self.pending_message_list: # if penidng message list has at least one entry
                 message = self.get_pending_message_route()
                 if message:
-                    print(message)
+                    print('Found message in thread: ' + message)
                     self.user_input(message)
                     self.pending_message_list.remove(message)
                 else:
