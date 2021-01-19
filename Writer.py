@@ -6,7 +6,7 @@ from RoutingTable import RoutingTable
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
-from RouteAcknowledge import RouteAcknowledge
+from RouteAcknowledgement import RouteAcknowledgement
 from TextMessage import TextMessage
 from UserMessage import UserMessage
 from UserInterface import UserInterface
@@ -144,7 +144,7 @@ class Writer(threading.Thread):
                     print('Pending message: ' + found_message)
                 return found_message 
 
-    # Overwritten thread run() function. Checks the list entries regularily for further processing of pending messages.
+    # Thread function checks the list entries for further processing of pending messages.
     def run(self): 
         while True:
             if self.pending_message_list: # if penidng message list has at least one entry
