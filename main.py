@@ -14,11 +14,11 @@ def main():
     connection.connect_device()
     configuration = Configuration(connection)
     configuration.config_module('AT+RST', 
-                              'AT+CFG=433500000,5,6,12,1,1,0,0,0,0,3000,8,4', 
-                              'AT+ADDR=0136',
-                              'AT+DEST=FFFF',
-                              'AT+RX',
-                              'AT+SAVE')
+                             'AT+CFG=433500000,5,6,12,1,1,0,0,0,0,3000,8,4', 
+                             'AT+ADDR=0136',
+                             'AT+DEST=FFFF',
+                             'AT+RX',
+                             'AT+SAVE')
     routing_table = RoutingTable(configuration.MY_ADDRESS, 0) #Adds own address and 0 hops to routing table
     writer = Writer(connection, configuration, routing_table)
     parser = Parser(routing_table, writer)
