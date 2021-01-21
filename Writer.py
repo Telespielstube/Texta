@@ -110,8 +110,8 @@ class Writer(threading.Thread):
         route = self.routing_table.find_route(user_message.destination)
         if not route: # best route means the neighbor with the lowest costs to the destination. 
             self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination)))
-            self.pending_message_list.append(user_message)
-            print('Message is pending')
+          #  self.pending_message_list.append(user_message)
+           # print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
 
@@ -140,22 +140,22 @@ class Writer(threading.Thread):
 
   # Finds the matching table entry for the waiting message
     # Finds the matching table entry for the waiting message
-    def get_pending_message_route(self):
-        for attribute in vars(self.routing_table).items():   
-            for message in self.pending_message_list:        
-                if message is attribute:
-                    pass
-                return message 
+    # def get_pending_message_route(self):
+    #     for attribute in vars(self.routing_table).items():   
+    #         for message in self.pending_message_list:        
+    #             if message is attribute:
+    #                 pass
+    #             return message 
 
     # Thread function checks the list entries for further processing of pending messages.
     def run(self): 
         while True:    
-            if self.pending_message_list:
-                message = self.get_pending_message_route()
-                self.pending_message_list.remove(message)
-                self.user_input(message)              
-            else:
-                pass
+            # if self.pending_message_list:
+            #     message = self.get_pending_message_route()
+            #     self.pending_message_list.remove(message)
+            #     self.user_input(message)              
+            # else:
+            #     pass
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
             # else:
