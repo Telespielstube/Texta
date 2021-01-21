@@ -24,6 +24,13 @@ class UserInterface(threading.Thread):
     def print_message(self, source, message):
         print('[' + source + '-->]' + message)
 
+    def routing_table_frame(self):
+        print('Routing Table')
+        print('---------------------------')
+        print('| Source | Neighbor | hop |')
+        print('---------------------------')
+        self.routing_table.show_routing_table()
+
     # Minimalistic menu to navigate though the chat application. 
     def select_option(self, option):
         command = option[:4] 
@@ -32,9 +39,8 @@ class UserInterface(threading.Thread):
         if 'SEND' in command:
             user_message = UserMessage(command, message, destination)
             self.writer.user_input(user_message)
-        if 'ROUT' in command:
-            print ('Routing Table')
-            self.routing_table.show_routing_table()
+        if 'TABLE' in command:
+            self.routing_table_frame()
         if 'EXIT' in command:
             self.writer.join()
             self.reader.join()

@@ -25,7 +25,7 @@ class RoutingTable():
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
         for entry in self.routing_table:
-            print (entry)
+            print ('|\s\s\s' + entry.source + '\s\s\s|' + '\s\s\s' + entry.neighbor + '\s\s\s|' + '\s\s\s' + entry.hop + '\s\s\s|' )
     
     # Find entry in unsorted routing table
     # @node     node address to be found in routing table

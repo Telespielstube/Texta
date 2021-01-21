@@ -1,4 +1,5 @@
-import threading, time
+import threading, time 
+from queue import Queue
 
 from Connection import Connection
 from Configuration import Configuration
@@ -22,21 +23,20 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.pending_message_list = []
-        self.ack_message_list = []
+        self.pending_message_dict = dict()
+        self.pending_message_queue = Queue()
 
     # Find a route to the request_message node
     # @request          Request message object.
-    # @n
+    # @neigbor_node     previous node.
     def route_request(self, request, neighbor_node):
         if request.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(request.source):
-            print('Request reached request source,')
+            print('Request reached origin.')
         if request.requested_node == self.configuration.MY_ADDRESS:
             print('Request reached end node')
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop() 
-                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-                print('Route to source adress added')       
+                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
             self.send_message(self.message_to_string(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source):
@@ -58,14 +58,13 @@ class Writer(threading.Thread):
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(reply.source):
-            print('Reply reached reply sender.') 
+            print('Reply reached origin.') 
             pass   
         if reply.end_node == self.configuration.MY_ADDRESS and reply.next_node !=  self.configuration.MY_ADDRESS:
             print('Reply reached end node')
             if not self.routing_table.search_entry(reply.source):  
                 reply.increment_hop()
-                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)       
-        
+                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)              
         if reply.next_node == self.configuration.MY_ADDRESS and reply.end_node != self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
@@ -92,7 +91,7 @@ class Writer(threading.Thread):
                 self.send_message(self.message_to_string(text_message))
                 print('Text message forwarded.')   
         if text_message.destination == self.configuration.MY_ADDRESS:
-            print('[' + text_message.source.decode() + '-->]\t' + text_message.payload.decode())
+            print('[' + text_message.source.decode() + '-->]\s\s\s\s' + text_message.payload.decode())
            # UserInterface.print_message(text_message.source, text_message.payload.decode())
     
     # Prepares the user text message for sending.
@@ -101,20 +100,26 @@ class Writer(threading.Thread):
         self.send_message(self.message_to_string(user_message))
         print('Text message sent')
 
-    def route_ack(self, ack_message):
-        self.ack_message_list.remove(ack_message.ack_node)
-        print('Removed acknowleding node from list')
+    # def route_ack(self, ack_message): 
+    #     self.ack_message_list.remove(ack_message.ack_node)
+    #     print('Removed acknowleding node from list')
 
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
-        if not route: # best route means the neighbor with the lowest costs to the destination. 
+        if not route:  
             self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination)))
-          #  self.pending_message_list.append(user_message)
-           # print('Message is pending')
+            # stores the message in a dict(). key = msg_dest and value = msg object.
+            # if more messages are meant for one dest the messages are queued up. 
+            if not user_message.destination in self.pending_message_dict:
+                self.pending_message_list[user_message.destination] = self.pending_message_queue.put(user_message)
+            else:
+                self.pending_message_list.update(user_message.destination, self.pending_message_queue.put(user_message))
+            print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
+            #self.ack_message_list(user_message)
 
     # Converts all different data types of the message to string and adds the field seperator.
     # @message    ields of the message  
@@ -140,27 +145,16 @@ class Writer(threading.Thread):
             time.sleep(1)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
-
-  # Finds the matching table entry for the waiting message
-    # Finds the matching table entry for the waiting message
-    #def get_pending_message_route(self):
-     #   for attribute in vars(self.routing_table).items():   
-      #      for message in self.pending_message_list:        
-       #         if message is attribute:
-        #            pass
-         #       return message 
-
+ 
     # Thread function checks the list entries for further processing of pending messages.
-    def run(self): 
+    def run(self):  
+        ack_retry = 0
         while True:    
-            if self.pending_message_list:
-                time.sleep(20)
-                message = self.get_pending_message_route()
-                self.pending_message_list.remove(message)
-                self.user_input(message)              
+            if self.pending_message_list:   
+                threading.Timer(20.0, self.user_input(self.pending_message_list.pop(0))).start() 
             else:
-                pass
-            # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
-            #     remove_entry()
-            # else:
-            #     if ack hast arrived after 3 resents the the destination gets removed  
+                pass  
+            if self.ack_message_list and ack_retry < 3:
+                threading.Timer(10.0, self.ack_message_list.remove([0])).start() 
+            else:
+                pass   

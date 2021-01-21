@@ -5,5 +5,5 @@ class UserMessage:
         self.message = message
         self.destination = destination
 
-    def __str__(self):
-        return self.command + self.message + self.destination
+    # def __str__(self):
+    #     return str(self.command) + str(self.message) + str(self.destination)

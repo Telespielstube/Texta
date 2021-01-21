@@ -6,7 +6,7 @@ class RouteAcknowledgement(MessageHeader):
         super().__init__(source, flag, time_to_live)
         self.ack_node = ack_node #neighbor node the textmessage was sent to.
     
-    def __str__(self):
-        return self.source + str(self.flag) + str(self.time_to_live) + self.ack_node
+    # def __str__(self):
+    #     return self.source + str(self.flag) + str(self.time_to_live) + self.ack_node
    
     
