@@ -25,7 +25,7 @@ class Parser():
         if protocol_field[2] == b'4':
             self.writer.route_reply(RouteReply(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
         if protocol_field[2] == b'5':
-            self.writer.route_error(RouteError(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4]))
+            self.writer.route_error(RouteError(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4]), neighbor_node)
 
     # Parses incoming byte stream. 
     # @mcu_header       mcu message part.

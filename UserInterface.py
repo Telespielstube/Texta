@@ -22,7 +22,7 @@ class UserInterface(threading.Thread):
     # Prints received data on screen.
     # @message    received data encoded to utf-8
     def print_message(self, source, message):
-        print('[' + source + '-->]' + message[:-1].decode())
+        print('[' + source + '-->]' + message)
 
     # Minimalistic menu to navigate though the chat application. 
     def select_option(self, option):

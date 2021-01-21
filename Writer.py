@@ -36,7 +36,7 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(request.source):  
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
                 print('Route to source adress added')       
-            self.send_message(self.message_to_string(RouteReply(request.source, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
+            self.send_message(self.message_to_string(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source): 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
@@ -48,6 +48,7 @@ class Writer(threading.Thread):
                 print('Request forwarded')
             else:
                 print('ttl = 0. Request deleted')
+                pass
     
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
@@ -61,25 +62,24 @@ class Writer(threading.Thread):
             print('Reply reached end node')
             if not self.routing_table.search_entry(reply.source):  
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)       
-        else:
-            if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
-                self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
-                if reply.decrement_time_to_live() > 0:              
-                    reply.increment_hop(reply.hop)    
-                    self.send_message(self.message_to_string(reply))
-                    print('Reply forwarded.')
-                else: 
-                    print('ttl = 0 reply deleted')
-                    pass
-            else:
-                print('Next node differs from my adress. Reply deleted')
+        
+        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+            self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+            if reply.decrement_time_to_live() > 0:              
+                reply.increment_hop(reply.hop)    
+                self.send_message(self.message_to_string(reply))
+                print('Reply forwarded.')
+            else: 
+                print('ttl = 0 reply deleted')
                 pass
+        else:
+            print('Next node differs from my adress. Reply deleted')
+            pass
     
     # Prepares the route message for sending. 
     # error    RouteError message object
-    def route_error(self, error):
-        if self.routing_table.find_route(error.broken_node, error.neighbor_node):
-            self.routing_table.remove_route_from_table()          
+    def route_error(self, error, neighbor_node):
+        self.routing_table.remove_route_from_table(error.broken_node)          
         self.send_message(self.message_to_string(error))
         print('Route Error forwarded')
 
@@ -89,10 +89,10 @@ class Writer(threading.Thread):
         if text_message.next_node != self.configuration.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
                 self.send_message(self.message_to_string(text_message))
-                print('Text message forwarded.')
-          
-        if text_message.end_node  == self.configuration.MY_ADDRESS:
-            UserInterface.print_message(text_message.source, text_message.payload)
+                print('Text message forwarded.')   
+        if text_message.destination == self.configuration.MY_ADDRESS:
+            print('[' + text_message.source.decode() + '-->]\t' + text_message.payload.decode())
+           # UserInterface.print_message(text_message.source, text_message.payload.decode())
     
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
@@ -139,27 +139,22 @@ class Writer(threading.Thread):
             self.connection.unlock()
 
   # Finds the matching table entry for the waiting message
+    # Finds the matching table entry for the waiting message
     def get_pending_message_route(self):
-        for attribute, value in self.routing_table.__dict__.items():   
+        for attribute in vars(self.routing_table).items():   
             for message in self.pending_message_list:        
-                if message.destination is attribute.destination.decode():
-                    print('Pending message dest: ' + message.destination)
-                    found_message = message
-                    print('Pending message: ' + found_message)
-                return found_message 
+                if message is attribute:
+                    pass
+                return message 
 
     # Thread function checks the list entries for further processing of pending messages.
     def run(self): 
-        while True:
-            if self.pending_message_list: # if penidng message list has at least one entry
+        while True:    
+            if self.pending_message_list:
                 message = self.get_pending_message_route()
-                if message:
-                    print('Found message in thread: ' + message)
-                    self.user_input(message)
-                    self.pending_message_list.remove(message)
-                else:
-                    pass
-            else:    
+                self.pending_message_list.remove(message)
+                self.user_input(message)              
+            else:
                 pass
             # if self.ticker.wait(Writer.CHECK_ACK_TABLE) and self.acknowledgment_list.destination is ack_message.source:
             #     remove_entry()
