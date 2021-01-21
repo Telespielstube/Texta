@@ -36,7 +36,7 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(request.source):  
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
                 print('Route to source adress added')       
-            self.send_message(self.message_to_string(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, self.configuration.MY_ADDRESS, neighbor_node)))
+            self.send_message(self.message_to_string(RouteReply(self.configuration.MY_ADDRESS, 4, 9, 0, request.requested_node, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source): 
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
@@ -142,12 +142,12 @@ class Writer(threading.Thread):
 
   # Finds the matching table entry for the waiting message
     # Finds the matching table entry for the waiting message
-    # def get_pending_message_route(self):
-    #     for attribute in vars(self.routing_table).items():   
-    #         for message in self.pending_message_list:        
-    #             if message is attribute:
-    #                 pass
-    #             return message 
+    def get_pending_message_route(self):
+        for attribute in vars(self.routing_table).items():   
+            for message in self.pending_message_list:        
+                if message is attribute:
+                    pass
+                return message 
 
     # Thread function checks the list entries for further processing of pending messages.
     def run(self): 
