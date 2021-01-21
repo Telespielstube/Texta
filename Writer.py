@@ -66,7 +66,7 @@ class Writer(threading.Thread):
                 reply.increment_hop()
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)       
         
-        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+        if reply.next_node == self.configuration.MY_ADDRESS and reply.end_node != self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
