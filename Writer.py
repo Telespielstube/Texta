@@ -144,19 +144,22 @@ class Writer(threading.Thread):
             self.connection.unlock()
  
 
-    # Thread function checks the list entries for further processing of pending messages.
+    # Checks availablility of message destinations. If available they will be sent
+    # otherwise retries will be counted up and the messages may be deleted. 
+    def process_user_pending_message(self):
+        message_list = self.get_pending_message(self.pending_message_list, self.routing_table)    
+        if message_list:
+            for entry in message_list:    
+                self.user_input(entry) 
+                self.message_list.remove(entry)
+            time.sleep(0.3)
+        else: 
+            self.pending_message.add_retry(self.pending_message_list)
+            self.pending_message.delete_peding_message_from_list(self.pending_message_list)
+
+    # Thread function checks the list entries for further processing of pending messages and ack messages.
     def run(self):  
         while True:
-                message = self.get_pending_message(self.pending_message_list, self.routing_table)    
-                if message:
-                    self.pending_message_list.remove(message)
-                    self.user_input(message)
-                    time.sleep(0.3)
-                else: 
-                    threading.Timer(20.0, self.user_input(message)).start()   
-                 
-                #threading.Timer(30.0, self.delete_pending_message().start()
-            # if self.ack_message_list and ack_retry < 3:
-            #     threading.Timer(10.0, self.ack_message_list.remove([0])).start() 
-            # else:
-            #     pass   
+            threading.Timer(20.0, self.process_pending_user_message()).start()
+            # threading.Timer(10.0, callback).start()
+  
