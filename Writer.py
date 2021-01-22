@@ -1,9 +1,9 @@
 import threading, time 
-from queue import Queue
 
 from Connection import Connection
 from Configuration import Configuration
 from RoutingTable import RoutingTable
+from PendingMessage import PendingMessage
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
@@ -23,8 +23,9 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.pending_message_dict = dict()
-        self.pending_message_queue = Queue()
+        self.pending_message = PendingMessage()
+        self.pending_message_list = []
+        self.send_pending_message = None
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -109,13 +110,9 @@ class Writer(threading.Thread):
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
-            self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination)))
-            # stores the message in a dict(). key = msg_dest and value = msg object.
-            # if more messages are meant for one dest the messages are queued up. 
-            if not user_message.destination in self.pending_message_dict:
-                self.pending_message_list[user_message.destination] = self.pending_message_queue.put(user_message)
-            else:
-                self.pending_message_list.update(user_message.destination, self.pending_message_queue.put(user_message))
+            self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination))) 
+            #Puts penidng message into a list.
+            self.pending_message_list.append(self.pending_message(user_message, int(time.time())))
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
@@ -146,15 +143,20 @@ class Writer(threading.Thread):
             print(self.connection.read_from_mcu())
             self.connection.unlock()
  
+
     # Thread function checks the list entries for further processing of pending messages.
     def run(self):  
-        ack_retry = 0
-        while True:    
-            if self.pending_message_list:   
-                threading.Timer(20.0, self.user_input(self.pending_message_list.pop(0))).start() 
-            else:
-                pass  
-            if self.ack_message_list and ack_retry < 3:
-                threading.Timer(10.0, self.ack_message_list.remove([0])).start() 
-            else:
-                pass   
+        while True:
+                message = self.get_pending_message(self.pending_message_list, self.routing_table)    
+                if message:
+                    self.pending_message_list.remove(message)
+                    self.user_input(message)
+                    time.sleep(0.3)
+                else: 
+                    threading.Timer(20.0, self.user_input(message)).start()   
+                 
+                #threading.Timer(30.0, self.delete_pending_message().start()
+            # if self.ack_message_list and ack_retry < 3:
+            #     threading.Timer(10.0, self.ack_message_list.remove([0])).start() 
+            # else:
+            #     pass   
