@@ -23,9 +23,7 @@ class Writer(threading.Thread):
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
-        self.pending_message = PendingMessage()
         self.pending_message_list = []
-        self.send_pending_message = None
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -101,18 +99,14 @@ class Writer(threading.Thread):
         self.send_message(self.message_to_string(user_message))
         print('Text message sent')
 
-    # def route_ack(self, ack_message): 
-    #     self.ack_message_list.remove(ack_message.ack_node)
-    #     print('Removed acknowleding node from list')
-
     # Message from the user interface
     # @user_message    text message        
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
             self.send_message(self.message_to_string(RouteRequest(self.configuration.MY_ADDRESS, 3, 9, 0, user_message.destination))) 
-            #Puts penidng message into a list.
-            self.pending_message_list.append(self.pending_message(user_message, int(time.time())))
+            #Puts pendng message into a list.
+            self.pending_message_list.append(PendingMessage(user_message, 1))
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
@@ -142,24 +136,49 @@ class Writer(threading.Thread):
             time.sleep(1)
             print(self.connection.read_from_mcu())
             self.connection.unlock()
- 
+
+    # Compares pending_message_list message destination and routing table destination esntry for matches.
+    # @return     list with matching messages
+    def get_pending_message_from_list(self):
+        match = []
+        for entry in self.routing_table.routing_table:
+            for pending in self.pending_message_list:
+                if entry.destination is pending.message.destination:
+                    match.append(pending.message.destination)
+        #match = [self.pending_message_list.index(entry.destination) for entry in self.routing_table.routing_table]
+        print(match)
+        return match
 
     # Checks availablility of message destinations. If available they will be sent
     # otherwise retries will be counted up and the messages may be deleted. 
-    def process_user_pending_message(self):
-        message_list = self.get_pending_message(self.pending_message_list, self.routing_table)    
-        if message_list:
-            for entry in message_list:    
+    def process_pending_user_message(self):
+        matching_adress = self.get_pending_message_from_list()     
+        if matching_adress:
+            for entry in matching_adress:    
                 self.user_input(entry) 
                 self.message_list.remove(entry)
             time.sleep(0.3)
         else: 
-            self.pending_message.add_retry(self.pending_message_list)
-            self.pending_message.delete_peding_message_from_list(self.pending_message_list)
+            self.add_retry(self.pending_message_list)
+            self.delete_peding_message(self.pending_message_list)
+    
+    def add_retry(self, message_list):
+        for entry in message_list:
+            entry.retry += 1
+            print(entry.retry)
+
+    def delete_peding_message(self, pending_message_list):
+        for entry in pending_message_list:
+            if entry.retry == 3:
+                pending_message_list.remove(entry)
+            print('Pending message deleted.')
 
     # Thread function checks the list entries for further processing of pending messages and ack messages.
     def run(self):  
         while True:
-            threading.Timer(20.0, self.process_pending_user_message()).start()
-            # threading.Timer(10.0, callback).start()
+            if self.pending_message_list:
+                threading.Timer(20.0, self.process_pending_user_message()).start()
+            else:
+                time.sleep(0.2)
+
   
