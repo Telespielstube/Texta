@@ -1,20 +1,20 @@
-import threading, time
+import threading, time, random
 
 from Connection import Connection
 
 class PendingMessageHandler(threading.Thread):
 
-    def __init__(self, connection, writer):
+    def __init__(self, writer):
         super(PendingMessageHandler, self).__init__()
-        self.connection = connection
         self.writer = writer
-        pass
+
+    def list_timer(self, min, max):
+        return random.randint(min, max)
 
     def run(self):
         while True:
-            time.sleep(30)
-            self.connection.lock()
+            self.list_timer(15, 25)
             self.writer.process_pending_user_message()
+           #print('Procees pending message')
             #check ack message list
-            self.connection.unlock()
-            time.sleep(0.3)
+            time.sleep(0.2)

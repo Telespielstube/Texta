@@ -12,19 +12,19 @@ from TextMessage import TextMessage
 from UserMessage import UserMessage
 from UserInterface import UserInterface
 
-class Writer(threading.Thread):
+class Writer():
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
     # @header           
     # @configuration    
     def __init__(self, connection, configuration, routing_table):
-        super(Writer,self).__init__()
         self.connection = connection
         self.configuration = configuration
         self.routing_table = routing_table
         self.pending_message_list = []
         self.ack_message_list = []
+        self.list_lock = threading.Lock()
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -65,7 +65,7 @@ class Writer(threading.Thread):
             if not self.routing_table.search_entry(reply.source):  
                 reply.increment_hop()
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)              
-        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and not reply.end_node == self.connection.MY_ADDRESS:
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
@@ -88,21 +88,20 @@ class Writer(threading.Thread):
     # Forwards the received message if destination is not own address.
     # text_message    TextMessage to be forwarded to next node.
     def forward_message(self, text_message):
-        if text_message.next_node == self.configuration.MY_ADDRESS and text_message.end_node != self.configuration.MY_ADDRESS:
+        if text_message.next_node == self.configuration.MY_ADDRESS and text_message.destination != self.configuration.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
                 self.send_message(self.message_to_string(text_message))
                 print('Text message forwarded.')
                # self.ack_message_list.append(text_message) 
         else:
             pass  
-        if text_message.destination == self.configuration.MY_ADDRESS and text_message.next_node == self.configuration.MY_ADDRERSS:
-            UserInterface.print_message(text_message.source, text_message.payload.decode())
+        if text_message.destination == self.configuration.MY_ADDRESS and text_message.next_node == self.configuration.MY_ADDRESS:
+            UserInterface.print_message(text_message.source, text_message.payload)
 
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
     def text_message(self, user_message):
         self.send_message(self.message_to_string(user_message))
-        print('Text message sent')
 
     # Message from the user interface
     # @user_message    text message        
@@ -115,6 +114,7 @@ class Writer(threading.Thread):
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
+            print('Text message sent.')
             #self.ack_message_list(user_message)
 
     # Converts all different data types of the message to string and adds the field seperator.
@@ -146,26 +146,30 @@ class Writer(threading.Thread):
     # @return     list with matching messages
     def get_pending_message_from_list(self):
         match = []
+        self.lock()
         for key in self.routing_table.table.keys():
             for entry in self.pending_message_list:
-                if key is entry.message.destination:
-                    match.append(entry.message.message)
+                if key == entry.message.destination.encode():
+                    match.append(entry.message)
+        self.unlock()
         return match
 
     # Checks availablility of message destinations. If available they will be sent
     # otherwise retries will be counted up and the messages may be deleted. 
     def process_pending_user_message(self):
-        matching_address = self.get_pending_message_from_list()   
-        print(matching_address)  
-        if matching_address:
-            for entry in matching_address:    
-                self.message_list.remove(entry) 
+        matching_message = self.get_pending_message_from_list()  
+        print(matching_message)    
+        self.lock()
+        if matching_message:
+            for entry in matching_message:    
+                self.pending_message_list.remove(entry) 
                 self.user_input(entry) 
-        else:
-            pass
+        self.unlock()
 
-    # Thread function checks the list entries for further processing of pending messages and ack messages.
-    def run(self): 
-        while True:
-            time.sleep(0.2)
+    def lock(self):
+        self.list_lock.acquire()
+
+    def unlock(self):
+        self.list_lock.release()
+
                 

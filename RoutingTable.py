@@ -26,14 +26,14 @@ class RoutingTable():
     def show_routing_table(self):
         for key, value in self.table.items():
             print ('|  ' + key.decode() + '  |' + '   ' + value.neighbor.decode() + '   |' + '  ' + str(value.hop) + '  |' )
-    
+        print('---------------------------')
     # Find entry in unsorted routing table
     # @node     node address to be found in routing table
     # @return   found node address  
     def search_entry(self, node):
         found = False
-        for entry in self.table:
-            if entry.destination == node:
+        for key in self.table.keys():
+            if key == node:
                 found = True
         return found
 
@@ -43,6 +43,6 @@ class RoutingTable():
     def find_route(self, node):
         neighbor = b''
         for key, value in self.table.items():
-            if value.neighbor == node.encode():
-                neighbor = key
+            if key == node.encode():
+                neighbor = value.neighbor
         return neighbor

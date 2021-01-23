@@ -23,7 +23,7 @@ class UserInterface(threading.Thread):
     # @message    text message payload decoded to utf-8
     @staticmethod
     def print_message(source, payload):
-        print('[' + source.decode() + '-->]\s\s\s\s' + payload.decode())
+        print('[' + source.decode() + '-->]   ' + payload.decode())
 
     def print_routing_table(self):
         print('Routing Table')
