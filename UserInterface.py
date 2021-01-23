@@ -20,12 +20,12 @@ class UserInterface(threading.Thread):
         return command
 
     # Prints received data on screen.
-    # @message    received data encoded to utf-8
+    # @message    text message payload decoded to utf-8
     @staticmethod
     def print_message(source, payload):
         print('[' + source.decode() + '-->]\s\s\s\s' + payload.decode())
 
-    def routing_table_frame(self):
+    def print_routing_table(self):
         print('Routing Table')
         print('---------------------------')
         print('| Source | Neighbor | hop |')
@@ -40,8 +40,8 @@ class UserInterface(threading.Thread):
         if 'SEND' in command:
             user_message = UserMessage(command, message, destination)
             self.writer.user_input(user_message)
-        if 'TABLE' in command:
-            self.routing_table_frame()
+        if 'USER' in command:
+            self.print_routing_table()
         if 'EXIT' in command:
             self.writer.join()
             self.reader.join()

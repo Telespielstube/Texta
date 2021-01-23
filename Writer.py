@@ -97,7 +97,7 @@ class Writer(threading.Thread):
             pass  
         if text_message.destination == self.configuration.MY_ADDRESS and text_message.next_node == self.configuration.MY_ADDRERSS:
             UserInterface.print_message(text_message.source, text_message.payload.decode())
-    
+
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
     def text_message(self, user_message):
@@ -161,11 +161,11 @@ class Writer(threading.Thread):
             for entry in matching_address:    
                 self.message_list.remove(entry) 
                 self.user_input(entry) 
+        else:
+            pass
 
     # Thread function checks the list entries for further processing of pending messages and ack messages.
     def run(self): 
         while True:
-            time.sleep(0.3)
-            if self.pending_message_list:
-                self.process_pending_user_message()
+            time.sleep(0.2)
                 

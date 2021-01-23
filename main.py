@@ -5,6 +5,7 @@ from Configuration import Configuration
 from Writer import Writer
 from Reader import Reader
 from Parser import Parser
+from PendingMessageHandler import PendingMessageHandler
 from UserInterface import UserInterface
 from RoutingTable import RoutingTable
 
@@ -24,9 +25,12 @@ def main():
     parser = Parser(routing_table, writer)
     reader = Reader(connection, parser)
     user_interface = UserInterface(connection, writer, reader, routing_table)
+    #message_handler = MessageHandler()
+    pending_message_handler = PendingMessageHandler(connection, writer)
     writer.start()
     reader.start()
     user_interface.start()
+    pending_message_handler.start()
 
 if __name__ == '__main__':
     main()
