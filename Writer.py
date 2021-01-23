@@ -7,7 +7,7 @@ from PendingMessage import PendingMessage
 from RouteRequest import RouteRequest
 from RouteReply import RouteReply
 from RouteError import RouteError
-from RouteAcknowledgement import RouteAcknowledgement
+from RouteAck import RouteAck
 from TextMessage import TextMessage
 from UserMessage import UserMessage
 from UserInterface import UserInterface
@@ -24,6 +24,7 @@ class Writer(threading.Thread):
         self.configuration = configuration
         self.routing_table = routing_table
         self.pending_message_list = []
+        self.ack_message_list = []
 
     # Find a route to the request_message node
     # @request          Request message object.
@@ -59,12 +60,12 @@ class Writer(threading.Thread):
         if reply.source == self.configuration.MY_ADDRESS and self.routing_table.search_entry(reply.source):
             print('Reply reached origin.') 
             pass   
-        if reply.end_node == self.configuration.MY_ADDRESS and reply.next_node !=  self.configuration.MY_ADDRESS:
+        if reply.end_node == self.configuration.MY_ADDRESS and reply.next_node == self.configuration.MY_ADDRESS:
             print('Reply reached end node')
             if not self.routing_table.search_entry(reply.source):  
                 reply.increment_hop()
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)              
-        if reply.next_node == self.configuration.MY_ADDRESS and reply.end_node != self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
+        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source):
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
@@ -74,7 +75,9 @@ class Writer(threading.Thread):
             else: 
                 print('ttl = 0 reply deleted')
                 pass
-    
+        if reply.next_node != self.configuration.MY_ADDRESS:
+            pass
+           
     # Prepares the route message for sending. 
     # error    RouteError message object
     def route_error(self, error, neighbor_node):
@@ -85,13 +88,15 @@ class Writer(threading.Thread):
     # Forwards the received message if destination is not own address.
     # text_message    TextMessage to be forwarded to next node.
     def forward_message(self, text_message):
-        if text_message.next_node != self.configuration.MY_ADDRESS:
+        if text_message.next_node == self.configuration.MY_ADDRESS and text_message.end_node != self.configuration.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
                 self.send_message(self.message_to_string(text_message))
-                print('Text message forwarded.')   
-        if text_message.destination == self.configuration.MY_ADDRESS:
-            print('[' + text_message.source.decode() + '-->]\s\s\s\s' + text_message.payload.decode())
-           # UserInterface.print_message(text_message.source, text_message.payload.decode())
+                print('Text message forwarded.')
+               # self.ack_message_list.append(text_message) 
+        else:
+            pass  
+        if text_message.destination == self.configuration.MY_ADDRESS and text_message.next_node == self.configuration.MY_ADDRERSS:
+            UserInterface.print_message(text_message.source, text_message.payload.decode())
     
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
@@ -141,44 +146,26 @@ class Writer(threading.Thread):
     # @return     list with matching messages
     def get_pending_message_from_list(self):
         match = []
-        for entry in self.routing_table.routing_table:
-            for pending in self.pending_message_list:
-                if entry.destination is pending.message.destination:
-                    match.append(pending.message.destination)
-        #match = [self.pending_message_list.index(entry.destination) for entry in self.routing_table.routing_table]
-        print(match)
+        for key in self.routing_table.table.keys():
+            for entry in self.pending_message_list:
+                if key is entry.message.destination:
+                    match.append(entry.message.message)
         return match
 
     # Checks availablility of message destinations. If available they will be sent
     # otherwise retries will be counted up and the messages may be deleted. 
     def process_pending_user_message(self):
-        matching_adress = self.get_pending_message_from_list()     
-        if matching_adress:
-            for entry in matching_adress:    
+        matching_address = self.get_pending_message_from_list()   
+        print(matching_address)  
+        if matching_address:
+            for entry in matching_address:    
+                self.message_list.remove(entry) 
                 self.user_input(entry) 
-                self.message_list.remove(entry)
-            time.sleep(0.3)
-        else: 
-            self.add_retry(self.pending_message_list)
-            self.delete_peding_message(self.pending_message_list)
-    
-    def add_retry(self, message_list):
-        for entry in message_list:
-            entry.retry += 1
-            print(entry.retry)
-
-    def delete_peding_message(self, pending_message_list):
-        for entry in pending_message_list:
-            if entry.retry == 3:
-                pending_message_list.remove(entry)
-            print('Pending message deleted.')
 
     # Thread function checks the list entries for further processing of pending messages and ack messages.
-    def run(self):  
+    def run(self): 
         while True:
+            time.sleep(0.3)
             if self.pending_message_list:
-                threading.Timer(20.0, self.process_pending_user_message()).start()
-            else:
-                time.sleep(0.2)
-
-  
+                self.process_pending_user_message()
+                

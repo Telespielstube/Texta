@@ -14,15 +14,16 @@ class UserInterface(threading.Thread):
         self.reader = reader
         self.routing_table = routing_table
 
-    #reads user input.    
+    # reads user input.    
     def read_console_input(self):
         command = input()
         return command
 
     # Prints received data on screen.
     # @message    received data encoded to utf-8
-    def print_message(self, source, message):
-        print('[' + source + '-->]' + message)
+    @staticmethod
+    def print_message(source, payload):
+        print('[' + source.decode() + '-->]\s\s\s\s' + payload.decode())
 
     def routing_table_frame(self):
         print('Routing Table')
