@@ -2,9 +2,8 @@ import serial, time
 
 from Connection import Connection
 class Configuration:
-    MY_ADDRESS = b'0136'
     
-    def __init__(self, connection):
+    def __init__(self, connection, cli_address):
         self.connection = connection
 
     # Configures the Lora module

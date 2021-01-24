@@ -25,4 +25,3 @@ class Reader(threading.Thread):
                 continue
             #print('Reader:' + message.decode()) 
             self.parser.parse_incoming_message(message[:11], message[11:]) #first message arg = MCU header, second is protocol header
-            
