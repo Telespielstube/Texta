@@ -130,9 +130,8 @@ class MessageHandler:
     # otherwise retries will be counted up and the messages may be deleted. 
     def process_pending_user_message(self):
         match_list = self.get_pending_message_from_list()    
-        self.lock()
         if match_list:
+            self.lock()
             for message in match_list:    
-                #self.pending_message_list.remove(message) 
-                self.user_input(message) 
-        self.unlock()
+                self.user_input(self.pending_message_list.pop(message)) 
+            self.unlock()
