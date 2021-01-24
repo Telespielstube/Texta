@@ -110,7 +110,6 @@ class MessageHandler:
         else:
             self.text_message(TextMessage(self.configuration.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
             UserInterface.print_outgoing_message(user_message.destination, user_message.message)
-            print('Text message sent.')
             #self.ack_message_list(user_message)
 
     # Compares pending_message_list message destination and routing table destination esntry for matches.
@@ -128,13 +127,12 @@ class MessageHandler:
     # Checks availablility of message destinations. If available they will be sent
     # otherwise retries will be counted up and the messages may be deleted. 
     def process_pending_user_message(self):
-        match_list = self.get_pending_message_from_list()  
-        print(match_list)    
+        match_list = self.get_pending_message_from_list()    
         self.lock()
         if match_list:
-            for entry in match_list:    
-                self.pending_message_list.remove(entry) 
-                self.user_input(entry) 
+            for message in match_list:    
+                #self.pending_message_list.remove(message) 
+                self.user_input(message) 
         self.unlock()
 
     # Locks a code block for safely read from and write to it.

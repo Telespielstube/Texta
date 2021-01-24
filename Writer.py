@@ -8,7 +8,7 @@ class Writer():
     # @connection       connection to the serial device
     # @header           
     # @configuration    
-    def __init__(self, connection, configuration, routing_table):
+    def __init__(self, connection):
         self.connection = connection
 
     # Converts all different data types of the message to string and adds the field seperator.

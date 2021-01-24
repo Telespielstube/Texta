@@ -7,9 +7,9 @@ from RouteAck import RouteAck
 
 class Parser():
 
-    def __init__(self, routing_table, writer):
+    def __init__(self, routing_table, message_handler):
         self.routing_table = routing_table
-        self.writer = writer
+        self.message_handler = message_handler
     
     # Based on the flag, the different fields are passed to the appropriate object. 
     # 1 = Textmassage, 3 = Request, 4 = Reply, 5 = Error, 6 = Node unreachable
@@ -17,15 +17,15 @@ class Parser():
     def parse_header(self, protocol_header, neighbor_node):
         protocol_field = protocol_header.split(b'|')
         if protocol_field[2] == b'1':
-            self.writer.forward_message(TextMessage(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4], protocol_field[5], protocol_field[6]))
+            self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4], protocol_field[5], protocol_field[6]))
         if protocol_field[2] == b'2':
-            self.writer.acknowledgment_message(RouteAck(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]))
+            self.message_handler.acknowledgment_message(RouteAck(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]))
         if protocol_field[2] == b'3':           
-            self.writer.route_request(RouteRequest(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
+            self.message_handler.route_request(RouteRequest(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
         if protocol_field[2] == b'4':
-            self.writer.route_reply(RouteReply(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
+            self.message_handler.route_reply(RouteReply(protocol_field[1], protocol_field[2], protocol_field[3], int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
         if protocol_field[2] == b'5':
-            self.writer.route_error(RouteError(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4]), neighbor_node)
+            self.message_handler.route_error(RouteError(protocol_field[1], protocol_field[2], protocol_field[3], protocol_field[4]), neighbor_node)
         if not protocol_field[0] == '|':
             pass
          
