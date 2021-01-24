@@ -60,7 +60,7 @@ class MessageHandler:
             if not self.routing_table.search_entry(reply.source):  
                 reply.increment_hop()
                 self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)              
-        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and not reply.end_node == self.connection.MY_ADDRESS:
+        if reply.next_node == self.configuration.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and not reply.end_node == self.configuration.MY_ADDRESS:
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
@@ -91,7 +91,7 @@ class MessageHandler:
         else:
             pass  
         if text_message.destination == self.configuration.MY_ADDRESS and text_message.next_node == self.configuration.MY_ADDRESS:
-            UserInterface.print_message(text_message.source, text_message.payload)
+            UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
