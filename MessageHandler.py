@@ -9,16 +9,15 @@ from RouteAck import RouteAck
 from TextMessage import TextMessage
 from UserMessage import UserMessage
 from UserInterface import UserInterface
-
+from PendingMessageHandler import PendingMessageHandler
 class MessageHandler:
 
     def __init__(self, MY_ADDRESS, routing_table, writer):
         self.MY_ADDRESS = MY_ADDRESS
         self.routing_table = routing_table
         self.writer = writer
-        self.pending_message_list = []
-        self.ack_message_list = []
-        self.list_lock = threading.Lock()
+        self.pending_message_handler = PendingMessageHandler()
+        self.pending_message_handler.start()
     
     # Find a route to the request_message node
     # @request          Request message object.
@@ -99,51 +98,9 @@ class MessageHandler:
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
             self.writer.send_message(self.writer.message_to_string(RouteRequest(self.MY_ADDRESS, 3, 9, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, 1))
+            self.pending_message_handler.pending_message_list.append(PendingMessage(user_message, 1))
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))
             UserInterface.print_outgoing_message(user_message.destination, user_message.message)
-            #self.ack_message_list(user_message)
-
-    # Locks a code block for safely read from and write to it.
-    def lock(self):
-        self.list_lock.acquire()
-
-    # releases a locked code block. 
-    def unlock(self):
-        self.list_lock.release()
-
-    # Compares pending_message_list message destination and routing table destination esntry for matches.
-    # @return     list with matching messages list
-    def get_pending_message_from_list(self):
-        match = []
-        self.lock()
-        for key in self.routing_table.table.keys():
-            for entry in self.pending_message_list:
-                if key == entry.message.destination.encode():
-                    match.append(entry.message)
-                else:
-                    entry.message.retry += 1
-        self.unlock()
-        return match
-    
-    # Removes all entries that have reached 3 retries.
-    def clean_up_pending_message_list(self):
-        for entry in self.pending_message_list:
-            if entry.retry == 3:
-                del entry
-
-    # Checks availablility of message destinations. If available they will be sent
-    # otherwise retries will be counted up and the messages may be deleted. 
-    def process_pending_user_message(self):
-        match_list = self.get_pending_message_from_list()    
-        if match_list:
-            self.lock()
-            for message in match_list:    
-                self.user_input(self.pending_message_list.pop(message)) 
-        self.clean_up_pending_message_list()
-        self.unlock()
-    
-    def process_ack_message(self):
-        match = self.get_ack_message_from_list() 
+            #selfpending_message_handler.ack_message_list(user_message)

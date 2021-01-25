@@ -23,10 +23,8 @@ def main(argv):
     parser = Parser(routing_table, message_handler)
     reader = Reader(connection, parser)  
     user_interface = UserInterface(connection, message_handler, reader, routing_table)
-    pending_message_handler = PendingMessageHandler(message_handler)
     reader.start()
     user_interface.start()
-    pending_message_handler.start()
 
 if __name__ == '__main__':
     main(sys.argv)
