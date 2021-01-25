@@ -123,8 +123,16 @@ class MessageHandler:
             for entry in self.pending_message_list:
                 if key == entry.message.destination.encode():
                     match.append(entry.message)
+                else:
+                    entry.message.retry += 1
         self.unlock()
         return match
+    
+    # Removes all entries that have reached 3 retries.
+    def clean_up_pending_message_list(self):
+        for entry in self.pending_message_list:
+            if entry.retry == 3:
+                del entry
 
     # Checks availablility of message destinations. If available they will be sent
     # otherwise retries will be counted up and the messages may be deleted. 
@@ -134,4 +142,8 @@ class MessageHandler:
             self.lock()
             for message in match_list:    
                 self.user_input(self.pending_message_list.pop(message)) 
-            self.unlock()
+        self.clean_up_pending_message_list()
+        self.unlock()
+    
+    def process_ack_message(self):
+        match = self.get_ack_message_from_list() 

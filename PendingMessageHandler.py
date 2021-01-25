@@ -18,6 +18,5 @@ class PendingMessageHandler(threading.Thread):
         while True:
             time.sleep(self.list_timer(15, 25))
             self.message_handler.process_pending_user_message()
-           #print('Procees pending message')
-            #check ack message list
+            #self.message_handler.process_ack_message()
             time.sleep(0.2)
