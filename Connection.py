@@ -30,7 +30,7 @@ class Connection:
     def read_from_mcu(self):
         return self.serial_connection.readline()
 
-    # activates the read / write access    
+    # activates a lock to safely read / write to the lora modul   
     def lock(self):
         self.access_lock.acquire()
 

@@ -30,10 +30,10 @@ class Writer():
             command_string += str(len(message))
             self.connection.write_to_mcu(command_string)
             time.sleep(1)
-            print(self.connection.read_from_mcu())
+            self.connection.read_from_mcu()
             self.connection.write_to_mcu(message)
             time.sleep(1)
-            print(self.connection.read_from_mcu())
+            self.connection.read_from_mcu()
             self.connection.unlock()
 
     

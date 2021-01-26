@@ -51,8 +51,7 @@ class UserInterface(threading.Thread):
         if 'USER' in command:
             self.print_routing_table()
         if 'EXIT' in command:
-            self.reader.join()
-            UserInterface.join()
+            self.connection.close_connection()
             sys.exit(0)
             
     def run(self):
