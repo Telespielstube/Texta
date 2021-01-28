@@ -2,10 +2,11 @@ import threading, time, random
 
 from Connection import Connection
 
-class PendingMessageHandler(threading.Thread):
+class PendingMessageTimer(threading.Thread):
 
-    def __init__(self):
-        super(PendingMessageHandler, self).__init__()
+    def __init__(self, message_handler):
+        super(PendingMessageTimer, self).__init__()
+        self.message_handler = message_handler
         self.pending_message_list = []
         self.ack_message_list = []
         self.list_lock = threading.Lock()
