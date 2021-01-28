@@ -1,4 +1,4 @@
-import threading 
+import threading, random 
 
 from RoutingTable import RoutingTable
 from PendingMessage import PendingMessage
@@ -21,9 +21,12 @@ class MessageHandler:
         self.ack_message_list = []
         self.list_lock = threading.Lock()
   
-    # Find a route to the request_message node
-    # @request          Request message object.
-    # @neigbor_node     previous node.
+    # Calculates a random floating number between a minimum and maximum range.
+    # @min   smallest number  
+    # @max   largest number    
+    def waiting_time(self, min, max):
+        return random.uniform(min, max)
+
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS and self.routing_table.search_entry(request.source):
             print('Request reached origin.')
@@ -32,6 +35,7 @@ class MessageHandler:
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
+                self.waiting_time(0.0, 2.0)
             self.writer.send_message(self.writer.message_to_string(RouteReply(self.MY_ADDRESS, 4, 9, 0, request.source, neighbor_node)))
         else:
             if not self.routing_table.search_entry(request.source): 
@@ -41,11 +45,13 @@ class MessageHandler:
                 self.writer.send_message(self.writer.message_to_string(RouteReply(request.source, 4, 9, 0, request.source, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
                 request.increment_hop()
+                self.waiting_time(0.0, 2.0)
                 self.writer.send_message(self.writer.message_to_string(request))
                 print('Request forwarded')
             else:
+                del request
                 print('ttl = 0. Request deleted')
-                pass
+                
     
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
@@ -65,6 +71,7 @@ class MessageHandler:
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
                 reply.increment_hop()    
+                self.waiting_time(0.0, 2.0)
                 self.writer.send_message(self.writer.message_to_string(reply))
                 print('Reply forwarded.')
             else: 
@@ -76,7 +83,8 @@ class MessageHandler:
     # Prepares the route message for sending. 
     # error    RouteError message object
     def route_error(self, error, neighbor_node):
-        self.routing_table.remove_route_from_table(error.broken_node)          
+        self.routing_table.remove_route_from_table(error.broken_node)    
+        self.waiting_time(0.0, 2.0)      
         self.writer.send_message(self.writer.message_to_string(error))
         print('Route Error forwarded')
 
@@ -85,6 +93,7 @@ class MessageHandler:
     def forward_message(self, text_message):
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
+                self.waiting_time(0.0, 2.0)
                 self.writer.send_message(self.writer.message_to_string(text_message))
               #  self.ack_message_list.append(PendingMessage(text_message, 1)
                 print('Text message forwarded.')
@@ -96,11 +105,12 @@ class MessageHandler:
     # Prepares the user text message for sending.
     # user_message    MessageItem object. Represents the user input.
     def text_message(self, user_message):
+        self.waiting_time(0.0, 2.0)
         self.writer.send_message(self.writer.message_to_string(user_message))
 
     # def ack_message(self, ack_message):
     #     for entry in self.ack_message_list:
-    #         if entry.message.next_node == ack_message.ack_message and entry.message.source is ack_message.orogin_sender:
+    #         if hash_value == :
     #             self.ack_message_list.remove(entry)
 
     # Message from user interface
@@ -108,6 +118,7 @@ class MessageHandler:
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
+            self.waiting_time(0.0, 2.0)
             self.writer.send_message(self.writer.message_to_string(RouteRequest(self.MY_ADDRESS, 3, 9, 0, user_message.destination))) 
             self.pending_message_list.append(PendingMessage(user_message, 1))
             print('Message is pending')
@@ -159,9 +170,3 @@ class MessageHandler:
                 self.user_input(message)
                 self.unlock()
         self.clean_up_pending_message_list()
-
-    # Regularily checks the acknowledgment list if an ack_msg was received.
-    # If yes the message gets deleted an if not the message is sent again. 
-    # def process_ack_message(self):
-    #     for entry in self.ack_message_list: 
-    #         self.user_input(entry)

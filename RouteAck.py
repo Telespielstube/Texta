@@ -1,3 +1,5 @@
+import hashlib
+
 from MessageHeader import MessageHeader
 
 class RouteAck(MessageHeader):
@@ -8,6 +10,8 @@ class RouteAck(MessageHeader):
         self.origin_node = origin_node
         self.ack_node = ack_node #node that sends the acknowledgement.
     
+    def generate_hash_value(self, source, payload):
+        md5_hash = hashlib.md5(source, payload)
     # def __str__(self):
     #     return self.source + str(self.flag) + str(self.time_to_live) + self.ack_node
    

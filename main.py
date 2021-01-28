@@ -22,7 +22,7 @@ def process_argument():
 
 def main(argv):
     MY_ADDRESS = process_argument(argv)
-    print('Minimalistic chat application that uses a LoRa modul for communication.\n Type \'SEND\' to send a text(max. 240 Characters) or type \'USER\' to get an overview of all available chat peers.')
+    print('Minimalistic chat application that uses a LoRa modul for communication.\nType \'SEND\' to send a text(max. 240 Characters) or type \'USER\' to get an overview of all available chat peers.')
     time.sleep(5)
     #connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
     connection = Connection('/dev/ttys004', 115200, 8, 'N', 1, 5)
