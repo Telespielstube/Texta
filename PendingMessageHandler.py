@@ -58,12 +58,12 @@ class PendingMessageHandler(threading.Thread):
     # Calculates a random int number between a minimum and maximum range.
     # @min   smallest number  
     # @max   largest number    
-    def list_timer(self, min, max):
+    def waiting_time(self, min, max):
         return random.randint(min, max)
 
     def run(self):
         while True:
-            time.sleep(self.list_timer(15, 25))
+            time.sleep(self.waiting_time(15, 25))
             self.message_handler.process_pending_user_message()
             #self.message_handler.process_ack_message()
             time.sleep(0.2)

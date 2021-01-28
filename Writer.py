@@ -1,14 +1,15 @@
-import threading, time 
+import threading, time, random
 
 from Connection import Connection
 
-class Writer():
+class Writer(threading.Thred):
 
     # Constructor for Writer class.
     # @connection       connection to the serial device
     # @header           
     # @configuration    
     def __init__(self, connection):
+        super(Writer, self).__init__()
         self.connection = connection
 
     # Converts all different data types of the message to string and adds the field seperator.
@@ -36,6 +37,13 @@ class Writer():
             self.connection.read_from_mcu()
             self.connection.unlock()
 
-    
+    # Calculates a random int number between a minimum and maximum range.
+    # @min   smallest number  
+    # @max   largest number    
+    def waiting_time(self, min, max):
+        return random.randint(min, max)
+
+    def run(self):
+        time.sleep(0, 2) 
 
                 
