@@ -1,4 +1,4 @@
-import threading, random 
+import threading, hashlib, random 
 
 from RoutingTable import RoutingTable
 from PendingMessage import PendingMessage
@@ -95,7 +95,8 @@ class MessageHandler:
             if text_message.decrement_time_to_live() > 0:
                 self.waiting_time(0.0, 2.0)
                 self.writer.send_message(self.writer.message_to_string(text_message))
-              #  self.ack_message_list.append(PendingMessage(text_message, 1)
+                self.text_message.create_hash_value(text_message.source, text_message.payload)
+                self.ack_message_list.append(self.text_message.create_hash())
                 print('Text message forwarded.')
         else:
             pass  
@@ -120,7 +121,7 @@ class MessageHandler:
         if not route:  
             self.waiting_time(0.0, 2.0)
             self.writer.send_message(self.writer.message_to_string(RouteRequest(self.MY_ADDRESS, 3, 9, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, 1))
+            self.pending_message_list.append(self.text_message.create_hash()) 
             print('Message is pending')
         else:
             self.text_message(TextMessage(self.MY_ADDRESS, 1, 9, user_message.destination, route, user_message.message))

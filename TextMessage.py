@@ -1,3 +1,5 @@
+import hashlib
+
 from MessageHeader import MessageHeader
 
 class TextMessage(MessageHeader):
@@ -7,6 +9,12 @@ class TextMessage(MessageHeader):
         self.destination = destination
         self.next_node = next_node
         self.payload = payload 
+
+    def create_hash(self):    
+        hashed = hashlib.md5(self.source + self.payload)
+        hex_hash = hashed.hexdigest()
+        return hex_hash[:6]
+
 
     # # Represents the object as utf-8 string.    
     # def __str__(self):
