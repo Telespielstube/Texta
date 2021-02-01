@@ -5,14 +5,6 @@ from MessageHeader import MessageHeader
 class RouteAck(MessageHeader):
 
     # defines a struct-like object for route acknowledgement message.
-    def __init__(self, source, flag, time_to_live, origin_node, ack_node):
+    def __init__(self, source, flag, time_to_live, hash_value):
         super().__init__(source, flag, time_to_live)
-        self.origin_node = origin_node
-        self.ack_node = ack_node #node that sends the acknowledgement.
-    
-    def generate_hash_value(self, source, payload):
-        md5_hash = hashlib.md5(source, payload)
-    # def __str__(self):
-    #     return self.source + str(self.flag) + str(self.time_to_live) + self.ack_node
-   
-    
+        self.hash_value = hash_value #md5 generated value by concatenate source address and payload 

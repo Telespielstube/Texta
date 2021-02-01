@@ -15,7 +15,6 @@ class TextMessage(MessageHeader):
         hex_hash = hashed.hexdigest()
         return hex_hash[:6]
 
-
     # # Represents the object as utf-8 string.    
     # def __str__(self):
     #     return self.source + str(self.flag) + str(self.time_to_live) + str(self.destination) + self.next_node + str(self.payload)
