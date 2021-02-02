@@ -3,7 +3,7 @@ import serial, time
 from Connection import Connection
 class Configuration:
     
-    def __init__(self, connection, cli_address):
+    def __init__(self, connection):
         self.connection = connection
 
     # Configures the Lora module

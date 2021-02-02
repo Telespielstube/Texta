@@ -14,7 +14,7 @@ class Writer():
 
     # Converts all different data types of the message to string and adds the field seperator.
     # @message    ields of the message  
-    def message_to_string(self, message): 
+    def add_separator(self, message): 
         separator = '|'
         separated_message = ''
         for attr, value in message.__dict__.items():

@@ -12,8 +12,9 @@ from RoutingTable import RoutingTable
 
 def process_argument():
     parser = argparse.ArgumentParser(description='Add a valid address.')
-    parser.add_argument('integers', metavar='address', type=str, help='LoRa module address range from 0130 - 0140.')
+    parser.add_argument('string', metavar='address', type=str, help='LoRa module address range from 0130 - 0140.')
     argv = parser.parse_args() 
+    return argv.string
 
 def main():
     MY_ADDRESS = process_argument()
@@ -22,7 +23,7 @@ def main():
     #connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 5)
     connection = Connection('/dev/ttys006', 115200, 8, 'N', 1, 5)
     connection.connect_device() 
-    configuration = Configuration(connection, MY_ADDRESS)
+    configuration = Configuration(connection)
     #configuration.config_module('AT+RST', 'AT+CFG=433500000,5,9,7,1,1,0,0,0,0,3000,8,4', 'AT+ADDR=' + MY_ADDRESS, 'AT+DEST=FFFF', 'AT+RX', 'AT+SAVE')
     routing_table = RoutingTable(MY_ADDRESS.encode(), 0) #Adds own address and 0 hops to routing table
     writer = Writer(connection)
