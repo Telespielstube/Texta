@@ -1,4 +1,4 @@
-import time
+import time, random
 
 from Connection import Connection
 
@@ -11,6 +11,13 @@ class Writer():
     def __init__(self, connection):
         super(Writer, self).__init__()
         self.connection = connection
+
+    # Calculates a random floating number between a minimum and maximum range.
+    # @min       smallest number  
+    # @max       largest number    
+    # @return    random number.
+    def waiting_time(self, min, max):
+        return random.uniform(min, max)
 
     # Converts all different data types of the message to string and adds the field seperator.
     # @message    ields of the message  
@@ -26,6 +33,7 @@ class Writer():
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
     def send_message(self, message):
+            self.waiting_time(0.0, 0.3)
             self.connection.lock()
             command_string = 'AT+SEND='
             command_string += str(len(message))

@@ -13,11 +13,11 @@ class PendingMessageTimer(threading.Thread):
     # @max       largest number    
     # @return    random number 
     def waiting_time(self, min, max):
-        return random.randint(min, max)
+        return random.uniform(min, max)
 
     def run(self):
         while True:
-            time.sleep(self.waiting_time(2, 5))
+            time.sleep(self.waiting_time(10.0, 15.0))
             self.message_handler.process_pending_user_message()
             self.message_handler.clean_up_ack_message_list()
-            time.sleep(0.2)
+            time.sleep(0.1)

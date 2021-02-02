@@ -20,7 +20,7 @@ class RoutingTable():
     def remove_route_from_table(self, broken_node):
         for key, value in list(self.table.items()):
             if value.destination == broken_node or value.neighbor == broken_node:
-                self.table.pop(key)  
+                del self.table[key]  
 
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):
