@@ -135,7 +135,6 @@ class MessageHandler:
                     self.pending_message_list.remove(entry)
                     match.append(entry.message)
                     self.unlock()     
-                entry.retry += 1
         return match
 
     # Checks availablility of message destinations. If available they will be sent
@@ -150,20 +149,26 @@ class MessageHandler:
     
     # Removes all entries that have reached 3 retries.
     def clean_up_pending_message_list(self):
-        for entry in self.pending_message_list:
-            if entry.retry == 4:
-                self.lock()
-                self.pending_message_list.remove(entry)
-                self.unlock()
-                print('Pending message deleted')
-    
+        if self.pending_message_list:
+            for entry in self.pending_message_list:
+                entry.retry += 1
+                print('Pending retry +1')
+                if entry.retry == 4:
+                    self.lock()
+                    self.pending_message_list.remove(entry)
+                    self.unlock()
+                    print('Pending message deleted')
+        
     # Removes all entries that have reached 3 retries.
     def clean_up_ack_message_list(self):
-        for key, value in list(self.ack_message_list.items()):
-            value.retry +=1
-            if value.retry == 4:
-                self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
-                self.lock()
-                del self.ack_message_list[key]
-                self.unlock()
-                print('Ack message deleted')
+        if self.ack_message_list:
+            for key, value in list(self.ack_message_list.items()):
+                value.retry +=1
+                print('Ack retry +1')
+                if value.retry == 4:
+                    self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
+                    self.lock()
+                    del self.ack_message_list[key]
+                    self.unlock()
+                    print('Error sent')
+                    print('Ack message deleted')
