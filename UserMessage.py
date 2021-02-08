@@ -10,6 +10,3 @@ class UserMessage:
         hashed = hashlib.md5(MY_ADDRESS + self.message.encode())
         hex_hash = hashed.hexdigest()
         return hex_hash[:6]
-
-    # def __str__(self):
-    #     return str(self.command) + str(self.message) + str(self.destination)
