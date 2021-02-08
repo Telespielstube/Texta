@@ -100,11 +100,11 @@ class MessageHandler:
                 if key == ack_message.hash_value.decode():                
                     self.lock()
                     del self.ack_message_list[key]
-                    UserInterface.print_outgoing_message(value.message.destination, value.message.message)
                     self.unlock()
- 
+                    UserInterface.print_outgoing_message(value.message.destination, value.message.message)
+                    
     # Message from user interface
-    # @user_message    text message        
+    # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
@@ -145,14 +145,14 @@ class MessageHandler:
             for message in match_list: 
                 self.user_input(message)
                 match_list.remove(message)
-        self.clean_up_pending_message_list()
+       # self.clean_up_pending_message_list()
     
     # Removes all entries that have reached 3 retries.
     def clean_up_pending_message_list(self):
         if self.pending_message_list:
             for entry in self.pending_message_list:
                 entry.retry += 1
-                print('Pending retry +1')
+              #  print('Pending retry +1')
                 if entry.retry == 4:
                     self.lock()
                     self.pending_message_list.remove(entry)
@@ -164,7 +164,7 @@ class MessageHandler:
         if self.ack_message_list:
             for key, value in list(self.ack_message_list.items()):
                 value.retry +=1
-                print('Ack retry +1')
+              #  print('Ack retry +1')
                 if value.retry == 4:
                     self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                     self.lock()
