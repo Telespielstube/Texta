@@ -42,21 +42,15 @@ class UserInterface(threading.Thread):
     # Minimalistic menu to navigate though the chat application. 
     # @option            option the user can choose from. 
     def select_option(self, option):
-        command = option[:4] 
-        message = option[5:-5] 
-        destination = option[-4:] 
-
-        if 'SEND' in command and destination.isdigit():
-            user_message = UserMessage(message, destination)
-            self.message_handler.user_input(user_message)
-        else:
-            print("Message format incorrect. Correct format: SEND [your text (max. 244 characers)] [Adressformat: xxxx]")
-        if 'USER' in command:
+        if option[:4] == 'SEND' and option[-4:].isdigit():
+            self.message_handler.user_input(UserMessage(option[5:-5], option[-4:]))
+        elif option[:4] == 'USER':
             self.print_routing_table()
-        if 'EXIT' in command:
-            self.connection.close_connection()
-            sys.exit(0)
-            
+        else:
+            print("Command incorrect. Try:\n"
+            "SEND [your text (max. 244 characers)] [Adressformat: 1234]\nor:\n"
+            "USER for showing routing table.")
+
     def run(self):
         while True:
             command = self.read_console_input()
