@@ -12,10 +12,10 @@ class Reader(threading.Thread):
         self.connection = connection
         self.parser = parser
 
-    # Overridden Thread function to execute functions necessary to read from mcu.
+ 
     def run(self):
         # constantly read from mcu, if received message is empty 
-        # sleep if message has content break from if statement and put message to queue
+        # sleep if message has content break from if statement and pass message to parser
         while True:
             self.connection.lock()
             message = self.connection.read_from_mcu()

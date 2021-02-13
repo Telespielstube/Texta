@@ -16,19 +16,21 @@ class Parser():
     # field[0] = source adress, field[1] = flag, field [2] = ttl
     def parse_header(self, protocol_header, neighbor_node):
         protocol_field = protocol_header.split(b'|')
-        if protocol_field[2] == b'1':
-            self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5], protocol_field[6]), neighbor_node)
-        if protocol_field[2] == b'2': 
-            self.message_handler.ack_message(RouteAck(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5]))
-        if protocol_field[2] == b'3':           
-            self.message_handler.route_request(RouteRequest(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
-        if protocol_field[2] == b'4':
-            self.message_handler.route_reply(RouteReply(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
-        if protocol_field[2] == b'5':
-            self.message_handler.route_error(RouteError(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4]))
-        if not protocol_field[0] == '|':
+        try:
+            if protocol_field[2] == b'1':
+                self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5], protocol_field[6]), neighbor_node)
+            if protocol_field[2] == b'2': 
+                self.message_handler.ack_message(RouteAck(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5]))
+            if protocol_field[2] == b'3':           
+                self.message_handler.route_request(RouteRequest(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
+            if protocol_field[2] == b'4':
+                self.message_handler.route_reply(RouteReply(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
+            if protocol_field[2] == b'5':
+                self.message_handler.route_error(RouteError(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4]))
+        except:
+            print('Unknown message format from ' + neighbor_node + 'received')
             pass
-         
+
     # Parses incoming byte stream. 
     # @mcu_header       mcu message part.
     # @protocol_header  protocol message part.

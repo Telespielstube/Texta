@@ -45,9 +45,12 @@ class UserInterface(threading.Thread):
         command = option[:4] 
         message = option[5:-5] 
         destination = option[-4:] 
-        if 'SEND' in command:
-            user_message = UserMessage(command, message, destination)
+
+        if 'SEND' in command and destination.isdigit():
+            user_message = UserMessage(message, destination)
             self.message_handler.user_input(user_message)
+        else:
+            print("Message format incorrect. Correct format: SEND [your text (max. 244 characers)] [Adressformat: xxxx]")
         if 'USER' in command:
             self.print_routing_table()
         if 'EXIT' in command:

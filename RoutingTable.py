@@ -27,7 +27,7 @@ class RoutingTable():
         for key, value in self.table.items():
             print ('|  ' + key.decode() + '  |' + '   ' + value.neighbor.decode() + '   |' + '  ' + str(value.hop) + '  |' )
         print('---------------------------')
-    # Find entry in unsorted routing table
+    # Find entry in routing table
     # @node     node address to be found in routing table
     # @return   found node address  
     def search_entry(self, node):

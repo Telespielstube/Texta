@@ -22,7 +22,7 @@ class MessageHandler:
         self.list_lock = threading.Lock()
 
     def route_request(self, request, neighbor_node):
-        if request.source == self.MY_ADDRESS and self.routing_table.search_entry(request.source):
+        if request.source == self.MY_ADDRESS:
             del request
         if request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
@@ -49,13 +49,14 @@ class MessageHandler:
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS and self.routing_table.search_entry(reply.source):
             del reply   
-        if reply.end_node == self.MY_ADDRESS and reply.next_node == self.MY_ADDRESS:
-            if not self.routing_table.search_entry(reply.source):  
-                reply.increment_hop()
-                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
-                self.process_pending_user_message()              
-        if reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and not reply.end_node == self.MY_ADDRESS:
+        if reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS:
+            #if not self.routing_table.search_entry(reply.source):  
             reply.increment_hop()
+            self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
+            self.process_pending_user_message()             
+        if reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
+            reply.increment_hop()
+   
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
                 reply.increment_hop()    
@@ -84,10 +85,13 @@ class MessageHandler:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
                 self.ack_message_list[self.text_message.create_hash()] = PendingMessage(text_message, 1)
                 text_message.increment_hop()
+                text_message.next_node = self.routing_table.find_route(text_message.destination)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 
             else:
                 del text_message
+        if text_message.next_node != self.MY_ADDRESS:
+            del text_message
         if text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
             self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
@@ -145,7 +149,6 @@ class MessageHandler:
             for message in match_list: 
                 self.user_input(message)
                 match_list.remove(message)
-       # self.clean_up_pending_message_list()
     
     # Removes all entries that have reached 3 retries.
     def clean_up_pending_message_list(self):
