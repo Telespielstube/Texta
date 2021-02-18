@@ -81,9 +81,8 @@ class MessageHandler:
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
+                text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
                 self.ack_message_list[self.text_message.create_hash()] = PendingMessage(text_message, 1)
-                text_message.increment_hop()
-                text_message.next_node = self.routing_table.find_route(text_message.destination)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 
             else:
@@ -117,9 +116,9 @@ class MessageHandler:
             self.pending_message_list.append(PendingMessage(user_message, 1)) 
             print('Message is pending') 
         else:
-            self.ack_message_list[user_message.create_hash(self.MY_ADDRESS)] = (PendingMessage(user_message, 1))
-            print('ack list ' + str(self.ack_message_list))
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
+            self.ack_message_list[text_message.create_hash()] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
+            print('ack list ' + str(self.ack_message_list))
             print('Message added to ack list.')
 
     # # Locks a code block for safely read from and write to a resource. 
@@ -165,15 +164,15 @@ class MessageHandler:
         
     # Removes all entries that have reached 3 retries.
     def clean_up_ack_message_list(self):
-        if self.ack_message_list:
-            for key, value in list(self.ack_message_list.items()):
-                value.retry +=1
-              #  print('Ack retry +1')
-                if value.retry == 4:
-                    self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
-                    self.lock()
-                    del self.ack_message_list[key]
-                    self.routing_table.remove_route_from_table(value.message.destination)
-                    self.unlock()
-                    print('Error sent')
-                    print('Ack message deleted')
+        #if self.ack_message_list:
+        for key, value in list(self.ack_message_list.items()):
+            value.retry +=1
+            self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
+            if value.retry == 4:
+                self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
+                self.lock()
+                del self.ack_message_list[key]
+                self.routing_table.remove_route_from_table(value.message.destination)
+                self.unlock()
+                print('Error sent')
+                print('Ack message deleted')
