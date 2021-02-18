@@ -98,7 +98,6 @@ class MessageHandler:
     # @ack_message      Acknowledment message object 
     def ack_message(self, ack_message):
         print('Received Ack message hash: ' + ack_message.hash_value.decode())
-        print('saved ack list ' + str(self.ack_message_list))
         if ack_message.destination == self.MY_ADDRESS:
             for key, value in list(self.ack_message_list.items()):
                 if key == ack_message.hash_value.decode():                
@@ -106,7 +105,9 @@ class MessageHandler:
                     del self.ack_message_list[key]
                     self.unlock()
                     UserInterface.print_outgoing_message(value.message.destination, value.message.message)
-                    
+        else:
+            del ack_message
+
     # Message from user interface
     # @user_message    user message object.      
     def user_input(self, user_message):
@@ -116,7 +117,7 @@ class MessageHandler:
             self.pending_message_list.append(PendingMessage(user_message, 1)) 
             print('Message is pending') 
         else:
-            self.ack_message_list[user_message.create_hash()] = (PendingMessage(user_message, 1))
+            self.ack_message_list[user_message.create_hash(self.MY_ADDRESS)] = (PendingMessage(user_message, 1))
             print('ack list ' + str(self.ack_message_list))
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
             print('Message added to ack list.')
