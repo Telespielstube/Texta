@@ -114,7 +114,7 @@ class MessageHandler:
             self.pending_message_list.append(PendingMessage(user_message, 1)) 
             print('Message is pending') 
         else:
-            self.ack_message_list[user_message.create_hash(self.MY_ADDRESS)] = (PendingMessage(user_message, 1))
+            self.ack_message_list[user_message.create_hash()] = (PendingMessage(user_message, 1))
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
             print('Message added to ack list.')
 
