@@ -24,7 +24,7 @@ class MessageHandler:
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             del request
-        if request.requested_node == self.MY_ADDRESS: 
+        elif request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
@@ -49,12 +49,12 @@ class MessageHandler:
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS or reply.next_node != self.MY_ADDRESS:
             del reply   
-        if reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS:
+        elif reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS:
             #if not self.routing_table.search_entry(reply.source):  
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             self.process_pending_user_message()             
-        if reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
+        elif reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
             reply.increment_hop() 
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:              
@@ -88,15 +88,17 @@ class MessageHandler:
                 print('Text message forwarded.') 
             else:
                 del text_message
-        if text_message.next_node != self.MY_ADDRESS:
+        elif text_message.next_node != self.MY_ADDRESS:
             del text_message
-        if text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
+        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
             self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
     # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
     def ack_message(self, ack_message):
+        print('Received Ack message hash: ' + ack_message.hash_value.decode())
+        print('saved ack list ' + str(self.ack_message_list))
         if ack_message.destination == self.MY_ADDRESS:
             for key, value in list(self.ack_message_list.items()):
                 if key == ack_message.hash_value.decode():                
@@ -115,6 +117,7 @@ class MessageHandler:
             print('Message is pending') 
         else:
             self.ack_message_list[user_message.create_hash()] = (PendingMessage(user_message, 1))
+            print('ack list ' + str(self.ack_message_list))
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
             print('Message added to ack list.')
 
