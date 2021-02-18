@@ -27,8 +27,9 @@ class Parser():
                 self.message_handler.route_reply(RouteReply(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
             if protocol_field[2] == b'5':
                 self.message_handler.route_error(RouteError(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4]))
-        except:
-            print('Unknown message format ' + protocol_headerdecode() + ' from ' + neighbor_node.decode() +  'received')
+        except UnboundLocalError as error:
+            print('UnboundLocalError: ' + error)
+            #print('Unknown message format ' + protocol_header.decode() + ' from ' + neighbor_node.decode() +  'received')
             pass
 
     # Parses incoming byte stream. 
