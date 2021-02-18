@@ -68,11 +68,12 @@ class MessageHandler:
     # error    RouteError message object
     def route_error(self, error):      
         self.routing_table.remove_route_from_table(error.broken_node)    
-        if error.decrement_time_to_live() > 0:    
+        if error.decrement_time_to_live() > 0:           
             self.writer.send_message(self.writer.add_separator(error))
             print('Error forwarded')
         else:
             del error
+        del error
 
     # Forwards the received message if destination is not own address.
     # text_message    TextMessage object to be forwarded to next node.
@@ -152,7 +153,6 @@ class MessageHandler:
         if self.pending_message_list:
             for entry in self.pending_message_list:
                 entry.retry += 1
-              #  print('Pending retry +1')
                 if entry.retry == 4:
                     self.lock()
                     self.pending_message_list.remove(entry)

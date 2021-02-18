@@ -48,8 +48,8 @@ class UserInterface(threading.Thread):
             self.print_routing_table()
         else:
             print("Command incorrect. Try:\n"
-            "SEND [your text (max. 244 characers)] [Adressformat: 1234]\nor:\n"
-            "USER for showing routing table.")
+            "SEND [your text (max. 244 characers, except '|' are not allowed)] [Adressformat: 1234]\nor:\n"
+            "USER for displaying your routing table.")
 
     def run(self):
         while True:
