@@ -35,7 +35,7 @@ class UserInterface(threading.Thread):
     def print_routing_table(self):
         print('Routing Table')
         print('---------------------------')
-        print('| Source | Neighbor | hop |')
+        print('|  Dest  | Neighbor | hop |')
         print('---------------------------')
         self.routing_table.show_routing_table()
 

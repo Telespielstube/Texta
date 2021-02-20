@@ -1,4 +1,4 @@
-import threading, hashlib, random 
+import threading
 
 from RoutingTable import RoutingTable
 from PendingMessage import PendingMessage
@@ -19,7 +19,21 @@ class MessageHandler:
         self.writer = writer
         self.pending_message_list = []
         self.ack_message_list = dict()
-        self.list_lock = threading.Lock()
+        self.lock = threading.Lock()
+
+    # Message from user interface
+    # @user_message    user message object.      
+    def user_input(self, user_message):
+        route = self.routing_table.find_route(user_message.destination)
+        if not route:  
+            self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
+            self.pending_message_list.append(PendingMessage(user_message, 1)) 
+            print('Message is pending') 
+        else:
+            self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
+            self.ack_message_list[text_message.create_hash()] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
+            print('ack list ' + str(self.ack_message_list))
+            print('Message added to ack list.')
 
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
@@ -75,6 +89,20 @@ class MessageHandler:
             del error
         del error
 
+    # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
+    # @ack_message      Acknowledment message object 
+    def ack_message(self, ack_message):
+        print('Received Ack message hash: ' + ack_message.hash_value.decode())
+        if ack_message.destination == self.MY_ADDRESS:
+            for key, value in list(self.ack_message_list.items()):
+                if key == ack_message.hash_value.decode():                
+                    self.lock()
+                    del self.ack_message_list[key]
+                    self.unlock()
+                    UserInterface.print_outgoing_message(value.message.destination, value.message.message)
+        else:
+            del ack_message
+
     # Forwards the received message if destination is not own address.
     # text_message    TextMessage object to be forwarded to next node.
     def forward_message(self, text_message, neighbor_node):
@@ -93,41 +121,13 @@ class MessageHandler:
             self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
-    # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
-    # @ack_message      Acknowledment message object 
-    def ack_message(self, ack_message):
-        print('Received Ack message hash: ' + ack_message.hash_value.decode())
-        if ack_message.destination == self.MY_ADDRESS:
-            for key, value in list(self.ack_message_list.items()):
-                if key == ack_message.hash_value.decode():                
-                    self.lock()
-                    del self.ack_message_list[key]
-                    self.unlock()
-                    UserInterface.print_outgoing_message(value.message.destination, value.message.message)
-        else:
-            del ack_message
-
-    # Message from user interface
-    # @user_message    user message object.      
-    def user_input(self, user_message):
-        route = self.routing_table.find_route(user_message.destination)
-        if not route:  
-            self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, 1)) 
-            print('Message is pending') 
-        else:
-            self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.ack_message_list[text_message.create_hash()] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
-            print('ack list ' + str(self.ack_message_list))
-            print('Message added to ack list.')
-
     # # Locks a code block for safely read from and write to a resource. 
     def lock(self):
-        self.list_lock.acquire()
+        self.lock.acquire()
 
     # # releases a locked code block. 
     def unlock(self):
-        self.list_lock.release()
+        self.lock.release()
 
     # Compares pending_message_list message destination to routing table destination entry for matches.
     # @return     list with matching messages list
