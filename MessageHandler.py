@@ -116,6 +116,7 @@ class MessageHandler:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
+                print(text_message.payload.decode())
                 self.ack_message_list[self.text_message.create_hash()] = PendingMessage(text_message, 1)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 

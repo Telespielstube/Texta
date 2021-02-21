@@ -11,7 +11,6 @@ class TextMessage(MessageHeader):
         self.payload = payload 
 
     def create_hash(self):    
-        hashed = hashlib.md5(self.source + self.payload)
-        hex_hash = hashed.hexdigest()
-        print('Hash for ack message: ' + hex_hash)
-        return hex_hash[:6]
+        hashed = hashlib.md5(self.source + self.payload).hexdigest()
+        print('Hash for ack message: ' + hashed)
+        return hashed[:6]
