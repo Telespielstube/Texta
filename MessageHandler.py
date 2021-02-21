@@ -1,4 +1,4 @@
-import threading
+import threading, hashlib
 
 from RoutingTable import RoutingTable
 from PendingMessage import PendingMessage
@@ -31,7 +31,7 @@ class MessageHandler:
             print('Message is pending') 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.ack_message_list[user_message.create_hash(self.MY_ADDRESS)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
+            self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message.encode('utf-8'))] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
             print('ack list ' + str(self.ack_message_list))
 
     # Sends a reply to the source node if own address matches request_messageed node.
@@ -116,7 +116,7 @@ class MessageHandler:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
-                self.ack_message_list[self.text_message.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, 1)
+                self.ack_message_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, 1)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 
             else:
@@ -124,8 +124,14 @@ class MessageHandler:
         elif text_message.next_node != self.MY_ADDRESS:
             del text_message
         elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
-            self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))
+            self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
+
+    def create_hash(self, source, payload):   
+        self.payload.decode('utf-8') 
+        hashed = hashlib.md5(source + payload).hexdigest()
+        print('Hash for ack message: ' + hashed)
+        return hashed[:6]
 
     # # Locks a code block for safely read from and write to a resource. 
     def lock(self):

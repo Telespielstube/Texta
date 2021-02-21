@@ -9,9 +9,3 @@ class TextMessage(MessageHeader):
         self.destination = destination
         self.next_node = next_node
         self.payload = payload 
-
-    def create_hash(self, source, payload):   
-        self.payload.decode('utf-8') 
-        hashed = hashlib.md5(source + payload).hexdigest()
-        print('Hash for ack message: ' + hashed)
-        return hashed[:6]
