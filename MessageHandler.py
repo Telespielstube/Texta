@@ -83,14 +83,17 @@ class MessageHandler:
            
     # Prepares the route message for sending. 
     # error    RouteError message object
-    def route_error(self, error):      
-        self.routing_table.remove_route_from_table(error.broken_node)    
-        if error.decrement_time_to_live() > 0:           
-            self.writer.send_message(self.writer.add_separator(error))
-            print('Error forwarded')
-        else:
+    def route_error(self, error): 
+        if error.broken_node != self.MY_ADDRESS:     
+            self.routing_table.remove_route_from_table(error.broken_node)    
+            if error.decrement_time_to_live() > 0:           
+                self.writer.send_message(self.writer.add_separator(error))
+                print('Error forwarded')
+            else:
+                del error
             del error
-        del error
+        else:
+            pass
 
     # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
