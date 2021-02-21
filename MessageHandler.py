@@ -34,10 +34,9 @@ class MessageHandler:
             self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
             print('ack list ' + str(self.ack_message_list))
 
-    # Sends a reply to the source node if own address matches request_messageed node.
-    # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
-    # reply            Reply message object.
-    # neighbor_node    Neighbor node address.       
+    # Sends a request to all reachable nodes to find the requested node .
+    # @request          Request message object.
+    # @neighbor_node    Neighbor node address.       
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             del request
