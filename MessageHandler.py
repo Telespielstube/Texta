@@ -105,7 +105,6 @@ class MessageHandler:
                     self.lock()
                     del self.ack_message_list[key]
                     self.unlock()
-                    print("Ack entry deleted")
                     UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
         else:
             del ack_message
