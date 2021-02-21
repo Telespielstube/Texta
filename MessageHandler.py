@@ -179,7 +179,7 @@ class MessageHandler:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                 self.lock()
                 del self.ack_message_list[key]
+                self.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination)
-                self.unlock()
                 print('Error sent')
                 print('Ack message deleted')
