@@ -116,8 +116,7 @@ class MessageHandler:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
-                text_message.payload.decode()
-                self.ack_message_list[self.text_message.create_hash()] = PendingMessage(text_message, 1)
+                self.ack_message_list[self.text_message.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, 1)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 
             else:
@@ -163,7 +162,7 @@ class MessageHandler:
         if self.pending_message_list:
             for entry in self.pending_message_list:
                 entry.retry += 1
-                if entry.retry == 4:
+                if entry.retry == 3:
                     self.lock()
                     self.pending_message_list.remove(entry)
                     self.unlock()
@@ -175,7 +174,7 @@ class MessageHandler:
         for key, value in list(self.ack_message_list.items()):
             value.retry +=1
             self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
-            if value.retry == 4:
+            if value.retry == 3:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                 self.lock()
                 del self.ack_message_list[key]
