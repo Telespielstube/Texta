@@ -148,7 +148,7 @@ class MessageHandler:
                 if key == entry.message.destination.encode():
                     self.lock()
                     self.pending_message_list.remove(entry)
-                    match.append(entry.message)
+                    match.append(entry.message) 
                     self.unlock()     
         return match
 
