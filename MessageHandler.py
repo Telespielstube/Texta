@@ -114,7 +114,7 @@ class MessageHandler:
     def forward_message(self, text_message, neighbor_node):
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
-                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))              
+                self.writer.send_message(self.writer.add_separator(RouteAck(text_message.source, 2, 5, neighbor_node, text_message.create_hash())))              
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
                 print(text_message.payload.decode())
                 self.ack_message_list[self.text_message.create_hash()] = PendingMessage(text_message, 1)
@@ -125,7 +125,7 @@ class MessageHandler:
         elif text_message.next_node != self.MY_ADDRESS:
             del text_message
         elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
-            self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, text_message.create_hash())))
+            self.writer.send_message(self.writer.add_separator(RouteAck(text_message.source, 2, 5, neighbor_node, text_message.create_hash())))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
     # # Locks a code block for safely read from and write to a resource. 
