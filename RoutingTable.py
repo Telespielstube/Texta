@@ -25,7 +25,7 @@ class RoutingTable():
         self.lock()
         self.table[destination] = Route(destination, neighbor, hop)
         self.unlock()
-        print('Route added')
+        print(destination.decode() + ' added')
         
     # Removes a given entry from the list
     # @node    the node to be removed

@@ -12,7 +12,7 @@ class Parser():
     def __init__(self, routing_table, message_handler):
         self.routing_table = routing_table
         self.message_handler = message_handler
-        logging.basicConfig(filename='logfile.log', encoding='utf-8', format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S', level=logging.DEBUG)
+        logging.basicConfig(filename='logfile.log', format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S', level=logging.DEBUG)
     
     # Based on the flag, the different fields are passed to the appropriate object. 
     # 1 = Textmassage, 3 = Request, 4 = Reply, 5 = Error, 6 = Node unreachable
