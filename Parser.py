@@ -21,7 +21,7 @@ class Parser():
         protocol_field = protocol_header.split(b'|')
         try:
             if protocol_field[2] == b'1' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4 and len(protocol_field[5]) == 4:                        
-                self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5], protocol_field[6].decode()), neighbor_node)
+                self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5], protocol_field[6].decode('ascii')), neighbor_node)
             elif protocol_field[2] == b'2' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4 and len(protocol_field[5]) == 6:            
                 self.message_handler.ack_message(RouteAck(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5]))
             elif protocol_field[2] == b'3' and len(protocol_field[1]) == 4 and len(protocol_field[2]) ==1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 1 and len(protocol_field[5]) == 4:            
