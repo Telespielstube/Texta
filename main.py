@@ -21,7 +21,7 @@ def main():
     print('Minimalistic chat application that uses a LoRa modul for communication.\nType `SEND` to send a text(max. 240 Characters) or type `USER` to get an overview of all available chat peers.')
     time.sleep(5)
     #connection = Connection('/dev/ttyS0', 115200, 8, 'N', 1, 6)
-    connection = Connection('/dev/ttys006', 115200, 8, 'N', 1, 5)
+    connection = Connection('/dev/ttys009', 115200, 8, 'N', 1, 5)
     connection.connect_device() 
     configuration = Configuration(connection)
     #configuration.config_module('AT+RST', 'AT+CFG=433500000,5,9,7,1,1,0,0,0,0,3000,8,4', 'AT+ADDR=' + MY_ADDRESS, 'AT+DEST=FFFF', 'AT+RX', 'AT+SAVE')

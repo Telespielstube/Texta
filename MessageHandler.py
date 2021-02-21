@@ -19,7 +19,7 @@ class MessageHandler:
         self.writer = writer
         self.pending_message_list = []
         self.ack_message_list = dict()
-        self.lock = threading.Lock()
+        self.list_lock = threading.Lock()
 
     # Message from user interface
     # @user_message    user message object.      
@@ -31,10 +31,13 @@ class MessageHandler:
             print('Message is pending') 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.ack_message_list[text_message.create_hash()] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
+            self.ack_message_list[user_message.create_hash(self.MY_ADDRESS)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
             print('ack list ' + str(self.ack_message_list))
-            print('Message added to ack list.')
 
+    # Sends a reply to the source node if own address matches request_messageed node.
+    # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
+    # reply            Reply message object.
+    # neighbor_node    Neighbor node address.       
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             del request
@@ -99,7 +102,8 @@ class MessageHandler:
                     self.lock()
                     del self.ack_message_list[key]
                     self.unlock()
-                    UserInterface.print_outgoing_message(value.message.destination, value.message.message)
+                    print("Ack entry deleted")
+                    UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
         else:
             del ack_message
 
@@ -123,11 +127,11 @@ class MessageHandler:
 
     # # Locks a code block for safely read from and write to a resource. 
     def lock(self):
-        self.lock.acquire()
+        self.list_lock.acquire()
 
     # # releases a locked code block. 
     def unlock(self):
-        self.lock.release()
+        self.list_lock.release()
 
     # Compares pending_message_list message destination to routing table destination entry for matches.
     # @return     list with matching messages list
