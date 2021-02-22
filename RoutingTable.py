@@ -31,12 +31,12 @@ class RoutingTable():
     # @node    the node to be removed
     def remove_route_from_table(self, broken_node):
         self.lock()
+        deleted_node = None
         for key, value in list(self.table.items()):
-            if value.destination is broken_node: 
-                del self.table[key] 
-            elif value.neighbor is broken_node: 
-                del self.table[key]
+            if value.destination is broken_node or value.neighbor is broken_node: 
+                deleted_node = self.table.pop(key, None) 
         self.unlock()
+        return deleted_node
 
     # Prints all Nodes in routing table as readable string.   
     def show_routing_table(self):

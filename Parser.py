@@ -34,7 +34,6 @@ class Parser():
                 print('Wrong message format: ' + protocol_header.decode() + ' and source: ' + protocol_field[1].decode())
         except Exception as error:
             logging.debug(error)
-            #print('Unknown message format ' + protocol_header.decode() + ' from ' + neighbor_node.decode() +  ' received')
             print(error) 
             pass
 
