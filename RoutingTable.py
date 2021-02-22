@@ -33,7 +33,7 @@ class RoutingTable():
         self.lock()
         deleted_node = None
         for key, value in list(self.table.items()):
-            if value.destination is broken_node or value.neighbor is broken_node: 
+            if value.destination == broken_node or value.neighbor == broken_node: 
                 deleted_node = self.table.pop(key, None) 
         self.unlock()
         return deleted_node
