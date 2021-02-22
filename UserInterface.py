@@ -43,7 +43,7 @@ class UserInterface(threading.Thread):
     # @option            option the user can choose from. 
     def select_option(self, option):
         if option[:4] == 'SEND' and option[-4:].isdigit():
-            self.message_handler.user_input(UserMessage(option[5:-5].encode('ascii:', errors='ignore'), option[-4:]))
+            self.message_handler.user_input(UserMessage(option[5:-5]), option[-4:])
         elif option[:4] == 'USER':
             self.print_routing_table()
         else:

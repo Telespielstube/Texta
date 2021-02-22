@@ -127,7 +127,6 @@ class MessageHandler:
 
     def create_hash(self, source, payload):    
         hashed = hashlib.md5(source + payload.encode()).hexdigest()
-        print('Hash for ack message: ' + hashed)
         return hashed[:6]
 
     # # Locks a code block for safely read from and write to a resource. 

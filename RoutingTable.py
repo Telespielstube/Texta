@@ -6,16 +6,16 @@ class RoutingTable():
     # @routing_table   inizialises a list. A list allows duplicates.
     def __init__(self, MY_ADDRESS, metric):
         self.table = dict()
+        self.table_lock = threading.Lock() 
         self.add_route_to_table(MY_ADDRESS, MY_ADDRESS, 0)
-        self.list_lock = threading.Lock() 
-
+        
     # # Locks a code block for safely read from and write to a resource. 
     def lock(self):
-        self.list_lock.acquire()
+        self.table_lock.acquire()
 
     # # releases a locked code block. 
     def unlock(self):
-        self.list_lock.release()
+        self.table_lock.release()
 
     # Adds a new address to the routing table.
     # @destination Destination node
@@ -32,7 +32,7 @@ class RoutingTable():
     def remove_route_from_table(self, broken_node):
         self.lock()
         for key, value in list(self.table.items()):
-            if value.destination == broken_node or value.neighbor == broken_node:
+            if value.destination is broken_node or value.neighbor is broken_node:
                 del self.table[key]  
         self.unlock()
 
@@ -41,7 +41,7 @@ class RoutingTable():
         for key, value in self.table.items():
             print ('|  ' + key.decode() + '  |' + '   ' + value.neighbor.decode() + '   |' + '  ' + str(value.hop) + '  |' )
         print('---------------------------')
-        
+    
     # Find entry in routing table
     # @node     node address to be found in routing table
     # @return   found node address  
