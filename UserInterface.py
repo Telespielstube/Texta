@@ -18,7 +18,7 @@ class UserInterface(threading.Thread):
     # @message    text message payload decoded to utf-8
     @staticmethod
     def print_incoming_message(source, payload):
-        print('[ ' + source.decode() + ' --> ]   ' + payload)
+        print('[ ' + source.decode() + ' --> ]   ' + payload.decode())
 
     # Prints outgoing message on screen.
     # @message    text message payload 
