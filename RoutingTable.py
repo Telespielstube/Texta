@@ -6,8 +6,8 @@ class RoutingTable():
     # @routing_table   inizialises a list. A list allows duplicates.
     def __init__(self, MY_ADDRESS, metric):
         self.table = dict()
-        self.list_lock = threading.Lock() 
         self.add_route_to_table(MY_ADDRESS, MY_ADDRESS, 0)
+        self.list_lock = threading.Lock() 
 
     # # Locks a code block for safely read from and write to a resource. 
     def lock(self):

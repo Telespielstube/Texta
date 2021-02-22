@@ -145,10 +145,10 @@ class MessageHandler:
         for key in self.routing_table.table.keys():
             for entry in self.pending_message_list:
                 if key == entry.message.destination.encode():
-                    self.lock()
+                    self.list_lock.lock()
                     self.pending_message_list.remove(entry)
                     match.append(entry.message) 
-                    self.unlock()     
+                    self.list_lock.unlock()     
         return match
 
     # Checks availablility of message destinations. If available they will be sent
@@ -166,9 +166,9 @@ class MessageHandler:
             for entry in self.pending_message_list:
                 entry.retry += 1
                 if entry.retry == 3:
-                    self.lock()
+                    self.list_lock.lock()
                     self.pending_message_list.remove(entry)
-                    self.unlock()
+                    self.list_lockunlock()
                     print('Pending message deleted')
         
     # Removes all entries that have reached 3 retries.
@@ -179,9 +179,9 @@ class MessageHandler:
             self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
             if value.retry == 3:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
-                self.lock()
+                self.list_lock.lock()
                 del self.ack_message_list[key]
-                self.unlock() 
+                self.list_lock.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination)
                 print('Error sent')
                 print('Ack message deleted')

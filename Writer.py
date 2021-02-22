@@ -34,7 +34,6 @@ class Writer():
     # @message      holds all specific fields the message object has
     def send_message(self, message):
         time.sleep(self.waiting_time(0.0, 0.3))
-        self.connection.lock()
         command_string = 'AT+SEND='
         command_string += str(len(message))
         self.connection.write_to_mcu(command_string)
@@ -42,5 +41,4 @@ class Writer():
         self.connection.read_from_mcu()
         self.connection.write_to_mcu(message)
         time.sleep(1)
-        self.connection.read_from_mcu()
-        self.connection.unlock()                
+        self.connection.read_from_mcu()            

@@ -24,11 +24,15 @@ class Connection:
     # Adding carriage return and writes data to the serial device 
     # @message      data to send
     def write_to_mcu(self, message):
+        self.access_lock.lock()
         self.serial_connection.write((message + '\r\n').encode())
-    
+        self.access_lock.unlock()
+
     # Reads data from the serial device
     def read_from_mcu(self):
+        self.access_lock.lock()
         return self.serial_connection.readline()
+        self.access_lock.unlock()
 
     # activates a lock to safely read / write to the lora modul   
     def lock(self):
