@@ -102,6 +102,7 @@ class MessageHandler:
                 if key == ack_message.hash_value.decode():                
                     self.lock()
                     del self.ack_message_list[key]
+                    print('ack_msg_list: ' + self.ack_message_list)
                     self.unlock()
                     UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
         else:
@@ -168,6 +169,7 @@ class MessageHandler:
                     self.lock()
                     self.pending_message_list.remove(entry)
                     self.unlock()
+                    print(' '.join(self.pending_message_list))
                     print('Pending message deleted')
         
     # Removes all entries that have reached 3 retries.
@@ -182,5 +184,6 @@ class MessageHandler:
                 del self.ack_message_list[key]
                 self.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination)
+                print(self.ack_message_list)
                 print('Error sent')
-                print('Ack message deleted')
+                
