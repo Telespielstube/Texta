@@ -31,7 +31,7 @@ class MessageHandler:
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
             self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
-            print('ack_msg_list: ' + self.ack_message_list)
+           # print('ack_msg_list: ' + self.ack_message_list)
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -168,7 +168,7 @@ class MessageHandler:
                     self.lock()
                     self.pending_message_list.remove(entry)
                     self.unlock()
-                    print(entry)
+                    print(entry.message.destination)
         
     # Removes all entries that have reached 3 retries.
     def clean_up_ack_message_list(self):
