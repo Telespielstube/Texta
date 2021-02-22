@@ -90,9 +90,8 @@ class MessageHandler:
                 print('Error forwarded')
             else:
                 del error
-            del error
         else:
-            pass
+            del error
 
     # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 

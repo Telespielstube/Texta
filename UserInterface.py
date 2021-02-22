@@ -28,7 +28,7 @@ class UserInterface(threading.Thread):
 
     # reads user input.    
     def read_console_input(self):
-        command = input()
+        command = input().encode('ascii', errors = 'ignore')
         return command
 
     # Print a formatted easy to read  version of the current routing table.     
