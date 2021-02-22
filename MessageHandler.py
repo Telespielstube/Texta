@@ -168,7 +168,7 @@ class MessageHandler:
                     self.lock()
                     self.pending_message_list.remove(entry)
                     self.unlock()
-                    print(entry.destination + ' is not available at the moment.')
+                    print(entry)
         
     # Removes all entries that have reached 3 retries.
     def clean_up_ack_message_list(self):
@@ -179,7 +179,7 @@ class MessageHandler:
             if value.retry == 3:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                 self.lock()
-                print(' Ack msg delested: ' + str(self.ack_message_list.pop(key)))
+                self.ack_message_list.pop(key)
                 self.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination.encode())
                 print(value.message.destination + ' left!')
