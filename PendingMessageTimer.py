@@ -11,9 +11,9 @@ class PendingMessageTimer(threading.Thread):
     def run(self):
         while True:
             if self.message_handler.pending_message_list:
-                time.sleep(4.0)
+                time.sleep(1.5)
                 self.message_handler.clean_up_pending_message_list()
             elif self.message_handler.ack_message_list:
-                time.sleep(2.0)
+                time.sleep(1.0)
                 self.message_handler.clean_up_ack_message_list()
             time.sleep(0.1)
