@@ -31,7 +31,6 @@ class MessageHandler:
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
             self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
-            print('ack_msg_list: ' + self.ack_message_list)
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -96,7 +95,6 @@ class MessageHandler:
     # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
     def ack_message(self, ack_message):
-        print('Received Ack message hash: ' + ack_message.hash_value.decode())
         if ack_message.destination == self.MY_ADDRESS:
             for key, value in list(self.ack_message_list.items()):
                 if key == ack_message.hash_value.decode():                
@@ -164,7 +162,7 @@ class MessageHandler:
         if self.pending_message_list:
             for entry in self.pending_message_list:
                 entry.retry += 1
-                self.writer.send_message(self.writer.add_separator(entry.message))
+                self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, entry.message.destination))) 
                 if entry.retry == 3:
                     self.lock()
                     self.pending_message_list.remove(entry)
