@@ -48,7 +48,7 @@ class MessageHandler:
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-            if self.routing_table.search_entry(request.requested_node):  
+            elif self.routing_table.search_entry(request.requested_node):  
                 self.writer.send_message(self.writer.add_separator(RouteReply(request.source, 4, 5, 0, request.source, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
                 request.increment_hop()

@@ -7,5 +7,4 @@ class MessageHeader:
 
     # Decrement time to live value
     def decrement_time_to_live(self):
-        decremented_ttl = self.time_to_live - 1
-        return decremented_ttl
+        return self.time_to_live - 1
