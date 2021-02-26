@@ -38,7 +38,7 @@ class MessageHandler:
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             del request
-        elif request.requested_node == self.MY_ADDRESS: 
+        if request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
@@ -63,16 +63,14 @@ class MessageHandler:
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS or reply.next_node != self.MY_ADDRESS:
             del reply   
-        elif reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS:
-            #if not self.routing_table.search_entry(reply.source):  
+        elif reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS: 
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
             self.process_pending_user_message()             
         elif reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
             reply.increment_hop() 
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
-            if reply.decrement_time_to_live() > 0:              
-                reply.increment_hop()    
+            if reply.decrement_time_to_live() > 0:                 
                 self.writer.send_message(self.writer.add_separator(reply))
                 print('Reply forwarded.')
             else: 
@@ -171,7 +169,6 @@ class MessageHandler:
         
     # Removes all entries that have reached 3 retries.
     def clean_up_ack_message_list(self):
-        #if self.ack_message_list:
         for key, value in list(self.ack_message_list.items()):
             value.retry +=1
             self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
