@@ -38,7 +38,7 @@ class MessageHandler:
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             del request
-        if request.requested_node == self.MY_ADDRESS: 
+        elif request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
@@ -175,7 +175,7 @@ class MessageHandler:
             if value.retry == 3:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                 self.lock()
-                self.ack_message_list.pop(key)
+                self.ack_message_list.pop(key.decode())
                 self.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination.encode())
                 print(value.message.destination + ' left!')
