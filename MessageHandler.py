@@ -21,16 +21,18 @@ class MessageHandler:
         self.ack_message_list = dict()
         self.list_lock = threading.Lock()
 
+    def count_time():
+        
     # Message from user interface
     # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, 1)) 
+            self.pending_message_list.append(PendingMessage(user_message, 0, 1)) 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 1))
+            self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), 0, 1))
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.

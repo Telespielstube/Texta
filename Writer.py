@@ -33,7 +33,7 @@ class Writer():
     # Prepares the message for sending to the write_to_mcu function.
     # @message      holds all specific fields the message object has
     def send_message(self, message):
-        time.sleep(self.waiting_time(0.0, 0.3))
+        time.sleep(self.waiting_time(0.1, 0.4))
         self.connection.lock()
         command_string = 'AT+SEND='
         command_string += str(len(message))
