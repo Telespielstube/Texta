@@ -15,7 +15,7 @@ class UserInterface(threading.Thread):
         self.routing_table = routing_table
 
     # Prints received message on screen.
-    # @message    text message payload decoded to utf-8
+    # @message    text message payload
     @staticmethod
     def print_incoming_message(source, payload):
         print('[ ' + source.decode() + ' --> ]   ' + payload)
