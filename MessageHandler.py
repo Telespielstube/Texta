@@ -92,7 +92,7 @@ class MessageHandler:
 
     # Compares received hash field to the route_ack_list table entries and deletes the matching entry.
     # @route_ack      Acknowledment message object 
-    def route_ack(self, ack_m):
+    def route_ack(self, route_ack):
         if route_ack.destination == self.MY_ADDRESS:
             for key, value in list(self.route_ack_list.items()):
                 if key == route_ack.hash_value.decode():                
