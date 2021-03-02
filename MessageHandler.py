@@ -19,7 +19,7 @@ class MessageHandler:
         self.writer = writer
         self.pending_message_list = []
         self.route_ack_list = dict()
-        self.list_lock = threading.Lock()
+        self.list_lock = threading.Lock() 
 
     # Message from user interface
     # @user_message    user message object.      
@@ -30,7 +30,7 @@ class MessageHandler:
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), self.get_time(), 1))
+            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message.encode())] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), self.get_time(), 1))
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -128,7 +128,7 @@ class MessageHandler:
     #
     # hashed        hash value slided to 6 characters.
     def create_hash(self, source, payload):    
-        hashed = hashlib.md5(source + payload.encode()).hexdigest()
+        hashed = hashlib.md5(source + payload).hexdigest()
         return hashed[:6]
 
     # Function to get unixtime counting seconds since 1970.
@@ -188,7 +188,7 @@ class MessageHandler:
                 if value.retry == 3:
                     self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                     self.lock()
-                    self.route_ack_list.pop(key.decode())
+                    self.route_ack_list.pop(key)
                     self.unlock() 
                     self.routing_table.remove_route_from_table(value.message.destination.encode())
                     print(value.message.destination + ' left!')
