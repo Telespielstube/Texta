@@ -187,9 +187,9 @@ class MessageHandler:
                 if value.retry == 3:
                     self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                     self.lock()
-                    deleted_route = self.route_ack_list.pop(key)
+                    self.route_ack_list.pop(key)
                     self.unlock() 
-                    self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print('Deleted ' + deleted_route)
+                    deleted_route = self.routing_table.remove_route_from_table(value.message.destination.encode())
+                    print(deleted_route + ' left')
                     print('Error sent')
                 
