@@ -18,7 +18,7 @@ class MessageHandler:
         self.routing_table = routing_table
         self.writer = writer
         self.pending_message_list = []
-        self.ack_message_list = dict()
+        self.route_ack_list = dict()
         self.list_lock = threading.Lock()
 
     # Message from user interface
@@ -30,7 +30,7 @@ class MessageHandler:
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message)))
-            self.ack_message_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), self.get_time(), 1))
+            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route, user_message.message), self.get_time(), 1))
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -90,14 +90,14 @@ class MessageHandler:
         else:
             del error
 
-    # Compares received hash field to the ack_message_list table entries and deletes the matching entry.
+    # Compares received hash field to the route_ack_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
     def ack_message(self, ack_message):
         if ack_message.destination == self.MY_ADDRESS:
-            for key, value in list(self.ack_message_list.items()):
+            for key, value in list(self.route_ack_list.items()):
                 if key == ack_message.hash_value.decode():                
                     self.lock()
-                    del self.ack_message_list[key]
+                    del self.route_ack_list[key]
                     self.unlock()
                     UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
         else:
@@ -110,7 +110,7 @@ class MessageHandler:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))              
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
-                self.ack_message_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
+                self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
                 self.writer.send_message(self.writer.add_separator(text_message))
                 print('Text message forwarded.') 
             else:
@@ -173,14 +173,14 @@ class MessageHandler:
                     print(entry.message.destination + ' is not available.')
         
     # Removes all entries that have reached 3 retries.
-    def clean_up_ack_message_list(self):
-        for key, value in list(self.ack_message_list.items()):
+    def clean_up_route_ack_list(self):
+        for key, value in list(self.route_ack_list.items()):
             value.retry +=1
             self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
             if value.retry == 3:
                 self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
                 self.lock()
-                self.ack_message_list.pop(key.decode())
+                self.route_ack_list.pop(key.decode())
                 self.unlock() 
                 self.routing_table.remove_route_from_table(value.message.destination.encode())
                 print(value.message.destination + ' left!')
