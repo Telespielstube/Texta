@@ -185,6 +185,6 @@ class MessageHandler:
                     self.route_ack_list.pop(key)
                     self.unlock() 
                     deleted_node = self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print(deleted_node + ' left!')
+                    print(deleted_node.source + ' left!')
                     print('Error sent')
                 
