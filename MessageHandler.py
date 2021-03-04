@@ -126,7 +126,7 @@ class MessageHandler:
     # @Source       node adress which sent the message.
     # @payload      the actual information from a chat partner for a specific participant.
     #
-    # hashed        hash value slided to 6 characters.
+    # hashed        hash value sliced to 6 characters.
     def create_hash(self, source, payload):    
         hashed = hashlib.md5(source + payload).hexdigest()
         return hashed[:6]
@@ -190,7 +190,7 @@ class MessageHandler:
                     self.lock()
                     self.route_ack_list.pop(key)
                     self.unlock() 
-                    self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print(value.message.destination + ' left!')
+                    deleted_node = self.routing_table.remove_route_from_table(value.message.destination.encode())
+                    print(str(deleted_node) + ' left!')
                     print('Error sent')
                 
