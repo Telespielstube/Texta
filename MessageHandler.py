@@ -164,25 +164,27 @@ class MessageHandler:
     def clean_up_pending_message_list(self):
         if self.pending_message_list:
             for entry in self.pending_message_list:
-                entry.retry += 1
-                self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, entry.message.destination))) 
-                if entry.retry == 3:
-                    self.lock()
-                    self.pending_message_list.remove(entry)
-                    self.unlock()
-                    print(entry.message.destination + ' is not available.')
+                if self.get_time() - entry.timestamp > 8.0:
+                    entry.retry += 1
+                    self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, entry.message.destination))) 
+                    if entry.retry == 3:
+                        self.lock()
+                        self.pending_message_list.remove(entry)
+                        self.unlock()
+                        print(entry.message.destination + ' is not available.')
         
     # Removes all entries that have reached 3 retries.
     def clean_up_route_ack_list(self):
         for key, value in list(self.route_ack_list.items()):
-            value.retry +=1
-            self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
-            if value.retry == 3:
-                self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
-                self.lock()
-                self.route_ack_list.pop(key.decode())
-                self.unlock() 
-                self.routing_table.remove_route_from_table(value.message.destination.encode())
-                print(value.message.destination + ' left!')
-                print('Error sent')
+            if self.get_time() - value.timestamp > 8.0:
+                value.retry +=1
+                self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
+                if value.retry == 3:
+                    self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
+                    self.lock()
+                    self.route_ack_list.pop(key)
+                    self.unlock() 
+                    deleted_node = self.routing_table.remove_route_from_table(value.message.destination.encode())
+                    print(deleted_node + ' left!')
+                    print('Error sent')
                 
