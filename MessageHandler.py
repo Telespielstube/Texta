@@ -80,8 +80,8 @@ class MessageHandler:
     # error    RouteError message object
     def route_error(self, error): 
         if error.broken_node != self.routing_table.search_entry(self.MY_ADDRESS):  
-            self.routing_table.remove_route_from_table(error.broken_node.encode())
-            print(error.broken_node + ' left!')
+            self.routing_table.remove_route_from_table(error.broken_node)
+            print(str(error.broken_node) + ' left!')
             if error.decrement_time_to_live() > 0:           
                 self.writer.send_message(self.writer.add_separator(error))
                 print('Error forwarded')
@@ -190,6 +190,6 @@ class MessageHandler:
                     self.route_ack_list.pop(key)
                     self.unlock() 
                     deleted_route = self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print(str(deleted_route.source) + ' left!!')
+                    print(str(deleted_route) + ' left!!')
                     print('Error sent')
                 
