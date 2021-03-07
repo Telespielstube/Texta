@@ -60,6 +60,6 @@ class RoutingTable():
     def find_route(self, node):
         neighbor = b''
         for key, value in self.table.items():
-            if key == node.encode():
+            if key == node:
                 neighbor = value.neighbor
         return neighbor

@@ -81,7 +81,7 @@ class MessageHandler:
     def route_error(self, error): 
         if error.broken_node != self.routing_table.search_entry(self.MY_ADDRESS):  
             self.routing_table.remove_route_from_table(error.broken_node)
-            print(str(error.broken_node) + ' left!')
+            print(error.broken_node.decode() + ' left!')
             if error.decrement_time_to_live() > 0:           
                 self.writer.send_message(self.writer.add_separator(error))
                 print('Error forwarded')
@@ -108,11 +108,11 @@ class MessageHandler:
     def forward_message(self, text_message, neighbor_node):
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
-                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))              
+                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload)))) 
                 text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
                 self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
-                self.writer.send_message(self.writer.add_separator(text_message))
-                print('Text message forwarded.') 
+                self.writer.send_message(self.writer.add_separator(text_message)) 
+                print('Forwarding message')
             else:
                 del text_message
         elif text_message.next_node != self.MY_ADDRESS:
@@ -127,7 +127,7 @@ class MessageHandler:
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
     def create_hash(self, source, payload):    
-        hashed = hashlib.md5(source + payload.encode()).hexdigest()
+        hashed = hashlib.md5(source + payload).hexdigest()
         return hashed[:6]
 
     # Function to get unixtime counting seconds since 1970.
