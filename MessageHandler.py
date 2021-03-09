@@ -37,7 +37,7 @@ class MessageHandler:
     # @neighbor_node    Neighbor node address.       
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
-            del request
+            pass
         elif request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
@@ -53,8 +53,6 @@ class MessageHandler:
                 request.increment_hop()
                 self.writer.send_message(self.writer.add_separator(request))
                 print('Request forwarded')
-            else:
-                del request
                 
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
@@ -73,8 +71,6 @@ class MessageHandler:
             if reply.decrement_time_to_live() > 0:                 
                 self.writer.send_message(self.writer.add_separator(reply))
                 print('Reply forwarded.')
-            else: 
-                del reply
            
     # Prepares the route message for sending. 
     # error    RouteError message object
@@ -85,10 +81,6 @@ class MessageHandler:
             if error.decrement_time_to_live() > 0:           
                 self.writer.send_message(self.writer.add_separator(error))
                 print('Error forwarded')
-            else:
-                del error
-        else:
-            del error
 
     # Compares received hash field to the route_ack_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
@@ -100,8 +92,6 @@ class MessageHandler:
                     del self.route_ack_list[key]
                     self.unlock()
                     UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
-        else:
-            del ack_message
 
     # Forwards the received message if destination is not own address.
     # @text_message    TextMessage object to be forwarded to next node.
@@ -114,16 +104,10 @@ class MessageHandler:
                 self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
                 self.writer.send_message(self.writer.add_separator(text_message)) 
                 print('Forwarding message')
-            else:
-                del text_message
-        elif text_message.next_node != self.MY_ADDRESS:
-            del text_message
         elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:  
             if self.routing_table.search_entry(text_message.source):            
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
                 UserInterface.print_incoming_message(text_message.source, text_message.payload)
-            else:
-                del text_message
     
     # creates a mad5 Hash value and return the first 6 characters.
     # @source      origin sender of the message.  
