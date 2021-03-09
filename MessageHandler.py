@@ -104,7 +104,8 @@ class MessageHandler:
             del ack_message
 
     # Forwards the received message if destination is not own address.
-    # text_message    TextMessage object to be forwarded to next node.
+    # @text_message    TextMessage object to be forwarded to next node.
+    # @neighbor_node    Neighbor node address.   
     def forward_message(self, text_message, neighbor_node):
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
@@ -117,10 +118,16 @@ class MessageHandler:
                 del text_message
         elif text_message.next_node != self.MY_ADDRESS:
             del text_message
-        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS and text_message.source is self.routing_table.search_entry(text_message.source):              
-            self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
-            UserInterface.print_incoming_message(text_message.source, text_message.payload)
-
+        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:  
+            if self.routing_table.search_entry(text_message.source):            
+                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
+                UserInterface.print_incoming_message(text_message.source, text_message.payload)
+            else:
+                del text_message
+    
+    # creates a mad5 Hash value and return the first 6 characters.
+    # @source      origin sender of the message.  
+    # @payload     actual text message information.
     def create_hash(self, source, payload):    
         hashed = hashlib.md5(source + payload).hexdigest()
         return hashed[:6]

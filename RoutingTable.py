@@ -44,7 +44,7 @@ class RoutingTable():
             print ('|  ' + key.decode() + '  |' + '   ' + value.neighbor.decode() + '   |' + '  ' + str(value.hop) + '  |' )
         print('---------------------------')
     
-    # Find entry in routing table
+    # Searches entry in routing table
     # @node     node address to be found in routing table
     # @return   found node address  
     def search_entry(self, node):
@@ -58,8 +58,8 @@ class RoutingTable():
     # @node           destination node to be found in table 
     # @return         neighbor node the destination can be reached the fastest 
     def find_route(self, node):
-        neighbor = b''
+        found = b''
         for key, value in self.table.items():
             if key == node:
-                neighbor = value.neighbor
-        return neighbor
+                found = value.neighbor
+        return found
