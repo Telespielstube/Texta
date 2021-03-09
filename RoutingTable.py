@@ -54,7 +54,7 @@ class RoutingTable():
                 found = True
         return found
 
-    # Finds the route with the lowest costs to the destination node by sorting the table by the hop field.
+    # Finds the route to the destination node by finding the neighbor connected to the destination.
     # @node           destination node to be found in table 
     # @return         neighbor node the destination can be reached the fastest 
     def find_route(self, node):

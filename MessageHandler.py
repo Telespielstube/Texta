@@ -117,12 +117,7 @@ class MessageHandler:
                 del text_message
         elif text_message.next_node != self.MY_ADDRESS:
             del text_message
-        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:
-            if not self.routing_table.search_entry(text_message.source):
-                if text_message.source == neighbor_node:
-                    self.routing_table.add_route_to_table(text_message.source, neighbor_node, 1) 
-                else:
-                    self.routing_table.add_route_to_table(text_message.source, neighbor_node, 2) 
+        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS and text_message.source is self.routing_table.search_entry(text_message.source):              
             self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
             UserInterface.print_incoming_message(text_message.source, text_message.payload)
 
