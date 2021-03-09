@@ -60,7 +60,7 @@ class MessageHandler:
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS or reply.next_node != self.MY_ADDRESS:
-            del reply   
+            pass   
         elif reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS: 
             reply.increment_hop()
             self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
@@ -175,7 +175,6 @@ class MessageHandler:
                     self.lock()
                     self.route_ack_list.pop(key)
                     self.unlock() 
-                    deleted_route = self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print(str(deleted_route) + ' left!!')
+                    self.routing_table.remove_route_from_table(value.message.destination.encode())
+                    print(value.message.destination + ' left!!')
                     print('Error sent')
-                
