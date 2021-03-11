@@ -24,7 +24,7 @@ class UserInterface(threading.Thread):
     # @message    text message payload 
     @staticmethod
     def print_outgoing_message(destination, payload):
-        print('[ ' + destination + ' <-- ]   ' + payload)
+        print('[ ' + destination + ' <-- ]   ' + payload.decode())
 
     # reads user input.    
     def read_console_input(self):
@@ -43,7 +43,7 @@ class UserInterface(threading.Thread):
     # @option            option the user can choose from. 
     def select_option(self, option):
         if option[:4] == 'SEND' and option[-4:].isdigit():
-            self.message_handler.user_input(UserMessage(option[5:-5], option[-4:]))
+            self.message_handler.user_input(UserMessage(option[5:-5].encode(), option[-4:].encode()))
         elif option[:4] == 'USER':
             self.print_routing_table()
         else:
