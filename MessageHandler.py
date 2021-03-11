@@ -75,7 +75,7 @@ class MessageHandler:
     # Prepares the route message for sending. 
     # error    RouteError message object
     def route_error(self, error): 
-        if error.broken_node != self.routing_table.search_entry(self.MY_ADDRESS):  
+        if error.broken_node != self.MY_ADDRESS:  
             self.routing_table.remove_route_from_table(error.broken_node)
             print(error.broken_node.decode() + ' left!')
             if error.decrement_time_to_live() > 0:           
