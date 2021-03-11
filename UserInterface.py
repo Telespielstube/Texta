@@ -24,7 +24,7 @@ class UserInterface(threading.Thread):
     # @message    text message payload 
     @staticmethod
     def print_outgoing_message(destination, payload):
-        print('[ ' + destination + ' <-- ]   ' + payload.decode())
+        print('[ ' + destination.decode() + ' <-- ]   ' + payload.decode())
 
     # reads user input.    
     def read_console_input(self):
