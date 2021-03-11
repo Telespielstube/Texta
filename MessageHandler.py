@@ -175,6 +175,6 @@ class MessageHandler:
                     self.lock()
                     self.route_ack_list.pop(key)
                     self.unlock() 
-                    self.routing_table.remove_route_from_table(value.message.destination.encode())
-                    print(value.message.destination + ' left!!')
+                    self.routing_table.remove_route_from_table(value.message.destination)
+                    print(value.message.destination.decode() + ' left!!')
                     print('Error sent')
