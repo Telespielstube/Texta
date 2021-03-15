@@ -25,7 +25,8 @@ class MessageHandler:
     # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
-        if not route.neighbor:  
+        print(str(route.neighbor))
+        if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
         else:
