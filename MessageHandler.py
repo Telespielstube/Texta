@@ -25,7 +25,7 @@ class MessageHandler:
     # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
-        if not route:  
+        if not route.neighbor:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
         else:
@@ -48,7 +48,8 @@ class MessageHandler:
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
             elif self.routing_table.search_entry(request.requested_node):  
-                self.writer.send_message(self.writer.add_separator(RouteReply(request.source, 4, 5, 0, request.source, neighbor_node)))
+                route = self.routing_table.find_route(request.requested_node)
+                self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
             elif request.decrement_time_to_live() > 0:  
                 request.increment_hop()
                 self.writer.send_message(self.writer.add_separator(request))
@@ -100,7 +101,8 @@ class MessageHandler:
         if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
             if text_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload)))) 
-                text_message.next_node = self.routing_table.find_route(text_message.destination) #finds the neighbor to destination
+                route = self.routing_table.find_route(text_message.destination)
+                text_message.next_node = route.neighbor
                 self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
                 self.writer.send_message(self.writer.add_separator(text_message)) 
                 print('Forwarding message')
