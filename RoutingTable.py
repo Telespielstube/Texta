@@ -61,5 +61,5 @@ class RoutingTable():
         for key, value in self.table.items():
             if key == node: 
                 return self.table.get(key)        
-                #return Route(value.destination, value.neighbor, value.hop)
+
         
