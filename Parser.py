@@ -22,16 +22,14 @@ class Parser():
         try:
             if protocol_field[2] == b'1' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4 and len(protocol_field[5]) == 4:                        
                 self.message_handler.forward_message(TextMessage(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5], protocol_field[6]), neighbor_node)
-            elif protocol_field[2] == b'2' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4 and len(protocol_field[5]) == 6:            
+            if protocol_field[2] == b'2' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4 and len(protocol_field[5]) == 6:            
                 self.message_handler.ack_message(RouteAck(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4], protocol_field[5]))
-            elif protocol_field[2] == b'3' and len(protocol_field[1]) == 4 and len(protocol_field[2]) ==1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 1 and len(protocol_field[5]) == 4:            
+            if protocol_field[2] == b'3' and len(protocol_field[1]) == 4 and len(protocol_field[2]) ==1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 1 and len(protocol_field[5]) == 4:            
                 self.message_handler.route_request(RouteRequest(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5]), neighbor_node)
-            elif protocol_field[2] == b'4' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 1 and len(protocol_field[5]) == 4 and len(protocol_field[6]) == 4:            
+            if protocol_field[2] == b'4' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 1 and len(protocol_field[5]) == 4 and len(protocol_field[6]) == 4:            
                 self.message_handler.route_reply(RouteReply(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), int(protocol_field[4].decode()), protocol_field[5], protocol_field[6]), neighbor_node)
-            elif protocol_field[2] == b'5' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4:            
+            if protocol_field[2] == b'5' and len(protocol_field[1]) == 4 and len(protocol_field[2]) == 1 and len(protocol_field[3]) == 1 and len(protocol_field[4]) == 4:            
                 self.message_handler.route_error(RouteError(protocol_field[1], protocol_field[2], int(protocol_field[3].decode()), protocol_field[4]))
-            else:
-                print('Wrong message format: ' + protocol_header.decode() + ' and source: ' + protocol_field[1].decode())
         except Exception as error:
             logging.debug(error)
             print(error) 
