@@ -25,7 +25,6 @@ class MessageHandler:
     # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
-        print(str(route))
         if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
@@ -39,46 +38,25 @@ class MessageHandler:
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
             pass
-        elif request.requested_node == self.MY_ADDRESS: 
+        if request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
             self.writer.send_message(self.writer.add_separator(RouteReply(self.MY_ADDRESS, 4, 5, 0, request.source, neighbor_node)))
+            return
+        if not self.routing_table.search_entry(request.source): 
+            request.increment_hop()
+            self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
+        if self.routing_table.search_entry(request.requested_node): 
+            route = self.routing_table.find_route(request.requested_node)
+            self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
+            print('Relpy sent')
         else:
-            if not self.routing_table.search_entry(request.source): 
+            if request.decrement_time_to_live() > 0:
                 request.increment_hop()
-                self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)
-                if self.routing_table.search_entry(request.requested_node): 
-                    route = self.routing_table.find_route(request.requested_node)
-                    self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
-                    print('Relpy sent')
-                else:
-                    if request.decrement_time_to_live() > 0:
-                        request.increment_hop()
-                        self.writer.send_message(self.writer.add_separator(request))
-                        print('Request forwarded')
-
-
-
-
-
-
-
-            # elif self.routing_table.search_entry(request.requested_node): 
-            #     print("Entry found") 
-            #     route = self.routing_table.find_route(request.requested_node)
-            #     print(str(route.destination))
-            #     self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
-            # elif request.decrement_time_to_live() > 0:  
-            #     request.increment_hop()
-            #     self.writer.send_message(self.writer.add_separator(request))
-            #     print('Request forwarded')
-
-
-
-
-
-                
+                self.writer.send_message(self.writer.add_separator(request))
+                print('Request forwarded')
+                           
     # Sends a reply to the source node if own address matches request_messageed node.
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
     # reply            Reply message object.
@@ -86,11 +64,12 @@ class MessageHandler:
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS or reply.next_node != self.MY_ADDRESS:
             pass   
-        elif reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS: 
-            reply.increment_hop()
-            self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
-            self.process_pending_user_message()             
-        elif reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
+        if reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS: 
+            if not self.routing_table.search_entry(reply.source):
+                reply.increment_hop()
+                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
+                self.process_pending_user_message()             
+        if reply.next_node == self.MY_ADDRESS and not self.routing_table.search_entry(reply.source) and reply.end_node != self.MY_ADDRESS:
             reply.increment_hop() 
             self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
             if reply.decrement_time_to_live() > 0:                 
@@ -122,18 +101,19 @@ class MessageHandler:
     # @text_message    TextMessage object to be forwarded to next node.
     # @neighbor_node    Neighbor node address.   
     def forward_message(self, text_message, neighbor_node):
-        if text_message.next_node == self.MY_ADDRESS and text_message.destination != self.MY_ADDRESS:
-            if text_message.decrement_time_to_live() > 0:
-                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload)))) 
-                route = self.routing_table.find_route(text_message.destination)
-                text_message.next_node = route.neighbor
-                self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
-                self.writer.send_message(self.writer.add_separator(text_message)) 
-                print('Forwarding message')
-        elif text_message.destination == self.MY_ADDRESS and text_message.next_node == self.MY_ADDRESS:  
-            if self.routing_table.search_entry(text_message.source):            
-                self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
-                UserInterface.print_incoming_message(text_message.source, text_message.payload)
+        if text_message.next_node == self.MY_ADDRESS:
+            if text_message.destination != self.MY_ADDRESS:
+                if text_message.decrement_time_to_live() > 0:
+                    self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload)))) 
+                    route = self.routing_table.find_route(text_message.destination)
+                    text_message.next_node = route.neighbor
+                    self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
+                    self.writer.send_message(self.writer.add_separator(text_message)) 
+                    print('Forwarding message')
+            else:
+                if self.routing_table.search_entry(text_message.source):            
+                    self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
+                    UserInterface.print_incoming_message(text_message.source, text_message.payload)
     
     # creates a mad5 Hash value and return the first 6 characters.
     # @source      origin sender of the message.  
@@ -161,7 +141,7 @@ class MessageHandler:
         match = []
         for key in self.routing_table.table.keys():
             for entry in self.pending_message_list:
-                if key == entry.message.destination.encode():
+                if key == entry.message.destination:
                     self.lock()
                     self.pending_message_list.remove(entry)
                     match.append(entry.message) 
