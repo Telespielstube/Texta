@@ -63,7 +63,7 @@ class MessageHandler:
     # neighbor_node    Neighbor node address.
     def route_reply(self, reply, neighbor_node):
         if reply.source == self.MY_ADDRESS or reply.next_node != self.MY_ADDRESS:
-            pass   
+            return   
         if reply.next_node == self.MY_ADDRESS and reply.end_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(reply.source):
                 reply.increment_hop()
@@ -109,7 +109,7 @@ class MessageHandler:
                     text_message.next_node = route.neighbor
                     self.route_ack_list[self.create_hash(text_message.source, text_message.payload)] = PendingMessage(text_message, self.get_time(), 1)
                     self.writer.send_message(self.writer.add_separator(text_message)) 
-                    print('Forwarding message')
+                    print('Message forwarded')
             else:
                 if self.routing_table.search_entry(text_message.source):            
                     self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
