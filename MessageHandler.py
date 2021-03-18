@@ -37,7 +37,7 @@ class MessageHandler:
     # @neighbor_node    Neighbor node address.       
     def route_request(self, request, neighbor_node):
         if request.source == self.MY_ADDRESS:
-            pass
+            return
         if request.requested_node == self.MY_ADDRESS: 
             if not self.routing_table.search_entry(request.source): 
                 request.increment_hop()
