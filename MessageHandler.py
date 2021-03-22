@@ -50,7 +50,6 @@ class MessageHandler:
         if self.routing_table.search_entry(request.requested_node): 
             route = self.routing_table.find_route(request.requested_node)
             self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
-            print('Relpy sent')
         else:
             if request.decrement_time_to_live() > 0:
                 request.increment_hop()
