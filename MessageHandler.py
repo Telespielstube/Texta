@@ -113,7 +113,7 @@ class MessageHandler:
                     print('Message forwarded')
             else:
                 if self.routing_table.search_entry(text_message.source):            
-                    self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, neighbor_node, self.create_hash(text_message.source, text_message.payload))))
+                    self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, text_message.source, self.create_hash(text_message.source, text_message.payload))))
                     UserInterface.print_incoming_message(text_message.source, text_message.payload)
     
     # creates a mad5 Hash value and return the first 6 characters.
