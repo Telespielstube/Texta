@@ -109,9 +109,10 @@ class MessageHandler:
             if text_message.destination != self.MY_ADDRESS:
                 if text_message.decrement_time_to_live() > 0:
                     route = self.routing_table.find_route(text_message.destination)
-                    text_message.next_node = route.neighbor
-                    self.writer.send_message(self.writer.add_separator(text_message)) 
-                    print('Message forwarded')
+                    if route:
+                        text_message.next_node = route.neighbor
+                        self.writer.send_message(self.writer.add_separator(text_message)) 
+                        print('Message forwarded')
             else:
                 if self.routing_table.search_entry(text_message.source):            
                     self.writer.send_message(self.writer.add_separator(RouteAck(self.MY_ADDRESS, 2, 5, text_message.source, self.create_hash(text_message.source, text_message.payload))))
