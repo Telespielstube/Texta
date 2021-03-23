@@ -12,7 +12,6 @@ class Reader(threading.Thread):
         self.connection = connection
         self.parser = parser
 
- 
     def run(self):
         # constantly read from mcu, if received message is empty 
         # sleep if message has content break from if statement and pass message to parser
@@ -23,5 +22,5 @@ class Reader(threading.Thread):
             if not message:
                 time.sleep(0.2)
                 continue
-            #print('Reader: ' + message.decode())
+            print('Reader: ' + message.decode())
             self.parser.parse_message(message[:11], message[11:]) #first message arg = MCU header, second is protocol header

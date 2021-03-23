@@ -27,10 +27,10 @@ class MessageHandler:
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
+            self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 0)) 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message)))
-            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message), self.get_time(), 1))
+            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message), self.get_time(), 0))
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -92,11 +92,10 @@ class MessageHandler:
         if ack_message.destination == self.MY_ADDRESS:
             self.lock()
             for key, value in list(self.route_ack_list.items()):
-                if key == ack_message.hash_value.decode():  
-                    UserInterface.print_outgoing_message(value.message.destination, value.message.payload)               
+                if key == ack_message.hash_value.decode():                 
                     del self.route_ack_list[key]
-            self.unlock()
-            
+                UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
+            self.unlock()        
         else:
             if ack_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(ack_message))
@@ -105,7 +104,7 @@ class MessageHandler:
     # @text_message    TextMessage object to be forwarded to next node.
     # @neighbor_node    Neighbor node address.   
     def forward_message(self, text_message, neighbor_node):
-        if text_message.next_node == self.MY_ADDRESS and self.routing_table.search_entry(text_message.destination): # check if dest is in table
+        if text_message.next_node == self.MY_ADDRESS and self.routing_table.search_entry(text_message.destination): 
             if text_message.destination != self.MY_ADDRESS:
                 if text_message.decrement_time_to_live() > 0:
                     route = self.routing_table.find_route(text_message.destination)
