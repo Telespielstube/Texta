@@ -79,11 +79,12 @@ class MessageHandler:
     # error    RouteError message object
     def route_error(self, error): 
         if error.broken_node != self.MY_ADDRESS:  
-            self.routing_table.remove_route_from_table(error.broken_node)
-            print(error.broken_node.decode() + ' left!')
-            if error.decrement_time_to_live() > 0:           
-                self.writer.send_message(self.writer.add_separator(error))
-                print('Error forwarded')
+            if self.routing_table.search_entry(error.broken_node):
+                self.routing_table.remove_route_from_table(error.broken_node)
+                print(error.broken_node.decode() + ' left!')
+                if error.decrement_time_to_live() > 0:           
+                    self.writer.send_message(self.writer.add_separator(error))
+                    print('Error forwarded')
 
     # Compares received hash field to the route_ack_list table entries and deletes the matching entry.
     # @ack_message      Acknowledment message object 
@@ -91,10 +92,11 @@ class MessageHandler:
         if ack_message.destination == self.MY_ADDRESS:
             self.lock()
             for key, value in list(self.route_ack_list.items()):
-                if key == ack_message.hash_value.decode():                 
+                if key == ack_message.hash_value.decode():  
+                    UserInterface.print_outgoing_message(value.message.destination, value.message.payload)               
                     del self.route_ack_list[key]
             self.unlock()
-            UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
+            
         else:
             if ack_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(ack_message))

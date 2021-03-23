@@ -49,8 +49,8 @@ class RoutingTable():
     # @return   found node address  
     def search_entry(self, node):
         found = False
-        for key in self.table.keys():
-            if key == node:
+        for key, value in self.table.items():
+            if key == node or value.neighbor == node:
                 found = True
         return found
 
