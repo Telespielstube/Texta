@@ -93,8 +93,8 @@ class MessageHandler:
             for key, value in list(self.route_ack_list.items()):
                 if key == ack_message.hash_value.decode():                 
                     del self.route_ack_list[key]
-                    UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
             self.unlock()
+            UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
         else:
             if ack_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(ack_message))
