@@ -49,8 +49,8 @@ class RoutingTable():
     # @return   found node address  
     def search_entry(self, node):
         found = False
-        for key, value in self.table.items():
-            if key == node or value.neighbor == node:
+        for key in self.table.keys():
+            if key == node:
                 found = True
         return found
 
@@ -58,8 +58,8 @@ class RoutingTable():
     # @node           destination node to be found in table 
     # @return         neighbor node the destination can be reached the fastest 
     def find_route(self, node):
-        for key, value in self.table.items():
-            if key == node or value.neighbor == node: 
+        for key in self.table.keys():
+            if key == node: 
                 return self.table.get(key)        
 
         
