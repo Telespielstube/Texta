@@ -89,18 +89,21 @@ class MessageHandler:
     # @ack_message      Acknowledment message object 
     def ack_message(self, ack_message):
         if ack_message.destination == self.MY_ADDRESS:
+            self.lock()
             for key, value in list(self.route_ack_list.items()):
-                if key == ack_message.hash_value.decode():                
-                    self.lock()
+                if key == ack_message.hash_value.decode():                 
                     del self.route_ack_list[key]
-                    self.unlock()
                     UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
+            self.unlock()
+        else:
+            if ack_message.decrement_time_to_live() > 0:
+                self.writer.send_message(self.writer.add_separator(ack_message))
 
     # Forwards the received message if destination is not own address.
     # @text_message    TextMessage object to be forwarded to next node.
     # @neighbor_node    Neighbor node address.   
     def forward_message(self, text_message, neighbor_node):
-        if text_message.next_node == self.MY_ADDRESS:
+        if text_message.next_node == self.MY_ADDRESS and self.routing_table.search_entry(text_message.destination): # check if dest is in table
             if text_message.destination != self.MY_ADDRESS:
                 if text_message.decrement_time_to_live() > 0:
                     route = self.routing_table.find_route(text_message.destination)
@@ -137,12 +140,12 @@ class MessageHandler:
     def get_pending_message_from_list(self):
         match = []
         for key in self.routing_table.table.keys():
+            self.lock()
             for entry in self.pending_message_list:
                 if key == entry.message.destination:
-                    self.lock()
                     self.pending_message_list.remove(entry)
                     match.append(entry.message) 
-                    self.unlock()     
+            self.unlock()     
         return match
 
     # Checks availablility of message destinations. If available they will be sent
@@ -156,28 +159,28 @@ class MessageHandler:
     
     # Removes all entries that have reached 3 retries.
     def clean_up_pending_message_list(self):
-        if self.pending_message_list:
+            self.lock()
             for entry in self.pending_message_list:
                 if self.get_time() - entry.timestamp > 8.0:
                     entry.retry += 1
                     self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, entry.message.destination))) 
                     if entry.retry == 3:
-                        self.lock()
                         self.pending_message_list.remove(entry)
-                        self.unlock()
                         print(entry.message.destination.decode() + ' is not available!!')
+            self.unlock()
         
     # Removes all entries that have reached 3 retries.
     def clean_up_route_ack_list(self):
+        self.lock()
         for key, value in list(self.route_ack_list.items()):
             if self.get_time() - value.timestamp > 8.0:
                 value.retry +=1
                 self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
                 if value.retry == 3:
-                    self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))
-                    self.lock()
-                    self.route_ack_list.pop(key)
-                    self.unlock() 
+                    self.writer.send_message(self.writer.add_separator(RouteError(self.MY_ADDRESS, 5, 5, value.message.destination)))               
+                    self.route_ack_list.pop(key)   
                     self.routing_table.remove_route_from_table(value.message.destination)
                     print(value.message.destination.decode() + ' left!!')
                     print('Error sent')
+        self.unlock() 
+ 
