@@ -59,7 +59,7 @@ class RoutingTable():
     # @return         neighbor node the destination can be reached the fastest 
     def find_route(self, node):
         for key, value in self.table.items():
-            if key == node: 
+            if key == node or value == node: 
                 return self.table.get(key)        
 
         
