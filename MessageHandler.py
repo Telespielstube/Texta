@@ -27,10 +27,10 @@ class MessageHandler:
         route = self.routing_table.find_route(user_message.destination)
         if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
-            self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 0)) 
+            self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message)))
-            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message), self.get_time(), 0))
+            self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message), self.get_time(), 1))
 
     # Sends a request to all reachable nodes to find the requested node .
     # @request          Request message object.
@@ -76,7 +76,7 @@ class MessageHandler:
                 self.writer.send_message(self.writer.add_separator(reply))
                 print('Reply forwarded.')
            
-    # Prepares the route message for sending. 
+    #  for sending. 
     # error    RouteError message object
     def route_error(self, error): 
         if error.broken_node != self.MY_ADDRESS:  
@@ -164,7 +164,7 @@ class MessageHandler:
     def clean_up_pending_message_list(self):
             self.lock()
             for entry in self.pending_message_list:
-                if self.get_time() - entry.timestamp > 8.0:
+                if self.get_time() - entry.timestamp > 10.0:
                     entry.retry += 1
                     self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, entry.message.destination))) 
                     if entry.retry == 3:
@@ -176,7 +176,7 @@ class MessageHandler:
     def clean_up_route_ack_list(self):
         self.lock()
         for key, value in list(self.route_ack_list.items()):
-            if self.get_time() - value.timestamp > 8.0:
+            if self.get_time() - value.timestamp > 10.0:
                 value.retry +=1
                 self.writer.send_message(self.writer.add_separator(value.message)) # sends the message again after each unsuccessful attempt.
                 if value.retry == 3:
