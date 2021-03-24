@@ -72,7 +72,7 @@ class MessageHandler:
         if reply.next_node == self.MY_ADDRESS and reply.end_node != self.MY_ADDRESS:
             if not self.routing_table.search_entry(reply.source):
                 reply.increment_hop() 
-                self.routing_table.add_route_to_table(reply.end_node, neighbor_node, reply.hop)
+                self.routing_table.add_route_to_table(reply.source, neighbor_node, reply.hop)
                 if reply.decrement_time_to_live() > 0:  
                     route = self.routing_table.find_route(reply.end_node)
                     if route:  
