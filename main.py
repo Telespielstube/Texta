@@ -24,7 +24,7 @@ def main():
     #connection = Connection('/dev/ttys004', 115200, 8, 'N', 1, 1)
     connection.connect_device() 
     configuration = Configuration(connection)
-    configuration.config_module('AT+RST', 'AT+CFG=433500000,5,9,7,1,1,0,0,0,0,3000,8,4', 'AT+ADDR=' + MY_ADDRESS, 'AT+DEST=FFFF', 'AT+RX', 'AT+SAVE')
+    configuration.config_module('AT+RST', 'AT+CFG=433500000,7,9,7,1,1,0,0,0,0,3000,8,4', 'AT+ADDR=' + MY_ADDRESS, 'AT+DEST=FFFF', 'AT+RX', 'AT+SAVE')
     routing_table = RoutingTable(MY_ADDRESS.encode(), 0) #Adds own address and 0 hops to routing table
     writer = Writer(connection)
     message_handler = MessageHandler(MY_ADDRESS.encode(), routing_table, writer)
