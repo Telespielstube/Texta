@@ -28,6 +28,7 @@ class MessageHandler:
         if not route:  
             self.writer.send_message(self.writer.add_separator(RouteRequest(self.MY_ADDRESS, 3, 5, 0, user_message.destination))) 
             self.pending_message_list.append(PendingMessage(user_message, self.get_time(), 1)) 
+            print('Request sent')
         else:
             self.writer.send_message(self.writer.add_separator(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message)))
             self.route_ack_list[self.create_hash(self.MY_ADDRESS, user_message.message)] = (PendingMessage(TextMessage(self.MY_ADDRESS, 1, 5, user_message.destination, route.neighbor, user_message.message), self.get_time(), 1))
@@ -43,6 +44,7 @@ class MessageHandler:
                 request.increment_hop()
                 self.routing_table.add_route_to_table(request.source, neighbor_node, request.hop)     
             self.writer.send_message(self.writer.add_separator(RouteReply(self.MY_ADDRESS, 4, 5, 0, request.source, neighbor_node)))
+            print('Reply sent')
             return
         if not self.routing_table.search_entry(request.source): 
             request.increment_hop()
@@ -51,6 +53,7 @@ class MessageHandler:
             route = self.routing_table.find_route(request.requested_node) 
             if route:
                 self.writer.send_message(self.writer.add_separator(RouteReply(route.destination, 4, 5, route.hop, request.source, neighbor_node)))
+                print('Reply sent')
         else:
             if request.decrement_time_to_live() > 0:
                 request.increment_hop()
@@ -78,7 +81,7 @@ class MessageHandler:
                     if route:  
                         reply.next_node = route.neighbor             
                         self.writer.send_message(self.writer.add_separator(reply))
-                        print('Reply forwarded.')
+                        print('Reply forwarded')
             
     #  for sending. 
     # error    RouteError message object
@@ -100,10 +103,12 @@ class MessageHandler:
                 if key == ack_message.hash_value.decode():                 
                     del self.route_ack_list[key]
                 UserInterface.print_outgoing_message(value.message.destination, value.message.payload)
-            self.unlock()        
+            self.unlock() 
+            print('Ack received')       
         else:
             if ack_message.decrement_time_to_live() > 0:
                 self.writer.send_message(self.writer.add_separator(ack_message))
+                print('Ack forwarded')
 
     # Forwards the received message if destination is not own address.
     # @text_message    TextMessage object to be forwarded to next node.
