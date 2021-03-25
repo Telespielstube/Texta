@@ -21,7 +21,7 @@ class MessageHandler:
         self.route_ack_list = dict()
         self.list_lock = threading.Lock()
 
-    # Message from user interface
+    # Processes a message from user interface
     # @user_message    user message object.      
     def user_input(self, user_message):
         route = self.routing_table.find_route(user_message.destination)
@@ -60,7 +60,7 @@ class MessageHandler:
                 self.writer.send_message(self.writer.add_separator(request))
                 print('Request forwarded')
                            
-    # Sends a reply to the source node if own address matches request_messageed node.
+    # Processes reply messages
     # RouteReply(source, destination, flag, time_to_live, previous_node, end_node, metric))
     # reply            Reply message object.
     # neighbor_node    Neighbor node address.
@@ -83,7 +83,7 @@ class MessageHandler:
                         self.writer.send_message(self.writer.add_separator(reply))
                         print('Reply forwarded')
             
-    #  for sending. 
+    # Processes a received error message. 
     # error    RouteError message object
     def route_error(self, error): 
         if error.broken_node != self.MY_ADDRESS:  
@@ -167,7 +167,7 @@ class MessageHandler:
                 self.user_input(message)
                 match_list.remove(message)
     
-    # Removes all entries that have reached 3 retries.
+    # Checks timestamps and removes all entries that have reached 3 retries.
     def clean_up_pending_message_list(self):
             self.lock()
             for entry in self.pending_message_list:
@@ -179,7 +179,7 @@ class MessageHandler:
                         print(entry.message.destination.decode() + ' is not available!!')
             self.unlock()
         
-    # Removes all entries that have reached 3 retries.
+    # Checks timestamps and removes all entries that have reached 3 retries.
     def clean_up_route_ack_list(self):
         self.lock()
         for key, value in list(self.route_ack_list.items()):
